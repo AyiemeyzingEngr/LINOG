@@ -1,0 +1,1 @@
+   delete.tsv: 1460 rows (113 in merged/geom_reference), 1460 files by inode, 1477.975 GiB allocated; rows outside the rule 0

@@ -1,0 +1,3 @@
+   walk: listed files present and as in the dry run 1460 of 1460; kept entries as in the dry run 75419 of 75419
+   differences: listed files changed 0, listed files missing 0, kept entries changed 0, kept entries missing 0, entries not in the dry run 0, error lines 0
+   also seen: excluded files 0; names with a control character (not entered) 0; git folders (not entered) 2

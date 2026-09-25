@@ -1,0 +1,8 @@
+/eggraid/home/arieln/projects/linog/insar/old_runs	3
+/eggraid/home/arieln/projects/linog/insar/p448/_f0290_frozen_20260828T080244Z	1
+/eggraid/home/arieln/projects/linog/insar/p449/f0320/_n53_contaminated_20260829T151808Z	1
+/eggraid/home/arieln/projects/linog/insar/p449/f0300/_n53_contaminated_20260830T092741Z	1
+/eggraid/home/arieln/projects/linog/insar/p449/f0310/_n53_contaminated_20260830T0500Z	1
+/eggraid/home/arieln/projects/linog/insar/p449/f0280/_n53_contaminated_20260831T030339Z	1
+/eggraid/home/arieln/projects/linog/insar/p448/f0300/_revert_bak_20260828T112022Z	1
+/home/arieln/448	1

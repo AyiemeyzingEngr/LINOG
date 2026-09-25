@@ -1,0 +1,36 @@
+== hk_delete.sh 2026-09-25T15:09:16Z felix as arieln, pid 2340691, CONFIRM=YES
+   executor /home/arieln/linog_hk/HK3_20260925T145201Z/hk_delete.sh, md5 be572dcddf7b82b6abbbd600b0c027a8; records in /home/arieln/linog_hk/HK4_20260925T150916Z
+   list /home/arieln/linog_hk/HK2b_20260925T135351Z: md5sums.txt md5 445a591ada977841b1594d31ddb7506b as given; the six files match it
+   run folders: 20, each an allowed old-run folder, a real folder, not a link
+   delete.tsv: 1460 rows (113 in merged/geom_reference), 1460 files by inode, 1477.975 GiB allocated; rows outside the rule 0
+   walk: listed files present and as in the dry run 1460 of 1460; kept entries as in the dry run 75419 of 75419
+   differences: listed files changed 0, listed files missing 0, kept entries changed 0, kept entries missing 0, entries not in the dry run 0, error lines 0
+   also seen: excluded files 0; names with a control character (not entered) 0; git folders (not entered) 2
+   listed files held open by a process of arieln: 0
+   folders holding listed files: 1053; not writable 0; resolving elsewhere 0
+   watch folder /eggraid/home/arieln/projects/linog/insar/_xfer/LINOG_DELIVERY_v1.2_20260924_final: 241 files, md5 of their md5 list 6b84533644e59fc673f4e40767167d50
+   df on the run folders' filesystem, used and free (B): 6750958546944 498930851840
+-- deleting 1460 files one at a time; each is re-checked just before (type, size, inode, links, mtime, owner, folder)
+   [5 s] deleted 100 of 1460, 105.695 GiB
+   [8 s] deleted 200 of 1460, 170.478 GiB
+   [11 s] deleted 300 of 1460, 233.323 GiB
+   [15 s] deleted 400 of 1460, 338.641 GiB
+   [19 s] deleted 500 of 1460, 448.752 GiB
+   [24 s] deleted 600 of 1460, 559.999 GiB
+   [30 s] deleted 700 of 1460, 662.968 GiB
+   [34 s] deleted 800 of 1460, 781.773 GiB
+   [39 s] deleted 900 of 1460, 908.522 GiB
+   [43 s] deleted 1000 of 1460, 1013.141 GiB
+   [46 s] deleted 1100 of 1460, 1077.096 GiB
+   [50 s] deleted 1200 of 1460, 1176.502 GiB
+   [54 s] deleted 1300 of 1460, 1290.765 GiB
+   [59 s] deleted 1400 of 1460, 1400.983 GiB
+   [64 s] deleted 1460 of 1460 files; allocated bytes of files with every link gone: 1586963648512 (1477.975 GiB)
+-- after
+   walk: listed files gone 1460 of 1460, still present 0; kept entries as in the dry run 74366 of 75419, plus 1053 folders whose time changed because a file in them was deleted
+   differences: kept entries changed 0, kept entries missing 0, entries not in the dry run 0, gone without a done row 0, error lines 0
+   also seen: excluded files 0; names with a control character (not entered) 0; git folders (not entered) 2
+   watch folder: 241 files; their md5 list is same as before
+   df used and free (B): before 6750958546944 498930851840, after 5163994898432 2085894500352; used fell by 1477.975 GiB
+   done.tsv: 1460 rows, md5 767cddad878e3d981c7e7c920e237a22
+DONE: deleted 1460 of 1460 files, 1477.975 GiB; checks after: pass.

@@ -1,0 +1,96 @@
+== HK2b 2026-09-25T13:53:51Z felix as arieln: dry run of round 1 (20 runs; files of 8 MiB or more in the seven bulk folders and in merged/geom_reference); reads the runs, writes only into /home/arieln/linog_hk/HK2b_20260925T135351Z
+   Mounted on          Used        Avail
+   /eggraid   6750958546944 498930851840
+   /home       167979442176 131823968256
+   approved run folders: 20, missing: 0
+-- round 1, per run (GiB freed): the seven folders, merged/geom_reference, total, files, then what stays in the run
+    1    81.479     3.584    85.064    123    18.127  $P/old_runs/448/0290_AllStack/archive_previous_run
+    2    36.321     3.584    39.905     64    16.533  $P/old_runs/448/0290_FBD
+    3    66.727     7.218    73.945     59     9.223  $P/old_runs/448/0290_FBS
+    4    66.727     7.218    73.945     59    11.700  $P/old_runs/P448/f0290
+    5    36.321     3.584    39.905     64    17.039  $P/old_runs/448/0290_FBD_v2
+    6    81.237     7.243    88.480     81     2.092  $P/old_runs/P448/f0280
+    7    87.307     7.243    94.550     87     1.583  $P/old_runs/P448/f0320
+    8    87.307     7.243    94.550     87     1.599  $P/old_runs/P448/f0310
+    9   132.702     7.218   139.920    123    86.651  $P/old_runs/P448/f0290_combined_v1_FAILED_20260414
+   10    74.279     3.609    77.888    123    37.379  $P/old_runs/P448/f0290_combined
+   11    88.884     7.218    96.102     89    87.132  $P/p448/_f0290_frozen_20260828T080244Z
+   12    88.766     7.218    95.984     88     1.358  $P/old_runs/p447/archive_f0300_old_runs/f0300_old_products_20260610_091917
+   13    92.616     7.218    99.834     91     1.387  $P/old_runs/p447/f0310
+   14    66.911     7.404    74.315     60     1.162  $P/old_runs/p448/f0280
+   15    81.048     7.218    88.266     81     1.193  $P/old_runs/p448/f0290
+   16    88.766     7.218    95.984     88    35.974  $P/old_runs/p447/f0300
+   17    88.541     0.000    88.541     69     0.268  $P/p449/f0320/_n53_contaminated_20260829T151808Z
+   18     3.850     0.000     3.850      3     0.002  $P/p449/f0300/_n53_contaminated_20260830T092741Z
+   19     7.699     0.000     7.699      6     0.002  $P/p449/f0310/_n53_contaminated_20260830T0500Z
+   20    19.248     0.000    19.248     15     0.003  $P/p449/f0280/_n53_contaminated_20260831T030339Z
+   all 1376.737   101.238  1477.975   1460 files
+   by folder: offsets 497.858; coregSLC 278.443; merged/SLC 247.637; SLC 231.195; unzipped 106.394; merged/geom_reference 101.238; raw_fbs_unpacked 15.210;
+   by type: slc 772.484 (727); off 497.858 (456); IMG-ceos 105.438 (82); rdr 101.238 (113); LED-ceos 0.956 (82);
+-- checks
+   excluded from the list: 0 files, 0.000 GiB (reasons in excluded.tsv)
+   protected items left inside the seven folders (MintPy, Igrams, interferograms, deliverables, geometry other than merged/geom_reference, HDF5): 0 (0.000 GiB)
+   folders anywhere in the walk that arieln cannot write: 0; git folders not entered: 3; names with a control character: 0; error lines: 0; entries outside the start folders: 0
+      git: $P/old_runs/P448/scripts/.git
+      git: $P/old_runs/P448/f0290_combined/.git
+      git: $P/p448/_f0290_frozen_20260828T080244Z/.git
+-- round 2 candidates, not deleted (files of 8 MiB or more outside the seven folders, not MintPy, Igrams, deliverables, geometry, HDF5 or records): 295.219 GiB
+      31.060 GiB     24 files  /home/arieln/448
+      31.037 GiB     60 files  $P/old_runs/P448/f0290_combined_v1_FAILED_20260414/raw
+      31.037 GiB     60 files  $P/old_runs/448/0290_AllStack/unzipped
+      30.529 GiB     24 files  $P/old_runs/p447/f0300/qc
+      15.603 GiB     36 files  $P/p448/_f0290_frozen_20260828T080244Z/raw_fbd
+      15.434 GiB     24 files  $P/p448/_f0290_frozen_20260828T080244Z/raw_fbs
+      15.434 GiB     24 files  $P/old_runs/P448/f0290_combined_v1_FAILED_20260414/raw_fbs
+      15.210 GiB     12 files  $P/old_runs/P448/f0290_combined_v1_FAILED_20260414/SLC_temp
+      15.210 GiB     12 files  $P/old_runs/P448/f0290_combined/SLC_fbs
+      15.210 GiB     12 files  $P/old_runs/448/0290_FBD_v2/removed_FBS_data
+      15.210 GiB     12 files  $P/old_runs/448/0290_FBD/removed_FBS_data
+       7.871 GiB     24 files  $P/old_runs/P448/f0290_combined_v1_FAILED_20260414/raw_fbd
+       7.647 GiB     12 files  $P/old_runs/P448/f0290_combined/SLC_fbd
+       7.647 GiB     12 files  $P/old_runs/P448/f0290/removed_FBD_data
+       7.647 GiB     12 files  $P/old_runs/448/0290_FBS/removed_FBD_data
+       7.605 GiB     12 files  $P/p448/_f0290_frozen_20260828T080244Z/raw_fbs_downsampled
+       7.605 GiB     12 files  $P/old_runs/P448/f0290_combined_v1_FAILED_20260414/raw_fbs_downsampled
+       7.605 GiB     12 files  $P/old_runs/P448/f0290_combined/SLC_fbs_ds
+       3.850 GiB      3 files  $P/p448/f0300/_revert_bak_20260828T112022Z/merged_SLC_20070921
+       0.543 GiB      3 files  $P/old_runs/P448/f0290_combined_v1_FAILED_20260414/DEM
+       0.435 GiB      2 files  $P/p448/_f0290_frozen_20260828T080244Z/DEM
+       0.435 GiB      2 files  $P/old_runs/p448/f0290/DEM
+       0.435 GiB      2 files  $P/old_runs/p448/f0280/DEM
+       0.435 GiB      2 files  $P/old_runs/p447/f0300/DEM
+       0.435 GiB      2 files  $P/old_runs/P448/f0320/DEM
+       0.435 GiB      2 files  $P/old_runs/P448/f0310/DEM
+       0.435 GiB      2 files  $P/old_runs/P448/f0290/DEM
+       0.435 GiB      2 files  $P/old_runs/P448/f0280/DEM
+       0.435 GiB      2 files  $P/old_runs/448/0290_FBS/DEM
+       0.435 GiB      2 files  $P/old_runs/448/0290_FBD_v2/DEM
+       0.435 GiB      2 files  $P/old_runs/448/0290_FBD/DEM
+       0.290 GiB      1 files  $P/old_runs/448/0290_AllStack/DEM
+       0.145 GiB      1 files  $P/old_runs/p449/f0320/DEM
+       0.145 GiB      1 files  $P/old_runs/p449/f0310/DEM
+       0.145 GiB      1 files  $P/old_runs/p449/f0300/DEM
+       0.145 GiB      1 files  $P/old_runs/p449/f0290/DEM
+       0.145 GiB      1 files  $P/old_runs/p449/f0280/DEM
+       0.145 GiB      1 files  $P/old_runs/p447/f0310/DEM
+       0.145 GiB      1 files  $P/old_runs/p447/archive_f0300_old_runs/f0300_old_products_20260610_091917/DEM
+       0.145 GiB      1 files  $P/old_runs/P448/f0290_combined/DEM
+   kept entries recorded in keep_stat.tsv: 64793 files and links
+   [2 s] walk done
+   files on the list held open now by a process of arieln: 0
+-- written: /home/arieln/linog_hk/HK2b_20260925T135351Z
+   -rw------- 1 arieln arieln   266156 Sep 25 21:53 delete.tsv
+   -rw------- 1 arieln arieln        0 Sep 25 21:53 excluded.tsv
+   -rw------- 1 arieln arieln 13203922 Sep 25 21:53 keep_stat.tsv
+   -rw------- 1 arieln arieln      274 Sep 25 21:53 md5sums.txt
+   -rw------- 1 arieln arieln     1484 Sep 25 21:53 roots.txt
+   -rw------- 1 arieln arieln    32441 Sep 25 21:53 round2.tsv
+   -rw------- 1 arieln arieln      594 Sep 25 21:53 starts.txt
+   -rw------- 1 arieln arieln     6359 Sep 25 21:53 summary.txt
+   md5 968515607d298da667ff716234d7700a  roots.txt
+   md5 a9a76e501b4f7d7be46601b0f914a2cf  starts.txt
+   md5 5a0e39621959f20823db1329a8fde400  delete.tsv
+   md5 d41d8cd98f00b204e9800998ecf8427e  excluded.tsv
+   md5 54d71f405abea78af070052866355be5  keep_stat.tsv
+   md5 a7e2465542e18d3dd6c806b30cb25cf8  round2.tsv
+== HK2b DONE 2026-09-25T13:53:53Z: nothing was deleted; the list waits for your review
