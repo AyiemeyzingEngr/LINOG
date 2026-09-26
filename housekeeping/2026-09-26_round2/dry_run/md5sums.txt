@@ -1,0 +1,8 @@
+841e89944e48b00b3d6e42d8bc955209  roots.txt
+5e211eb290a0f1afe21dbf11346af3b1  delete.tsv
+d41d8cd98f00b204e9800998ecf8427e  excluded.tsv
+6adeea55eab9665c1eac8ae2f07ea5eb  keep_stat.tsv
+c2ae6c75d3cce5bb65681f3c1ad78a53  archive_zips.tsv
+ef511ce42703ed65568840311c7fa791  zipcheck.tsv
+cfde9af9bb8e191175f0b2a9f4032311  zip_md5.tsv
+1130ca7c6464b560aff6843ed2bf41f6  by_root.tsv

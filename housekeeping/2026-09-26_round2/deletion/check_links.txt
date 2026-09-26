@@ -1,0 +1,1 @@
+   links: 35597 found; to a listed file from outside the listed folders 0; from inside them 0 (these dangle after deletion); to a folder that holds listed files 1 (they stay valid)

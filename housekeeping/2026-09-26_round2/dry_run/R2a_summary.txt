@@ -1,0 +1,78 @@
+== R2a 2026-09-25T16:59:40Z felix as arieln: dry run of round 2 (the 40 folders in HK2b's round2.tsv); reads them and the archive, writes only into /home/arieln/linog_hk/R2a_20260925T165940Z
+   Mounted on          Used         Avail
+   /eggraid   5163994898432 2085894500352
+   /home       167999750144  131803660288
+   round-2 folders: 40, refused: 0; zips in the archive (/eggraid/data): 793
+   walk: folders not writable by arieln 0; git folders not entered 0; names with a control character 0; error lines 0; entries outside the folders 0
+   [0 s] walk done; zips with an archive copy of the same name and size: 24; reading each and its copy (md5)
+   [120 s] still working
+   [219 s] zips identical to their archive copy: 24; different: 0; unreadable: 0
+   listed files with a file of the same name and size in $P/shared_dem: 12; identical to it (md5): 12
+-- round 2, per folder (GiB): listed for deletion, files; left out, files; what stays; check against HK2b
+    1    0.290    1    0.000    0    0.002  same  $P/old_runs/448/0290_AllStack/DEM
+    2   31.037   60    0.000    0    0.023  same  $P/old_runs/448/0290_AllStack/unzipped
+    3    0.435    2    0.000    0    0.002  same  $P/old_runs/448/0290_FBD/DEM
+    4   15.210   12    0.000    0    0.001  same  $P/old_runs/448/0290_FBD/removed_FBS_data
+    5    0.435    2    0.000    0    0.002  same  $P/old_runs/448/0290_FBD_v2/DEM
+    6   15.210   12    0.000    0    0.001  same  $P/old_runs/448/0290_FBD_v2/removed_FBS_data
+    7    0.435    2    0.000    0    0.002  same  $P/old_runs/448/0290_FBS/DEM
+    8    7.647   12    0.000    0    0.001  same  $P/old_runs/448/0290_FBS/removed_FBD_data
+    9    0.435    2    0.000    0    0.000  same  $P/old_runs/P448/f0280/DEM
+   10    0.435    2    0.000    0    0.002  same  $P/old_runs/P448/f0290/DEM
+   11    7.647   12    0.000    0    0.001  same  $P/old_runs/P448/f0290/removed_FBD_data
+   12    0.145    1    0.000    0    0.000  same  $P/old_runs/P448/f0290_combined/DEM
+   13    7.647   12    0.000    0    0.001  same  $P/old_runs/P448/f0290_combined/SLC_fbd
+   14   15.210   12    0.000    0    0.001  same  $P/old_runs/P448/f0290_combined/SLC_fbs
+   15    7.605   12    0.000    0    0.000  same  $P/old_runs/P448/f0290_combined/SLC_fbs_ds
+   16    0.543    3    0.000    0    0.000  same  $P/old_runs/P448/f0290_combined_v1_FAILED_20260414/DEM
+   17   15.210   12    0.000    0    0.000  same  $P/old_runs/P448/f0290_combined_v1_FAILED_20260414/SLC_temp
+   18   31.037   60    0.000    0    0.023  same  $P/old_runs/P448/f0290_combined_v1_FAILED_20260414/raw
+   19    7.871   24    0.000    0    0.000  same  $P/old_runs/P448/f0290_combined_v1_FAILED_20260414/raw_fbd
+   20   15.434   24    0.000    0    0.012  same  $P/old_runs/P448/f0290_combined_v1_FAILED_20260414/raw_fbs
+   21    7.605   12    0.000    0    0.000  same  $P/old_runs/P448/f0290_combined_v1_FAILED_20260414/raw_fbs_downsampled
+   22    0.435    2    0.000    0    0.000  same  $P/old_runs/P448/f0310/DEM
+   23    0.435    2    0.000    0    0.000  same  $P/old_runs/P448/f0320/DEM
+   24    0.145    1    0.000    0    0.000  same  $P/old_runs/p447/archive_f0300_old_runs/f0300_old_products_20260610_091917/DEM
+   25    0.435    2    0.000    0    0.000  same  $P/old_runs/p447/f0300/DEM
+   26   30.529   24    0.000    0    2.804  same  $P/old_runs/p447/f0300/qc
+   27    0.145    1    0.000    0    0.000  same  $P/old_runs/p447/f0310/DEM
+   28    0.435    2    0.000    0    0.000  same  $P/old_runs/p448/f0280/DEM
+   29    0.435    2    0.000    0    0.000  same  $P/old_runs/p448/f0290/DEM
+   30    0.145    1    0.000    0    0.000  same  $P/old_runs/p449/f0280/DEM
+   31    0.145    1    0.000    0    0.000  same  $P/old_runs/p449/f0290/DEM
+   32    0.145    1    0.000    0    0.000  same  $P/old_runs/p449/f0300/DEM
+   33    0.145    1    0.000    0    0.000  same  $P/old_runs/p449/f0310/DEM
+   34    0.145    1    0.000    0    0.000  same  $P/old_runs/p449/f0320/DEM
+   35    0.435    2    0.000    0    0.000  same  $P/p448/_f0290_frozen_20260828T080244Z/DEM
+   36   15.603   36    0.000    0    0.011  same  $P/p448/_f0290_frozen_20260828T080244Z/raw_fbd
+   37   15.434   24    0.000    0    0.012  same  $P/p448/_f0290_frozen_20260828T080244Z/raw_fbs
+   38    7.605   12    0.000    0    0.000  same  $P/p448/_f0290_frozen_20260828T080244Z/raw_fbs_downsampled
+   39    3.850    3    0.000    0    0.000  same  $P/p448/f0300/_revert_bak_20260828T112022Z/merged_SLC_20070921
+   40   31.060   24    0.000    0    0.000  same  /home/arieln/448
+   all 295.219   433 files; left out 0.000 GiB in 0 files; what stays 2.899 GiB
+   listed on /home: 31.060 GiB; on /eggraid: 264.159 GiB
+   check against HK2b: files of 8 MiB or more by its rule now 295.219 GiB, HK2b 295.219 GiB; folders that differ: 0
+   by kind (GiB, files): derived (SLC, raw, DEM and the like) 147.742 (181); CEOS files named after a granule 116.417 (228); zips 31.060 (24)
+-- left out of the list, by reason (files, GiB)
+   none
+   listed files held open now by a process of arieln: 0
+-- written: /home/arieln/linog_hk/R2a_20260925T165940Z
+   -rw------- 1 arieln arieln  70034 Sep 26 00:59 archive_zips.tsv
+   -rw------- 1 arieln arieln   1013 Sep 26 00:59 by_root.tsv
+   -rw------- 1 arieln arieln  83783 Sep 26 01:03 delete.tsv
+   -rw------- 1 arieln arieln      0 Sep 26 00:59 excluded.tsv
+   -rw------- 1 arieln arieln 781581 Sep 26 00:59 keep_stat.tsv
+   -rw------- 1 arieln arieln    374 Sep 26 01:03 md5sums.txt
+   -rw------- 1 arieln arieln   3103 Sep 26 00:59 roots.txt
+   -rw------- 1 arieln arieln   5110 Sep 26 01:03 summary.txt
+   -rw------- 1 arieln arieln   3861 Sep 26 01:03 zip_md5.tsv
+   -rw------- 1 arieln arieln   4029 Sep 26 00:59 zipcheck.tsv
+   md5 841e89944e48b00b3d6e42d8bc955209  roots.txt
+   md5 5e211eb290a0f1afe21dbf11346af3b1  delete.tsv
+   md5 d41d8cd98f00b204e9800998ecf8427e  excluded.tsv
+   md5 6adeea55eab9665c1eac8ae2f07ea5eb  keep_stat.tsv
+   md5 c2ae6c75d3cce5bb65681f3c1ad78a53  archive_zips.tsv
+   md5 ef511ce42703ed65568840311c7fa791  zipcheck.tsv
+   md5 cfde9af9bb8e191175f0b2a9f4032311  zip_md5.tsv
+   md5 1130ca7c6464b560aff6843ed2bf41f6  by_root.tsv
+== R2a DONE 2026-09-25T17:03:37Z: nothing was deleted

@@ -1,0 +1,1 @@
+   delete.tsv: 399 rows (24 zips, 228 CEOS files named after a granule, 147 derived), 399 files by inode, 288.448 GiB allocated; rows outside the rule 0

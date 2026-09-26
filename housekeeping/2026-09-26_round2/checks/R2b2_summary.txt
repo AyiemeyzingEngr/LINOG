@@ -1,0 +1,122 @@
+== R2b2 2026-09-26T00:31:56Z felix as arieln: the round-2 list with the DEM files kept, tests of the executor on a throwaway tree, and a check of the real list; deletes nothing in the runs; writes only into /home/arieln/linog_hk/R2b_20260926T003156Z and the empty lock file /home/arieln/linog_hk/.hk_delete.lock
+-- 1. R2a's list
+   /home/arieln/linog_hk/R2a_20260925T165940Z/md5sums.txt md5 eaf1b0398aa926e25ccffea9ba9b3315; rebuilt from R2a's printed md5s eaf1b0398aa926e25ccffea9ba9b3315: same
+   roots.txt: OK
+   delete.tsv: OK
+   excluded.tsv: OK
+   keep_stat.tsv: OK
+   archive_zips.tsv: OK
+   zipcheck.tsv: OK
+   zip_md5.tsv: OK
+   by_root.tsv: OK
+-- 2. the round-2 list: R2a's list less the DEM files (Ariel, 26 Sept: DEM files stay in the old runs)
+   DEM files moved from the list to the kept files: 34, 6.771 GiB allocated, in 21 folders
+      1  $P/old_runs/448/0290_AllStack/DEM
+      2  $P/old_runs/448/0290_FBD/DEM
+      2  $P/old_runs/448/0290_FBD_v2/DEM
+      2  $P/old_runs/448/0290_FBS/DEM
+      2  $P/old_runs/P448/f0280/DEM
+      2  $P/old_runs/P448/f0290/DEM
+      1  $P/old_runs/P448/f0290_combined/DEM
+      3  $P/old_runs/P448/f0290_combined_v1_FAILED_20260414/DEM
+      2  $P/old_runs/P448/f0310/DEM
+      2  $P/old_runs/P448/f0320/DEM
+      1  $P/old_runs/p447/archive_f0300_old_runs/f0300_old_products_20260610_091917/DEM
+      2  $P/old_runs/p447/f0300/DEM
+      1  $P/old_runs/p447/f0310/DEM
+      2  $P/old_runs/p448/f0280/DEM
+      2  $P/old_runs/p448/f0290/DEM
+      1  $P/old_runs/p449/f0280/DEM
+      1  $P/old_runs/p449/f0290/DEM
+      1  $P/old_runs/p449/f0300/DEM
+      1  $P/old_runs/p449/f0310/DEM
+      1  $P/old_runs/p449/f0320/DEM
+      2  $P/p448/_f0290_frozen_20260828T080244Z/DEM
+   the round-2 list now: 399 files (399 by inode), 288.448 GiB allocated (on /home 31.060, on /eggraid 257.388)
+   written: /home/arieln/linog_hk/R2b_20260926T003156Z/list
+      -rw------- 1 arieln arieln  70034 Sep 26 00:59 archive_zips.tsv
+      -rw------- 1 arieln arieln  77678 Sep 26 08:31 delete.tsv
+      -rw------- 1 arieln arieln      0 Sep 26 00:59 excluded.tsv
+      -rw------- 1 arieln arieln 786947 Sep 26 08:31 keep_stat.tsv
+      -rw------- 1 arieln arieln    329 Sep 26 08:31 md5sums.txt
+      -rw------- 1 arieln arieln   6105 Sep 26 08:31 protected.tsv
+      -rw------- 1 arieln arieln   3103 Sep 26 00:59 roots.txt
+      -rw------- 1 arieln arieln   3861 Sep 26 01:03 zip_md5.tsv
+      md5 841e89944e48b00b3d6e42d8bc955209  roots.txt
+      md5 4547462645d6e76c52334e8ae9a51499  delete.tsv
+      md5 d41d8cd98f00b204e9800998ecf8427e  excluded.tsv
+      md5 1de53bab4af200e26ad0726a9a84c91d  keep_stat.tsv
+      md5 c2ae6c75d3cce5bb65681f3c1ad78a53  archive_zips.tsv
+      md5 cfde9af9bb8e191175f0b2a9f4032311  zip_md5.tsv
+      md5 0d150d471b7378512a9fd1c22da281d9  protected.tsv
+   md5 of /home/arieln/linog_hk/R2b_20260926T003156Z/list/md5sums.txt: b2ae7d7266f7a7cc94949387496c6973
+-- 3. the executor
+   bash -n: syntax OK
+   /home/arieln/linog_hk/hk_delete2.sh: -rw------- arieln 22686 B, 302 lines, md5 340cfdd07ae0122abae470fd2000afd5
+-- 4. tests on a throwaway tree in /home/arieln/linog_hk/R2b_20260926T003156Z (sparse files; nothing outside /home/arieln/linog_hk/R2b_20260926T003156Z is written except the lock file)
+   PASS t01 CONFIRM not set: rc 3, listed files left 6 of 6, kept 14 of 14 | CHECKED: every check passed; CONFIRM is not YES, so nothing was deleted.
+   PASS t02 CONFIRM=yes, lower case: rc 3, listed files left 6 of 6, kept 14 of 14 | CHECKED: every check passed; CONFIRM is not YES, so nothing was deleted.
+   PASS t03 wrong md5: rc 2, listed files left 6 of 6, kept 14 of 14 | REFUSED: md5sums.txt has md5 4dfe86896c77189ae6bb6705401ce15d, expected 0123456789abcdef0123456789abcdef. Nothing was deleted.
+   PASS t04 lists edited, md5sums.txt not redone: rc 2, listed files left 6 of 6, kept 14 of 14 | REFUSED: a list file differs from md5sums.txt. Nothing was deleted.
+   PASS t05 a DEM folder file added, md5s redone: rc 2, listed files left 6 of 6, kept 15 of 15 | REFUSED: delete.tsv has rows outside the round-2 rule. Nothing was deleted.
+   PASS t06 a DEM file in SLC_fbs added: rc 2, listed files left 6 of 6, kept 15 of 15 | REFUSED: delete.tsv has rows outside the round-2 rule. Nothing was deleted.
+   PASS t07 a MintPy file added: rc 2, listed files left 6 of 6, kept 15 of 15 | REFUSED: delete.tsv has rows outside the round-2 rule. Nothing was deleted.
+   PASS t08 an HDF5 file added: rc 2, listed files left 6 of 6, kept 15 of 15 | REFUSED: delete.tsv has rows outside the round-2 rule. Nothing was deleted.
+   PASS t09 a 9 MiB log added: rc 2, listed files left 6 of 6, kept 15 of 15 | REFUSED: delete.tsv has rows outside the round-2 rule. Nothing was deleted.
+   PASS t10 a 1 MiB file added: rc 2, listed files left 6 of 6, kept 15 of 15 | REFUSED: delete.tsv has rows outside the round-2 rule. Nothing was deleted.
+   PASS t11 a file outside the folders added: rc 2, listed files left 6 of 6, kept 15 of 15 | REFUSED: delete.tsv has rows outside the round-2 rule. Nothing was deleted.
+   PASS t12 zip_md5.tsv says the zip differs from its copy: rc 2, listed files left 6 of 6, kept 14 of 14 | REFUSED: delete.tsv has rows outside the round-2 rule. Nothing was deleted.
+   PASS t13 the archive copy changed after the dry run: rc 2, listed files left 6 of 6, kept 14 of 14 | REFUSED: the archive copy /home/arieln/linog_hk/R2b_20260926T003156Z/t13/archive/1/ALPSRP000000010-H1.1__A.zip has md5 ba1a225770dde595b9c36c45f686c800; the list says 33d9985b91c60b43acb56b3449baf8ea. Nothing was deleted.
+   PASS t14 the archive copy gone after the dry run: rc 2, listed files left 6 of 6, kept 14 of 14 | REFUSED: the archive file /home/arieln/linog_hk/R2b_20260926T003156Z/t14/archive/1/ALPSRP000000010-H1.1__A.zip is missing or not a regular file. Nothing was deleted.
+   PASS t15 a CEOS file whose granule has no zip added: rc 2, listed files left 6 of 6, kept 15 of 15 | REFUSED: delete.tsv has rows outside the round-2 rule. Nothing was deleted.
+   PASS t16 a granule zip gone from the archive after the dry run: rc 2, listed files left 6 of 6, kept 14 of 14 | REFUSED: the archive file /home/arieln/linog_hk/R2b_20260926T003156Z/t16/archive/2/ALPSRP000000030-H1.1__A.zip is missing or not a regular file. Nothing was deleted.
+   PASS t17 a listed file changed: rc 2, listed files left 6 of 6, kept 14 of 14 | REFUSED: the folders differ from the dry run. Nothing was deleted.
+   PASS t18 a kept file changed: rc 2, listed files left 6 of 6, kept 14 of 14 | REFUSED: the folders differ from the dry run. Nothing was deleted.
+   PASS t19 a new file, folder time put back: rc 2, listed files left 6 of 6, kept 15 of 15 | REFUSED: the folders differ from the dry run. Nothing was deleted.
+   PASS t20 a link outside the folders points at a listed file: rc 2, listed files left 6 of 6, kept 15 of 15 | REFUSED: a symbolic link outside the listed folders points at a listed file (links_outside.tsv). Nothing was deleted.
+   PASS t21 wrong host: rc 2, listed files left 6 of 6, kept 14 of 14 | REFUSED: host is notfelix, not felix. Nothing was deleted.
+   PASS t22 records folder already there: rc 2, listed files left 6 of 6, kept 14 of 14 | REFUSED: OUTDIR /home/arieln/linog_hk/R2b_20260926T003156Z/t22/out already exists. Nothing was deleted.
+   PASS t23 folders outside the allowed shapes: rc 2, listed files left 6 of 6, kept 14 of 14 | REFUSED: folder 1 is not an allowed round-2 folder: /home/arieln/linog_hk/R2b_20260926T003156Z/t23/wood/runA/raw. Nothing was deleted.
+   PASS t24 folders reached through a link: rc 2, listed files left 6 of 6, kept 14 of 14 | REFUSED: folder 1 resolves to /home/arieln/linog_hk/R2b_20260926T003156Z/t24/real/runA/raw: /home/arieln/linog_hk/R2b_20260926T003156Z/t24/tree/runA/raw. Nothing was deleted.
+   PASS t25 a folder holding a listed file is read-only: rc 2, listed files left 6 of 6, kept 14 of 14 | REFUSED: a folder holding a listed file is not writable or resolves elsewhere. Nothing was deleted.
+   PASS t26 a listed file open in a process of arieln: rc 2, listed files left 6 of 6, kept 14 of 14 | REFUSED: 1 listed files are open in a process of arieln. Nothing was deleted.
+   PASS t27 another executor holds the lock: rc 2, listed files left 6 of 6, kept 14 of 14 | REFUSED: another executor is running (lock /home/arieln/linog_hk/.hk_delete.lock). Nothing was deleted.
+   PASS t28 the zip's copy is not in the archive: rc 2, listed files left 6 of 6, kept 14 of 14 | REFUSED: delete.tsv has rows outside the round-2 rule. Nothing was deleted.
+   PASS t29 one folder inside another: rc 2, listed files left 6 of 6, kept 14 of 14 | REFUSED: folders equal or one inside another: /home/arieln/linog_hk/R2b_20260926T003156Z/t29/tree/runA/raw and /home/arieln/linog_hk/R2b_20260926T003156Z/t29/tree/runA. Nothing was deleted.
+   PASS t30 CONFIRM=YES on a correct list: rc 0, listed files left 0 of 6, kept 14 of 14 | DONE: deleted 6 of 6 files, 0.000 GiB; checks after: pass.
+   PASS t31 the same list again after t30: rc 2, listed files left 0 of 6, kept 14 of 14 | REFUSED: the folders differ from the dry run. Nothing was deleted.
+   PASS t32 protected.tsv names a listed file: rc 2, listed files left 6 of 6, kept 14 of 14 | REFUSED: protected.tsv names a file that is not a kept entry of the dry run. Nothing was deleted.
+      t30: DEM files kept by the list (protected.tsv): 1; each a kept entry with the same size, inode and mtime, present and unchanged in the walk above, and not on delete.tsv: 1
+      t30: links: looking in /home/arieln/linog_hk/R2b_20260926T003156Z/t30 for symbolic links that point at a listed file
+      t30: links: 1 found; to a listed file from outside the listed folders 0; from inside them 1 (these dangle after deletion); to a folder that holds listed files 0 (they stay valid)
+      t30: archive copies of the listed zips read again: 1 files, 0.009 GiB, each md5 as the list says; listed CEOS files whose granule zip is in the archive: 2
+      t30: archive /home/arieln/linog_hk/R2b_20260926T003156Z/t30/archive: 5 entries, md5 of the listing 43c3d6d15d676d4b31e8db02bfe5eec2
+      t30: walk: listed files gone 6 of 6, still present 0; kept entries as in the dry run 12 of 15, plus 3 folders whose time changed because a file in them was deleted
+      t30: differences: kept entries changed 0, kept entries missing 0, entries not in the dry run 0, gone without a done row 0, error lines 0
+      t30: archive /home/arieln/linog_hk/R2b_20260926T003156Z/t30/archive: 5 entries; the listing (type, size, inode, mtime, path) is same as before
+      t30: watch folder: 2 files; their md5 list is same as before
+      t30: done.tsv: 6 rows, md5 606c8eacd7974527d8c20e7644cf3e24
+   tests: 32 PASS, 0 FAIL
+-- 5. the real list, checked only (CONFIRM=NO: nothing is deleted); it reads the archive copies of the listed zips again
+== hk_delete2.sh 2026-09-26T00:32:05Z felix as arieln, pid 2357881, CONFIRM=NO
+   executor /home/arieln/linog_hk/hk_delete2.sh, md5 340cfdd07ae0122abae470fd2000afd5; records in /home/arieln/linog_hk/R2b_20260926T003156Z/check_real
+   list /home/arieln/linog_hk/R2b_20260926T003156Z/list: md5sums.txt md5 b2ae7d7266f7a7cc94949387496c6973 as given; the seven files match it
+   folders: 40, each an allowed round-2 folder, a real folder, not a link, none inside another; archive /eggraid/data
+   delete.tsv: 399 rows (24 zips, 228 CEOS files named after a granule, 147 derived), 399 files by inode, 288.448 GiB allocated; rows outside the rule 0
+   walk: listed files present and as in the dry run 399 of 399; kept entries as in the dry run 4159 of 4159
+   differences: listed files changed 0, listed files missing 0, kept entries changed 0, kept entries missing 0, entries not in the dry run 0, error lines 0
+   also seen: excluded files 0; names with a control character (not entered) 0; git folders (not entered) 0
+   DEM files kept by the list (protected.tsv): 34; each a kept entry with the same size, inode and mtime, present and unchanged in the walk above, and not on delete.tsv: 34
+   listed files held open by a process of arieln: 0
+   folders holding listed files: 220; not writable 0; resolving elsewhere 0
+   links: looking in /eggraid /home for symbolic links that point at a listed file
+   links: 35597 found; to a listed file from outside the listed folders 0; from inside them 0 (these dangle after deletion); to a folder that holds listed files 1 (they stay valid)
+   folders the link search could not read: 20
+   archive copies of the listed zips read again: 24 files, 31.060 GiB, each md5 as the list says; listed CEOS files whose granule zip is in the archive: 228
+   archive /eggraid/data: 856 entries, md5 of the listing 210493a1d4224861f3fedd8ec5e8b535
+   watch folder /eggraid/home/arieln/projects/linog/insar/_xfer/LINOG_DELIVERY_v1.2_20260924_final: 241 files, md5 of their md5 list 6b84533644e59fc673f4e40767167d50
+   df used and free (B) on the folders' filesystems: /eggraid 5163994898432 2085894500352; /home 168012107776 131791302656; 
+CHECKED: every check passed; CONFIRM is not YES, so nothing was deleted.
+   executor rc 3 (3 = every check passed and nothing was deleted)
+   for the deletion (R2c): list /home/arieln/linog_hk/R2b_20260926T003156Z/list, md5 b2ae7d7266f7a7cc94949387496c6973, executor md5 340cfdd07ae0122abae470fd2000afd5
+== R2b2 DONE 2026-09-26T00:33:37Z: nothing in the runs was deleted; the deletion waits for your review and your word

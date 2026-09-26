@@ -1,0 +1,36 @@
+== hk_delete2.sh 2026-09-26T01:07:25Z felix as arieln, pid 2359061, CONFIRM=YES
+   executor /home/arieln/linog_hk/hk_delete2.sh, md5 340cfdd07ae0122abae470fd2000afd5; records in /home/arieln/linog_hk/R2c_20260926T010725Z
+   list /home/arieln/linog_hk/R2b_20260926T003156Z/list: md5sums.txt md5 b2ae7d7266f7a7cc94949387496c6973 as given; the seven files match it
+   folders: 40, each an allowed round-2 folder, a real folder, not a link, none inside another; archive /eggraid/data
+   delete.tsv: 399 rows (24 zips, 228 CEOS files named after a granule, 147 derived), 399 files by inode, 288.448 GiB allocated; rows outside the rule 0
+   walk: listed files present and as in the dry run 399 of 399; kept entries as in the dry run 4159 of 4159
+   differences: listed files changed 0, listed files missing 0, kept entries changed 0, kept entries missing 0, entries not in the dry run 0, error lines 0
+   also seen: excluded files 0; names with a control character (not entered) 0; git folders (not entered) 0
+   DEM files kept by the list (protected.tsv): 34; each a kept entry with the same size, inode and mtime, present and unchanged in the walk above, and not on delete.tsv: 34
+   listed files held open by a process of arieln: 0
+   folders holding listed files: 220; not writable 0; resolving elsewhere 0
+   links: looking in /eggraid /home for symbolic links that point at a listed file
+   links: 35597 found; to a listed file from outside the listed folders 0; from inside them 0 (these dangle after deletion); to a folder that holds listed files 1 (they stay valid)
+   folders the link search could not read: 20
+   archive copies of the listed zips read again: 24 files, 31.060 GiB, each md5 as the list says; listed CEOS files whose granule zip is in the archive: 228
+   archive /eggraid/data: 856 entries, md5 of the listing 210493a1d4224861f3fedd8ec5e8b535
+   watch folder /eggraid/home/arieln/projects/linog/insar/_xfer/LINOG_DELIVERY_v1.2_20260924_final: 241 files, md5 of their md5 list 6b84533644e59fc673f4e40767167d50
+   df used and free (B) on the folders' filesystems: /eggraid 5163994898432 2085894500352; /home 168017567744 131785842688; 
+-- deleting 399 files one at a time; each is re-checked just before (type, size, inode, links, mtime, owner, folder; the archive copy or granule zip unchanged)
+   [2 s] deleted 50 of 399, 25.187 GiB
+   [5 s] deleted 100 of 399, 71.651 GiB
+   [7 s] deleted 150 of 399, 114.720 GiB
+   [8 s] deleted 200 of 399, 145.006 GiB
+   [10 s] deleted 250 of 399, 167.648 GiB
+   [12 s] deleted 300 of 399, 214.896 GiB
+   [13 s] deleted 350 of 399, 239.424 GiB
+   [17 s] deleted 399 of 399 files; allocated bytes of files with every link gone: 309718441984 (288.448 GiB)
+-- after
+   walk: listed files gone 399 of 399, still present 0; kept entries as in the dry run 3939 of 4159, plus 220 folders whose time changed because a file in them was deleted
+   differences: kept entries changed 0, kept entries missing 0, entries not in the dry run 0, gone without a done row 0, error lines 0
+   also seen: excluded files 0; names with a control character (not entered) 0; git folders (not entered) 0
+   archive /eggraid/data: 856 entries; the listing (type, size, inode, mtime, path) is same as before
+   watch folder: 241 files; their md5 list is same as before
+   df used and free (B): before /eggraid 5163994898432 2085894500352; /home 168017567744 131785842688;  after /eggraid 4887626903552 2362262495232; /home 134667329536 165136080896; 
+   done.tsv: 399 rows, md5 0dc8235571c26cd48d815f7d10ba0ad8
+DONE: deleted 399 of 399 files, 288.448 GiB; checks after: pass.
