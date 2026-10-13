@@ -2,39 +2,44 @@
  *
  * Beat plan (lt = t − 18 s · 1 beat = 0.5 s · bars start at lt 0, 2, 4, 6, 8, 10 · springs ζ 0.82)
  *  A · PHASE 03 COREGISTRATION (18–22, camera 1.00 → 1.04)
- *   0.0  the two chip frames unfold out of the incoming TL node while the TL flies to the reference
- *        and becomes the 'pixel' correlation window; images scan in (0.2 / 0.3), labels 0.25 / 0.5.
- *   0.5  cross-correlation card; correlation surface 0.75; the reference river is traced (0.75).
- *   1.0  TL snaps to the matching window on the secondary; correlation peak rises off-centre; offset
- *        vectors grow; the reference river ghost (cyan, dashed) and the secondary river (gold) sit apart.
- *   1.5  TL → reference patch 2; caption "→ sub-pixel alignment".
- *   2.0  BAR · TL → window 2'. The secondary springs into alignment (1.0 s): gold river lands on the cyan
- *        ghost, vectors shrink to dots, the correlation peak walks to zero offset.
- *   2.5 / 3.0  TL samples patch 3 / 3' (now aligned).   3.5–4.0  A contracts into the TL and unmasks.
+ *   0.0  the two chip frames unfold out of the incoming TL node — reference FBS = amber, secondary FBD = blue
+ *        (act 2's mode colours). The TL settles on reference window 1 as the 'pixel' correlation window, holding
+ *        the hand-off size for one beat. Images scan in (0.2 / 0.3), labels 0.25 / 0.5.
+ *   0.5  section title "Cross-correlation" (title slot); cross-correlation card; 0.75 surface + reference river.
+ *   1.0  TL hop 1 (1.0 s spring, arc) rides the dashed correlation link from reference window 1 to its match on
+ *        the secondary (fading trail); offset vectors grow; the correlation peak rises off-centre (1.25).
+ *   1.5 / 2.5  windows 2 / 3 are matched (amber + blue windows, their correlation links draw on).
+ *   2.0  BAR · the secondary springs into alignment (1.0 s) + "→ sub-pixel alignment": the blue river lands on the
+ *        amber ghost, vectors shrink to dots, the peak walks to zero offset; the TL rides its window.
+ *   3.0  TL hop 2 (0.6 s, in-chip) to window 2 — its peak sits at zero offset (aligned).
+ *   3.75 A contracts into the TL and unmasks while B builds (no blank beat).
  *  B · PHASE 04 INTERFEROGRAMS (22–26, camera 1.04 → 1.08)
- *   3.75 TL pixel → 'pulse' = complex wave s₁ (lands ≈ 4.3).  4.0 BAR wave guides construct from the TL.
- *   4.25 s₂ (gold) draws on, date labels.  4.5 multiply sweep s₁ · s₂* → product strip; phasor (one tick,
- *        then frozen).  4.75 / 5.0 "phase difference Δφ" / "wrapped into (−π, π]".
- *   5.0  wrapped single-look raster extrudes from the strip (5.0–6.0); multilook card (5.0), header 5.25,
- *        28 × 12 sample block 5.25; 5.75 zoom call-out from one ~90 m cell (drawn above the raster).
+ *   4.0  BAR · TL pixel → 'pulse' = complex wave s₁ (0.8 s); the wave guides construct from it.
+ *   4.25 s₂ (gold) + date labels draw on while the pulse settles.  4.5 multiply sweep s₁ · s₂* → product strip;
+ *        phasor (one tick, then frozen).  4.75 / 5.0 "phase difference Δφ" / "wrapped into (−π, π] · schematic".
+ *   5.0  wrapped single-look raster extrudes from the strip (5.0–6.0); multilook card (5.0), header 5.1,
+ *        28 × 12 sample block 5.25; 5.75 zoom call-out from one ≈ 90 m cell (drawn above the raster).
  *   6.0  BAR · the 28 azimuth looks merge + "28 az looks ≈ 90 m"; colour bar.
- *   6.5  the 12 range looks merge → ONE pixel + "12 × 4.68 m = 56 m slant → ~90 m ground", "→ ~90 × 90 m pixels".
+ *   6.5  the 12 range looks merge → ONE pixel + "12 × 4.68 m = 56 m slant → ≈ 90 m ground", "→ ≈ 90 m × 90 m pixels".
  *   7.0–7.5 the raster wipes noisy single-look → crisp multilooked (nearest-neighbour).
- *   7.15–7.5 phasor unmasks; 7.5 QC card constructs (counter rolls 1,779 → 1,634 on 16ths, lands 8.1).
+ *   7.15–7.5 phasor unmasks; 7.5 QC card constructs: hero counter 1,779 and "P448 F0290 · 149 → 149", held.
  *  C · QC + SNAPHU (26–30, camera 1.08 → 1.125)
- *   8.0  BAR · the multilooked raster springs into its slot of a 6 × 4 thumbnail grid; the TL becomes the
- *        gate head; waves unmask; multilook card unmasks 8.35–8.65 while the right columns construct.
- *   8.5  report-grid gate sweeps (8.5–9.5); two tiles (poor coherence, ionospheric) get a crimson strike and
- *        collapse out; the matching reason in the QC card flashes.
- *   9.5  tiles shrink + unmask (bottom row first); the kept interferogram expands into the field; TL morphs
- *        pixel → 'fringe' on the bowl; 9.75 transect + wrapped sawtooth profile draw on, reference point marked.
+ *   8.0  BAR · the multilooked raster springs into the last column of a 4 × 4 thumbnail grid; the TL becomes the
+ *        gate head at the grid's left edge; waves unmask; multilook card unmasks 8.35–8.65.
+ *   8.5  report-grid gate sweeps left → right (8.5–9.5) and stops right above the kept interferogram. Two tiles get
+ *        a crimson strike and collapse; each strike steps the counters down on 16ths (1,779 → 1,706 → 1,634,
+ *        149 → 139 → 129; final value from ≈ 9.33, held ≥ 2.4 s); the matching reason flashes.
+ *   9.5  the TL drops into the kept tile, which grows in place (1.0 s) into the SNAPHU field — one object, one move.
+ *        The QC card shrinks to a chip ("1,634 of 1,779 · G1–G23" / "P448 F0290 · 149 → 129") instead of exiting;
+ *        other tiles unmask; title "Phase unwrapping" + SNAPHU caption (readable 9.6–11.85).
+ *   9.75 transect + wrapped sawtooth profile draw on ("range change · ↓ away"), reference point marked.
  *   10.0 BAR · SNAPHU: the unwrapping front grows out of the reference point (10.0–10.7); every pixel goes
- *        cyclic → continuous, every 2π segment of the profile drops into one smooth curve; the y-axis
- *        follows the curve (2π ticks). Settled ≈ 11.0, held to 11.5.
- *   11.5 final beat · field + profile contract into the TL; text unmasks 11.85–12.0;
- *        TL → pure 'fringe', size 120, at screen (960, 450), rot 0, alpha 1.
- * Values: 2009-02-08 FBS reference, 4.68 m grid, 28 × 12 looks, ~90 m, 1,779 → 1,634, G1–G23 (fact sheet).
- * Offsets, fringes, phases, tiles and the reference point are schematic (no invented numbers are printed).
+ *        cyclic → continuous, every 2π segment of the profile drops into one smooth curve (deco π-multiple ticks).
+ *        Settled ≈ 11.0, held to 11.5.
+ *   11.5 final beat · field + profile contract into the TL; text unmasks 11.7–12.0;
+ *        TL → pure 'fringe' at the field centre, size 80 (≈ its in-act size), rot 0, alpha 1.
+ * Values: 2009-02-08 FBS reference, 4.68 m grid, 28 × 12 looks, ≈ 90 m, 1,779 → 1,634, P448 F0290 149 → 129,
+ * G1–G23 (fact sheet). Offsets, fringes, phases, tiles, the two-step QC split and the reference point are schematic.
  */
 (function () {
   'use strict';
@@ -44,18 +49,24 @@
   const wrap = (x) => x - TAU * Math.floor((x + Math.PI) / TAU); // → (−π, π]
   const outP = (lt, b, d) => (lt >= b ? 0 : clamp(1 - L.spring(lt - (b - d), d * 0.8)));
 
-  const INK = { blueCard: L.ink(C.blue, C.card) };
-  const END = { x: 960, y: 450, size: 120 }; // hand-off at 30.0 s (screen space)
+  // mode colours follow act 2 (FBS = amber, FBD = blue); s₁ / s₂ (dates) stay cyan / gold in section B
+  const INK = { blueCard: L.ink(C.blue, C.card), amber: L.ink(C.amber), blue: L.ink(C.blue) };
+  const END_SIZE = 80; // hand-off size at 30.0 s (screen px) ≈ the fringe's in-act size (64 world px × 1.125)
+  const TITLE = { display: { kind: 'display', size: 40, weight: 700 } }; // section-title role
 
   /* ================================================================ layout (world coordinates)
    * Each section keeps its content inside the HUD-safe box at that section's maximum camera zoom. */
   const A = {
-    ref: { x: 150, y: 300, s: 460 }, sec: { x: 690, y: 300, s: 460 },
-    card: { x: 1230, y: 300, w: 530, h: 460 },
+    ref: { x: 150, y: 324, s: 460 }, sec: { x: 690, y: 324, s: 460 },
+    card: { x: 1230, y: 324, w: 530, h: 460 },
     T: [16, -10], rot: (1.0 * Math.PI) / 180, // illustrative misregistration of the secondary (px, rad)
     patches: [[132, 42], [-134, -128], [-48, 138]], win: 66, grid: 92, ex: 2.5,
-    snaps: [[0.0, 0, 0], [1.0, 1, 0], [1.5, 0, 1], [2.0, 1, 1], [2.5, 0, 2], [3.0, 1, 2]], // [lt, chip 0 ref / 1 sec, patch]
-    alignAt: 2.0, cIn: 3.5, out: 4.1, outD: 0.55, capY: 842,
+    // TL hops [lt, chip (0 ref / 1 sec), patch, spring s, arc px]: one cross-chip hop riding the correlation link,
+    // one short in-chip hop. Peak speed ≈ 1,300 px/s.
+    hops: [[0.0, 0, 0, 0, 0], [1.0, 1, 0, 1.0, 46], [3.0, 1, 1, 0.6, 24]],
+    links: [[1.0, 0, 1.0], [1.5, 1, 0.5], [2.5, 2, 0.5]], // correlation links [lt, patch, draw-on spring]
+    alignAt: 2.0, cIn: 3.85, cD: 0.75, out: 4.5, outD: 0.65, tOut: 4.15,
+    title: { x: 160, y: 200 },
   };
   const B = {
     r: { x: 620, y: 360, s: 480 }, NSL: 520, NML: 40,
@@ -68,12 +79,14 @@
     azAt: 6.0, rgAt: 6.5, wipe: 7.0,
   };
   const Q = {
-    grid: { x: 775, y: 262, cols: 6, rows: 4, t: 120, g: 14 },
-    bad: { 13: 'decor', 10: 'iono' }, keep: 7,
-    gate: { x0: 761, x1: 1579, y0: 240, y1: 806, head: 216, t0: 8.5, t1: 9.5 },
-    qc: { x: 184, y: 352, w: 420, h: 340 }, qcIn: 7.5, qcOut: 9.9,
-    field: { x: 740, y: 215, s: 440 }, fieldAt: 9.5,
-    prof: { x: 740, y: 700, w: 440, h: 160 },
+    grid: { x: 645, y: 222, cols: 4, rows: 4, t: 112, g: 16 },
+    bad: { 4: 'decor', 10: 'iono' }, keep: 7, // keep = last column, row 1: the gate ends right above it
+    strikes: [[4, 73, 10], [10, 72, 10]],    // [tile, Δ 12-frame total, Δ P448 F0290] in strike order
+    gate: { y0: 208, y1: 732, head: 190, t0: 8.5, t1: 9.5 },
+    qc: { x: 196, y: 352, w: 420, h: 300 }, chip: { x: 196, y: 768, w: 360, h: 96 }, qcIn: 7.5, chipAt: 9.5,
+    field: { x: 920, y: 200, s: 480 }, fieldAt: 9.5, fieldD: 1.0,
+    prof: { x: 920, y: 724, w: 480, h: 140 },
+    title: { x: 215, y: 222 },
   };
   const UW = { t0: 10.0, d: 0.7, ref: [0.1, 0.12] }; // unwrapping front: starts on the bar at the reference point
   const DMAX = Math.hypot(1 - UW.ref[0], 1 - UW.ref[1]);
@@ -89,7 +102,7 @@
     return a + (b - a) * fx + (c - a) * fy + (a - b - c + d) * fx * fy;
   }
   const gauss = (i, j, s) => Math.sqrt(-2 * Math.log(1 - L.hash2(i, j, s) * 0.9999)) * Math.cos(TAU * L.hash2(i, j, s + 101));
-  const fmt = (n) => `${Math.floor(n / 1000)},${String(n % 1000).padStart(3, '0')}`;
+  const num = (n) => (n >= 1000 ? `${Math.floor(n / 1000)},${String(n % 1000).padStart(3, '0')}` : String(n)); // thousands separator, no zero-padding
 
   /* ================================================================ caches (pure functions of constants) */
   let K = null;
@@ -152,13 +165,10 @@
     let s0 = 0;
     for (let i = 0; i < NP; i++) { if (i && k.prof.n[i] !== k.prof.n[i - 1]) s0 = i / (NP - 1); k.prof.tSeg[i] = uwTime(s0, 0.5); }
     k.prof.min = mn;
-    // colour bars
-    k.barFr = L.canvas(256, 1); k.barVel = L.canvas(256, 1);
+    // colour bar (wrapped, cyclic) for section B
+    k.barFr = L.canvas(256, 1);
     { const x = k.barFr.getContext('2d'), im = x.createImageData(256, 1);
       for (let i = 0; i < 256; i++) { const c = L.fringeRGB(-Math.PI + (TAU * i) / 255); im.data[i * 4] = c[0]; im.data[i * 4 + 1] = c[1]; im.data[i * 4 + 2] = c[2]; im.data[i * 4 + 3] = 255; }
-      x.putImageData(im, 0, 0); }
-    { const x = k.barVel.getContext('2d'), im = x.createImageData(256, 1), v = L.LUT.vel;
-      for (let i = 0; i < 256; i++) { im.data[i * 4] = v[i * 3]; im.data[i * 4 + 1] = v[i * 3 + 1]; im.data[i * 4 + 2] = v[i * 3 + 2]; im.data[i * 4 + 3] = 255; }
       x.putImageData(im, 0, 0); }
     return k;
   }
@@ -287,39 +297,58 @@
   function secX(m) { const th = A.rot * m; return { c: Math.cos(th), s: Math.sin(th), tx: A.T[0] * m, ty: A.T[1] * m, th }; }
   const secPoint = (r, X) => [X.c * r[0] - X.s * r[1] + X.tx, X.s * r[0] + X.c * r[1] + X.ty]; // where reference point r shows in the secondary
   const chipC = (ch) => [ch.x + ch.s / 2, ch.y + ch.s / 2];
-  function snapPos(i, X) {
-    const sn = A.snaps[i], r = A.patches[sn[2]];
-    if (sn[1] === 0) { const c = chipC(A.ref); return [c[0] + r[0], c[1] + r[1]]; }
+  /** Centre of correlation window `pi` on the reference (chip 0) or its match on the (moving) secondary (chip 1). */
+  function winPos(chip, pi, X) {
+    const r = A.patches[pi];
+    if (!chip) { const c = chipC(A.ref); return [c[0] + r[0], c[1] + r[1]]; }
     const c = chipC(A.sec), q = secPoint(r, X);
     return [c[0] + q[0], c[1] + q[1]];
   }
-  function snapIndex(lt) { let i = 0; while (i + 1 < A.snaps.length && lt >= A.snaps[i + 1][0]) i++; return i; }
-  function tlPosA(lt) {
-    const X = secX(1 - alignK(lt)), i = snapIndex(lt), p = snapPos(i, X);
-    if (i === 0) return p;
-    const q = snapPos(i - 1, X), k = sp(lt, A.snaps[i][0], 0.3);
-    return [lerp(q[0], p[0], k), lerp(q[1], p[1], k)];
+  /** Point at s ∈ [0, 1] on a shallow arc a → b that bulges upward by `bulge` px. */
+  function arcPt(a, b, s, bulge) {
+    const dx = b[0] - a[0], dy = b[1] - a[1], len = Math.hypot(dx, dy) || 1;
+    let nx = -dy / len, ny = dx / len;
+    if (ny > 0 || (ny === 0 && nx > 0)) { nx = -nx; ny = -ny; }
+    const h = bulge * Math.sin(Math.PI * clamp(s));
+    return [a[0] + dx * s + nx * h, a[1] + dy * s + ny * h];
   }
+  function tlPosA(lt) {
+    const X = secX(1 - alignK(lt)), H = A.hops;
+    let p = winPos(H[0][1], H[0][2], X);
+    for (let i = 1; i < H.length; i++) {
+      const h = H[i];
+      if (lt <= h[0]) break;
+      p = arcPt(p, winPos(h[1], h[2], X), sp(lt, h[0], h[3]), h[4]);
+    }
+    return p;
+  }
+  /** Correlation-peak offset of the window the TL samples on the secondary (→ 0 once aligned). */
   function peakAt(lt) {
     const X = secX(1 - alignK(lt));
-    const ss = A.snaps.filter((s) => s[1] === 1);
     const off = (pi) => { const r = A.patches[pi], q = secPoint(r, X); return [(q[0] - r[0]) / 30, (q[1] - r[1]) / 30]; };
-    let i = -1;
-    for (let n = 0; n < ss.length; n++) if (lt >= ss[n][0]) i = n;
-    if (i <= 0) return off(ss[0][2]);
-    const a = off(ss[i - 1][2]), b = off(ss[i][2]), k = sp(lt, ss[i][0], 0.4);
+    const a = off(A.hops[1][2]), b = off(A.hops[2][2]), k = sp(lt, A.hops[2][0], 0.6);
     return [lerp(a[0], b[0], k), lerp(a[1], b[1], k)];
   }
 
   /* ================================================================ section C geometry */
-  const gateU = (lt) => sine(clamp((lt - Q.gate.t0) / (Q.gate.t1 - Q.gate.t0)));
-  const gateX = (lt) => lerp(Q.gate.x0, Q.gate.x1, gateU(lt));
-  const gateTimeAt = (x) => Q.gate.t0 + ((Q.gate.t1 - Q.gate.t0) * Math.acos(1 - 2 * clamp((x - Q.gate.x0) / (Q.gate.x1 - Q.gate.x0)))) / Math.PI;
   const tileRect = (n) => { const G = Q.grid, c = n % G.cols, r = (n / G.cols) | 0; return [G.x + c * (G.t + G.g), G.y + r * (G.t + G.g), G.t]; };
+  const GX0 = Q.grid.x - 14, GX1 = tileRect(Q.keep)[0] + Q.grid.t / 2; // the gate ends right above the kept tile
+  const gateU = (lt) => sine(clamp((lt - Q.gate.t0) / (Q.gate.t1 - Q.gate.t0)));
+  const gateX = (lt) => lerp(GX0, GX1, gateU(lt));
+  const gateTimeAt = (x) => Q.gate.t0 + ((Q.gate.t1 - Q.gate.t0) * Math.acos(1 - 2 * clamp((x - GX0) / (GX1 - GX0)))) / Math.PI;
   const strikeTime = (n) => gateTimeAt(tileRect(n)[0] + Q.grid.t / 2);
   function fieldRect(lt) {
-    const e = sp(lt, Q.fieldAt, 0.55), [tx0, ty0, tt] = tileRect(Q.keep), F = Q.field;
+    const e = sp(lt, Q.fieldAt, Q.fieldD), [tx0, ty0, tt] = tileRect(Q.keep), F = Q.field;
     return { x: lerp(tx0, F.x, e), y: lerp(ty0, F.y, e), s: lerp(tt, F.s, e) };
+  }
+  /** QC counters driven by the gate: held until a strike, then each strike rolls its share down on 16ths. */
+  function qcCounts(lt) {
+    let n = 1779, f = 149;
+    for (const [tile, dn, df] of Q.strikes) {
+      const ts = strikeTime(tile);
+      if (lt > ts) { const r = Math.min(1, (Math.floor((lt - ts) / 0.0625) + 1) / 4); n -= Math.round(dn * r); f -= Math.round(df * r); }
+    }
+    return [n, f];
   }
 
   /* ================================================================ the through-line */
@@ -334,13 +363,14 @@
   function tlWorld(lt) {
     const ph = phaseAt(lt), a = tlPosA(lt);
     const sA = { x: a[0], y: a[1], size: A.win / 1.24, form: 'pixel' };
-    if (lt < 3.75) return { ...sA, phase: ph };
+    if (lt < 4.0) return { ...sA, phase: ph };
     const W = B.wave, sB = { x: W.x, y: W.y1, size: W.half, form: 'pulse', amp: W.amp, cycles: W.cyc };
-    if (lt < 8) return { ...morph(sA, sB, sp(lt, 3.75, 0.8)), phase: ph };
+    if (lt < 8) return { ...morph(sA, sB, sp(lt, 4.0, 0.8)), phase: ph }; // morph starts on the 22 s bar
     const sC = { x: gateX(lt), y: Q.gate.head, size: 30, form: 'pixel' };
     if (lt < Q.fieldAt) return { ...morph(sB, sC, sp(lt, 8, 0.7)), phase: ph };
+    // drop: the gate head falls straight into the kept tile and rides it as it grows into the field
     const fr = fieldRect(lt), sD = { x: fr.x + fr.s * BOWL.cx, y: fr.y + fr.s * BOWL.cy, size: 64, form: 'fringe' };
-    return { ...morph(sC, sD, sp(lt, Q.fieldAt, 0.75)), phase: ph };
+    return { ...morph(sC, sD, sp(lt, Q.fieldAt, 0.6)), phase: ph };
   }
 
   /* ================================================================ A · coregistration */
@@ -369,77 +399,79 @@
     ctx.restore();
   }
 
+  /** Bright fading trail behind the TL on hop arc a → b, between spring progress s0 (tail) and s1 (head). */
+  function hopTrail(ctx, a, b, bulge, s0, s1, alpha) {
+    if (s1 - s0 < 0.004 || alpha <= 0) return;
+    const n = 20, pts = [];
+    for (let i = 0; i <= n; i++) pts.push(arcPt(a, b, lerp(s0, s1, i / n), bulge));
+    ctx.save(); ctx.lineCap = 'butt'; ctx.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < n; i++) {
+      const f = (i + 1) / n;
+      ctx.beginPath(); ctx.moveTo(pts[i][0], pts[i][1]); ctx.lineTo(pts[i + 1][0], pts[i + 1][1]);
+      ctx.strokeStyle = L.rgba(C.cyan, 0.16 * f * alpha); ctx.lineWidth = 12 * f; ctx.stroke();
+      ctx.strokeStyle = L.rgba(C.cyan, 0.85 * f * alpha); ctx.lineWidth = 0.6 + 2.6 * f; ctx.stroke();
+    }
+    ctx.restore();
+  }
+
   function drawA(ctx, env) {
     const lt = env.lt, k = cache(), al = alignK(lt), X = secX(1 - al), S = k.sar;
     const aOut = outP(lt, A.out, A.outD);
-    const tOut = (a, d = 0.4) => io(lt, a, A.out, d, 0.4); // text: fully revealed until 3.7
+    const tOut = (a, d = 0.4) => io(lt, a, A.tOut, d, 0.35); // text: fully revealed until 3.8
     const sc = A.ref.s / S.NR, scn = chipC(A.sec), rcn = chipC(A.ref);
     const tlW = env.tl ? env.cam.toWorld(env.tl.x, env.tl.y) : scn;
     const O = env.handoff ? env.cam.toWorld(env.handoff.x, env.handoff.y) : scn;
 
     ctx.save();
-    // final beat of the section: everything contracts into the TL while it unmasks
-    const fc = sp(lt, A.cIn, 0.6);
-    if (fc > 0) { const s = lerp(1, 0.1, clamp(fc)); ctx.translate(tlW[0], tlW[1]); ctx.scale(s, s); ctx.translate(-tlW[0], -tlW[1]); }
+    // section change: everything contracts into the TL while it unmasks (B constructs from 4.0 on the bar)
+    const fc = sp(lt, A.cIn, A.cD);
+    if (fc > 0) { const s = lerp(1, 0.18, clamp(fc)); ctx.translate(tlW[0], tlW[1]); ctx.scale(s, s); ctx.translate(-tlW[0], -tlW[1]); }
 
-    // chips: frames unfold out of the incoming TL node, images scan in
-    drawChip(ctx, A.ref, O, sp(lt, 0.0, 0.6), io(lt, 0.2, A.out, 0.6, A.outD), aOut, C.cyan, () => { ctx.drawImage(S.ref, A.ref.x, A.ref.y, A.ref.s, A.ref.s); });
-    drawChip(ctx, A.sec, O, sp(lt, 0.08, 0.6), io(lt, 0.3, A.out, 0.6, A.outD), aOut, C.gold, () => {
+    // chips: frames unfold out of the incoming TL node, images scan in (reference FBS amber, secondary FBD blue)
+    drawChip(ctx, A.ref, O, sp(lt, 0.0, 0.6), io(lt, 0.2, A.out, 0.6, A.outD), aOut, INK.amber, () => { ctx.drawImage(S.ref, A.ref.x, A.ref.y, A.ref.s, A.ref.s); });
+    drawChip(ctx, A.sec, O, sp(lt, 0.08, 0.6), io(lt, 0.3, A.out, 0.6, A.outD), aOut, INK.blue, () => {
       ctx.save(); ctx.translate(scn[0] + X.tx, scn[1] + X.ty); ctx.rotate(X.th);
       ctx.drawImage(S.sec, (-S.NS / 2) * sc, (-S.NS / 2) * sc, S.NS * sc, S.NS * sc);
       ctx.restore();
     });
-    // chip labels
+    // chip labels: mode tokens in act 2's colours (FBS amber, FBD blue)
     const label = (ch, tag, col, name, a) => {
       const p = tOut(a);
       L.text(ctx, tag, ch.x, ch.y - 56, { kind: 'mono', size: 18, weight: 600, color: col, tracking: 0.12, p, scanColor: col });
       L.text(ctx, name, ch.x, ch.y - 20, { kind: 'sans', size: 24, weight: 600, color: C.text, p: clamp(p * 1.15 - 0.1), scanColor: col });
     };
-    label(A.ref, 'REFERENCE', C.cyan, '2009-02-08 · FBS', 0.25);
-    label(A.sec, 'SECONDARY', C.gold, 'FBD → resampled to FBS grid', 0.5);
+    label(A.ref, 'REFERENCE', INK.amber, [{ s: '2009-02-08 · ' }, { s: 'FBS', color: INK.amber }], 0.25);
+    label(A.sec, 'SECONDARY', INK.blue, [{ s: 'FBD', color: INK.blue }, { s: ' → resampled to ' }, { s: 'FBS', color: INK.amber }, { s: ' grid' }], 0.5);
 
-    // river centreline: traced on the reference (cyan), ghosted on the secondary at the reference position
-    // (cyan, dashed) next to the secondary's own river (gold) — on the bar the gold line lands on the ghost.
+    // river centreline: traced on the reference (amber), ghosted on the secondary at the reference position
+    // (amber, dashed) next to the secondary's own river (blue) — on the bar the blue line lands on the ghost.
     const riv = k.river;
     const pR = Math.min(sp(lt, 0.75, 0.6), aOut), pS = Math.min(sp(lt, 1.0, 0.6), aOut);
     if (pR > 0 || pS > 0) {
       ctx.save(); ctx.lineJoin = 'round'; ctx.lineCap = 'round';
       if (pR > 0) {
         ctx.save(); ctx.beginPath(); ctx.rect(A.ref.x, A.ref.y, A.ref.s, A.ref.s); ctx.clip();
-        ctx.strokeStyle = L.rgba(C.cyan, 0.85); ctx.lineWidth = 1.6;
-        L.polyPartial(ctx, riv.map((r) => [rcn[0] + r[0], rcn[1] + r[1]]), pR); ctx.stroke(); ctx.restore();
+        ctx.strokeStyle = 'rgba(5,8,15,0.5)'; ctx.lineWidth = 3.6;
+        L.polyPartial(ctx, riv.map((r) => [rcn[0] + r[0], rcn[1] + r[1]]), pR); ctx.stroke();
+        ctx.strokeStyle = L.rgba(INK.amber, 0.9); ctx.lineWidth = 1.7; ctx.stroke(); ctx.restore();
       }
       if (pS > 0) {
         ctx.save(); ctx.beginPath(); ctx.rect(A.sec.x, A.sec.y, A.sec.s, A.sec.s); ctx.clip();
         ctx.strokeStyle = 'rgba(5,8,15,0.55)'; ctx.lineWidth = 4;
         L.polyPartial(ctx, riv.map((r) => { const q = secPoint(r, X); return [scn[0] + q[0], scn[1] + q[1]]; }), pS); ctx.stroke();
-        ctx.strokeStyle = L.rgba(C.gold, 0.95); ctx.lineWidth = 1.8; ctx.stroke();
-        ctx.setLineDash([7, 6]); ctx.strokeStyle = L.rgba(C.cyan, 0.95); ctx.lineWidth = 1.6;
+        ctx.strokeStyle = L.rgba(INK.blue, 0.95); ctx.lineWidth = 1.9; ctx.stroke();
+        ctx.setLineDash([7, 6]); ctx.strokeStyle = L.rgba(INK.amber, 0.95); ctx.lineWidth = 1.6;
         L.polyPartial(ctx, riv.map((r) => [scn[0] + r[0], scn[1] + r[1]]), pS); ctx.stroke(); ctx.setLineDash([]);
         ctx.restore();
       }
       ctx.restore();
     }
 
-    // sampled patches: reference windows (cyan) and matched windows in the secondary (gold, ride the alignment)
-    ctx.save(); ctx.lineWidth = 2;
-    A.snaps.forEach((sn, i) => {
-      if (i === 0 && lt < 0.6) return;
-      const pp = sp(lt, i === 0 ? 0.6 : sn[0] + 0.12, 0.35);
-      if (pp <= 0) return;
-      const pos = snapPos(i, X), col = sn[1] ? C.gold : C.cyan;
-      ctx.globalAlpha = aOut;
-      ctx.strokeStyle = L.rgba(col, 0.9); ctx.fillStyle = L.rgba(col, 0.08 * clamp(pp));
-      ctx.fillRect(pos[0] - A.win / 2, pos[1] - A.win / 2, A.win, A.win);
-      L.polyPartial(ctx, sqPts(pos[0], pos[1], A.win), pp); ctx.stroke();
-    });
-    ctx.restore();
-
     // dense offset field on the secondary (exaggerated), shrinking to dots on alignment
     const pV = Math.min(io(lt, 0.3, A.out, 0.6, A.outD), aOut);
     if (pV > 0) {
       ctx.save();
-      const dotCol = L.css(L.mix(C.gold, C.cyan, al));
+      const dotCol = L.css(L.mix(INK.blue, C.cyan, al));
       for (let j = -2; j <= 2; j++) for (let i = -2; i <= 2; i++) {
         const r = [i * A.grid, j * A.grid], q = secPoint(r, X), g = sp(lt, 1.0 + 0.045 * (i + 2 + j + 2), 0.45) * pV;
         if (g <= 0) continue;
@@ -452,7 +484,7 @@
         if (aA > 0) {
           ctx.globalAlpha = clamp(g) * aA;
           ctx.strokeStyle = 'rgba(5,8,15,0.55)'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x0 + vx, y0 + vy); ctx.stroke();
-          ctx.strokeStyle = C.gold; ctx.fillStyle = C.gold; ctx.lineWidth = 1.7;
+          ctx.strokeStyle = INK.blue; ctx.fillStyle = INK.blue; ctx.lineWidth = 1.7;
           ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x0 + vx * 0.85, y0 + vy * 0.85); ctx.stroke();
           arrowHead(ctx, x0, y0, x0 + vx, y0 + vy, 8);
         }
@@ -460,25 +492,60 @@
       ctx.restore();
     }
 
+    // correlation links (dashed arcs) between each reference window and its match on the secondary;
+    // the TL's first hop rides link 1, so it draws on with the TL
+    ctx.save(); ctx.lineCap = 'round';
+    for (const [t0, pi, d] of A.links) {
+      const pl = Math.min(sp(lt, t0, d), aOut);
+      if (pl <= 0) continue;
+      const a = winPos(0, pi, X), b = winPos(1, pi, X), bulge = pi === A.hops[1][2] ? A.hops[1][4] : 30, pts = [];
+      for (let i = 0; i <= 24; i++) pts.push(arcPt(a, b, i / 24, bulge));
+      ctx.strokeStyle = 'rgba(5,8,15,0.55)'; ctx.lineWidth = 3.5; L.polyPartial(ctx, pts, pl); ctx.stroke();
+      ctx.setLineDash([6, 6]); ctx.strokeStyle = L.rgba(C.cyan, 0.6); ctx.lineWidth = 1.5; ctx.stroke(); ctx.setLineDash([]);
+    }
+    ctx.restore();
+
+    // correlation windows: reference (amber) and matched secondary windows (blue, ride the alignment)
+    ctx.save(); ctx.lineWidth = 2;
+    A.links.forEach(([t0, pi]) => {
+      for (const chip of [0, 1]) {
+        const ta = chip ? t0 + (pi === A.hops[1][2] ? 0.5 : 0.15) : pi === A.hops[1][2] ? 0.6 : t0;
+        const pp = Math.min(sp(lt, ta, 0.35), aOut);
+        if (pp <= 0) continue;
+        const pos = winPos(chip, pi, X), col = chip ? INK.blue : INK.amber;
+        ctx.strokeStyle = 'rgba(5,8,15,0.5)'; ctx.lineWidth = 4; L.polyPartial(ctx, sqPts(pos[0], pos[1], A.win), pp); ctx.stroke();
+        ctx.strokeStyle = L.rgba(col, 0.95); ctx.fillStyle = L.rgba(col, 0.1 * clamp(pp)); ctx.lineWidth = 2;
+        ctx.fillRect(pos[0] - A.win / 2, pos[1] - A.win / 2, A.win, A.win);
+        L.polyPartial(ctx, sqPts(pos[0], pos[1], A.win), pp); ctx.stroke();
+      }
+    });
+    ctx.restore();
+
+    // fading 0.25 s trail behind each TL hop
+    for (let i = 1; i < A.hops.length; i++) {
+      const h = A.hops[i], hp = A.hops[i - 1];
+      if (lt <= h[0] || lt > h[0] + h[3] + 0.4) continue;
+      const s1 = sp(lt, h[0], h[3]), s0 = sp(lt - 0.25, h[0], h[3]);
+      hopTrail(ctx, winPos(hp[1], hp[2], X), winPos(h[1], h[2], X), h[4], s0, Math.min(1, s1), aOut);
+    }
+
     // cross-correlation card
     const cd = A.card, pc = io(lt, 0.5, A.out, 0.5, A.outD);
     L.card(ctx, cd.x, cd.y, cd.w, cd.h, { p: pc, accent: C.blue });
-    L.text(ctx, 'CROSS-CORRELATION', cd.x + 26, cd.y + 44, { kind: 'mono', size: 18, weight: 600, color: INK.blueCard, tracking: 0.1, p: tOut(0.65), bg: C.card, scanColor: C.blue });
+    L.text(ctx, 'CROSS-CORRELATION', cd.x + 26, cd.y + 44, { kind: 'mono', size: 18, weight: 600, color: INK.blueCard, tracking: 0.12, p: tOut(0.65), bg: C.card, scanColor: C.blue });
     corrSurface(ctx, env, cd, io(lt, 0.75, A.out, 0.6, A.outD), al, tOut(0.9));
     L.text(ctx, 'peak position = sub-pixel offset', cd.x + 26, cd.y + cd.h - 30, { kind: 'sans', size: 22, weight: 500, color: C.textDim, p: tOut(1.0), bg: C.card });
-
-    // caption
-    const o = { kind: 'display', size: 36, weight: 700 };
-    const c1 = 'cross-correlation', c2 = '  →  sub-pixel alignment';
-    const w1 = L.measure(ctx, c1, o).w, w2 = L.measure(ctx, c2, o).w, x0 = (A.ref.x + A.sec.x + A.sec.s) / 2 - (w1 + w2) / 2;
-    L.text(ctx, c1, x0, A.capY, { ...o, color: C.text, p: tOut(1.0) });
-    L.text(ctx, c2, x0 + w1, A.capY, { ...o, color: C.cyan, p: tOut(1.5) });
     ctx.restore();
+
+    // section title (title slot, not scaled by the contraction): the "→ sub-pixel alignment" half lands with the bar
+    const T = A.title, w1 = L.measure(ctx, 'Cross-correlation', TITLE.display).w;
+    L.text(ctx, 'Cross-correlation', T.x, T.y, { ...TITLE.display, color: C.text, p: tOut(0.5, 0.5), id: 'a3-titleA' });
+    L.text(ctx, '  →  sub-pixel alignment', T.x + w1, T.y, { ...TITLE.display, color: C.cyan, p: tOut(2.0, 0.5), id: 'a3-titleA2' });
 
     // crosshair ticks around the TL correlation window (not scaled: they belong to the TL)
     const tl = env.tl;
     if (tl) {
-      const wPix = L.TL.weight(tl, 'pixel') * outP(lt, 3.9, 0.4);
+      const wPix = L.TL.weight(tl, 'pixel') * outP(lt, 4.1, 0.4);
       if (wPix > 0.01) {
         const h = (tl.size / env.cam.z) * 0.62;
         ctx.save(); ctx.globalAlpha = wPix; ctx.strokeStyle = C.cyan; ctx.lineWidth = 2; ctx.beginPath();
@@ -492,7 +559,7 @@
     if (p <= 0) return;
     const lt = env.lt, cx = cd.x + cd.w / 2, cy = cd.y + cd.h / 2 + 30, S = 120;
     const pr = (gx, gy, z) => [cx + (gx - gy) * S * 0.86, cy + (gx + gy) * S * 0.36 - z * 118];
-    const pk = peakAt(lt), rise = sp(lt, 1.0, 0.5), br = 0.93 + 0.07 * env.pulse;
+    const pk = peakAt(lt), rise = sp(lt, 1.25, 0.6), br = 0.93 + 0.07 * env.pulse;
     const Z = (gx, gy) => { const dx = gx - pk[0], dy = gy - pk[1]; return rise * br * Math.exp(-(dx * dx + dy * dy) / 0.07) + 0.09 * (L.noise2(gx * 2.6 + 9, gy * 2.6 + 4, 7) - 0.5) * (1 - 0.5 * al) + 0.015; };
     const n = 17, m = 24, lv = 7, paths = [];
     for (let q = 0; q < lv; q++) paths.push(new Path2D());
@@ -509,15 +576,18 @@
     scanDraw(ctx, lx, top, rx - lx, bot - top, p, C.blue, () => {
       ctx.save(); ctx.lineWidth = 1.2;
       for (let q = 0; q < lv; q++) { const t = q / (lv - 1); ctx.strokeStyle = L.css(t < 0.5 ? L.mix(C.blue, C.cyan, t * 2) : L.mix(C.cyan, C.text, (t - 0.5) * 2), 0.45 + 0.5 * t); ctx.stroke(paths[q]); }
-      // base: zero-offset crosshair, offset vector, peak marker
+      // base: zero-offset crosshair, offset vector (secondary's colour), peak marker
       const o0 = pr(0, 0, 0), ob = pr(pk[0], pk[1], 0), ot = pr(pk[0], pk[1], Z(pk[0], pk[1]));
       ctx.strokeStyle = L.rgba(C.text, 0.6); ctx.lineWidth = 1.5; ctx.beginPath();
       const e1 = pr(0.16, 0, 0), e2 = pr(-0.16, 0, 0), e3 = pr(0, 0.16, 0), e4 = pr(0, -0.16, 0);
       ctx.moveTo(e1[0], e1[1]); ctx.lineTo(e2[0], e2[1]); ctx.moveTo(e3[0], e3[1]); ctx.lineTo(e4[0], e4[1]); ctx.stroke();
       ctx.setLineDash([3, 4]); ctx.strokeStyle = L.rgba(C.text, 0.55); ctx.beginPath(); ctx.moveTo(ob[0], ob[1]); ctx.lineTo(ot[0], ot[1]); ctx.stroke(); ctx.setLineDash([]);
       const len = Math.hypot(ob[0] - o0[0], ob[1] - o0[1]);
-      if (len > 6) { ctx.strokeStyle = C.gold; ctx.fillStyle = C.gold; ctx.lineWidth = 2.2; ctx.beginPath(); ctx.moveTo(o0[0], o0[1]); ctx.lineTo(ob[0], ob[1]); ctx.stroke(); arrowHead(ctx, o0[0], o0[1], ob[0], ob[1], 8); }
-      const pc = L.mix(C.gold, C.cyan, al);
+      if (len > 6) {
+        ctx.strokeStyle = 'rgba(5,8,15,0.6)'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(o0[0], o0[1]); ctx.lineTo(ob[0], ob[1]); ctx.stroke();
+        ctx.strokeStyle = INK.blueCard; ctx.fillStyle = INK.blueCard; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.moveTo(o0[0], o0[1]); ctx.lineTo(ob[0], ob[1]); ctx.stroke(); arrowHead(ctx, o0[0], o0[1], ob[0], ob[1], 9);
+      }
+      const pc = L.mix(INK.blueCard, C.cyan, al);
       L.glow(ctx, ot[0], ot[1], 26, L.css(pc), 0.8 * rise);
       ctx.fillStyle = L.css(pc); ctx.beginPath(); ctx.arc(ot[0], ot[1], 5 * rise, 0, TAU); ctx.fill();
       ctx.restore();
@@ -542,8 +612,8 @@
     const x0 = W.x - W.half;
     const wo = (a, d = 0.5) => io(lt, a, B.wOut, d, 0.35);
 
-    // ---- guides: s₁ / s₂ baselines and the product-strip slot construct outward from the arriving TL (bar)
-    const pgd = Math.min(sp(lt, 3.75, 0.6), outP(lt, B.wOut, 0.35));
+    // ---- guides: s₁ / s₂ baselines and the product-strip slot construct outward from the TL on the bar
+    const pgd = Math.min(sp(lt, 4.0, 0.5), outP(lt, B.wOut, 0.35));
     if (pgd > 0) {
       const h = W.half * clamp(pgd);
       ctx.save(); ctx.strokeStyle = L.rgba(C.text, 0.14); ctx.lineWidth = 1; ctx.beginPath();
@@ -554,7 +624,7 @@
     }
     // ---- s₂ (gold): same carrier as the TL's s₁, shifted by the interferometric phase. A fixed row and a damped
     //      share of the along-range variation keep it reading as "same wave, phase-shifted" (the strip carries Δφ).
-    const pG = wo(4.25, 0.6);
+    const pG = wo(4.1, 0.6);
     if (pG > 0) {
       const pts = [], mean = k.row0Mean + off;
       for (let i = 0; i <= 200; i++) {
@@ -563,12 +633,12 @@
       }
       glowLine(ctx, pts, C.gold, pG, 2.2);
     }
-    // ---- labels
-    const pl1 = wo(4.25, 0.4), pl2 = wo(4.35, 0.4), pl3 = wo(4.5, 0.4);
-    L.text(ctx, 's₁', x0 - 20, W.y1 + 12, { kind: 'sans', size: 34, weight: 700, color: C.cyan, align: 'right', p: pl1 });
-    L.text(ctx, 'date 1', x0 - 72, W.y1 + 8, { kind: 'mono', size: 18, color: C.textDim, align: 'right', p: pl1 });
-    L.text(ctx, 's₂', x0 - 20, W.y2 + 12, { kind: 'sans', size: 34, weight: 700, color: C.gold, align: 'right', p: pl2, scanColor: C.gold });
-    L.text(ctx, 'date 2', x0 - 72, W.y2 + 8, { kind: 'mono', size: 18, color: C.textDim, align: 'right', p: pl2, scanColor: C.gold });
+    // ---- labels (build while the s₁ pulse settles)
+    const pl1 = wo(4.1, 0.4), pl2 = wo(4.2, 0.4), pl3 = wo(4.5, 0.4);
+    L.text(ctx, 's₁', x0 - 20, W.y1 + 12, { kind: 'sans', size: 34, weight: 700, color: C.cyan, align: 'right', p: pl1, id: 'a3-s1' });
+    L.text(ctx, 'date 1', x0 - 72, W.y1 + 8, { kind: 'mono', size: 18, color: C.textDim, align: 'right', p: pl1, id: 'a3-d1' });
+    L.text(ctx, 's₂', x0 - 20, W.y2 + 12, { kind: 'sans', size: 34, weight: 700, color: C.gold, align: 'right', p: pl2, scanColor: C.gold, id: 'a3-s2' });
+    L.text(ctx, 'date 2', x0 - 72, W.y2 + 8, { kind: 'mono', size: 18, color: C.textDim, align: 'right', p: pl2, scanColor: C.gold, id: 'a3-d2' });
     L.text(ctx, 's₁ · s₂*', x0 - 20, B.strip.y + 14, { kind: 'sans', size: 28, weight: 700, color: C.text, align: 'right', p: pl3 });
 
     // ---- product strip (multiply sweep 4.5–5.0)
@@ -639,7 +709,7 @@
       ctx.restore();
     }
     L.text(ctx, 'phase difference Δφ', P.x, P.y + P.r + 76, { kind: 'sans', size: 24, weight: 600, color: C.text, align: 'center', p: io(lt, 4.75, B.phOut, 0.4, 0.35) });
-    L.text(ctx, 'wrapped into (−π, π]', P.x, P.y + P.r + 110, { kind: 'mono', size: 18, color: C.textDim, align: 'center', p: io(lt, 5.0, B.phOut, 0.4, 0.35) });
+    L.text(ctx, 'wrapped into (−π, π] · schematic', P.x, P.y + P.r + 110, { kind: 'mono', size: 18, color: C.textDim, align: 'center', p: io(lt, 5.0, B.phOut, 0.4, 0.35) });
 
     // ---- multilook card: each arithmetic line arrives with the merge it explains
     const cd = B.card, co = (a, d = 0.3) => io(lt, a, B.cOut, d, 0.3);
@@ -649,8 +719,8 @@
     L.text(ctx, 'MULTILOOK', tx, cd.y + 40, { kind: 'mono', size: 18, weight: 600, color: INK.blueCard, tracking: 0.12, p: co(5.1, 0.4), bg: C.card, scanColor: C.blue });
     L.text(ctx, '28 az × 12 rg looks', tx, cd.y + 78, { kind: 'mono', size: 24, weight: 600, color: C.text, p: co(5.25, 0.4), bg: C.card });
     L.text(ctx, '28 az looks ≈ 90 m', tx, cd.y + 428, { kind: 'mono', size: 19, color: L.css(L.mix(C.text, C.gold, clamp(h1))), p: co(B.azAt), bg: C.card, scanColor: C.gold });
-    L.text(ctx, '12 × 4.68 m = 56 m slant → ~90 m ground', tx, cd.y + 464, { kind: 'mono', size: 19, color: L.css(L.mix(C.text, C.gold, clamp(h2))), p: co(B.rgAt), bg: C.card, scanColor: C.gold });
-    L.text(ctx, '→ ~90 × 90 m pixels', tx, cd.y + 504, { kind: 'mono', size: 22, weight: 600, color: C.cyan, p: co(B.rgAt + 0.03), bg: C.card });
+    L.text(ctx, '12 × 4.68 m = 56 m slant → ≈ 90 m ground', tx, cd.y + 464, { kind: 'mono', size: 19, color: L.css(L.mix(C.text, C.gold, clamp(h2))), p: co(B.rgAt), bg: C.card, scanColor: C.gold });
+    L.text(ctx, '→ ≈ 90 m × 90 m pixels', tx, cd.y + 504, { kind: 'mono', size: 22, weight: 600, color: C.cyan, p: co(B.rgAt + 0.03), bg: C.card });
     drawLookBlock(ctx, env, k, off, co(5.25, 0.5), h1, h2);
   }
 
@@ -673,7 +743,7 @@
   }
 
   /** Wrapped interferogram raster: extrudes from the product strip (5.0–6.0), wipes noisy → multilooked (7.0–7.5),
-   *  then (8.0, the bar) springs into its slot in the QC thumbnail grid — the match cut into section C. */
+   *  then (8.0, the bar) springs into the kept slot of the QC thumbnail grid — the match cut into section C. */
   function drawRaster(ctx, env) {
     const lt = env.lt, R = B.r, k = cache(), off = fringeOff(lt), row = rowAt(lt);
     if (lt < 5.0 || lt >= B.move + 0.75) return; // from 8.75 the QC grid draws the landed tile
@@ -707,7 +777,7 @@
     ctx.restore();
   }
 
-  /** 12 range × 28 azimuth single-look samples → one ~90 m pixel: the 28 azimuth looks merge on the bar (6.0),
+  /** 12 range × 28 azimuth single-look samples → one ≈ 90 m pixel: the 28 azimuth looks merge on the bar (6.0),
    *  then the 12 range looks (6.5). Colours are complex averages of the sample phases. */
   function drawLookBlock(ctx, env, k, off, p, h1, h2) {
     if (p <= 0) return;
@@ -748,16 +818,16 @@
   }
 
   /* ================================================================ C · QC gate + SNAPHU */
-  function drawQC(ctx, env, k) {
+  function drawQCGrid(ctx, env, k) {
     const lt = env.lt, G = Q.grid, gx = gateX(lt);
     const kc = Q.keep % G.cols, kr = (Q.keep / G.cols) | 0;
     for (let n = 0; n < G.cols * G.rows; n++) {
       const [x, y, t] = tileRect(n), c = n % G.cols, r = (n / G.cols) | 0;
       if (n === Q.keep && (lt < B.move + 0.75 || lt >= Q.fieldAt)) continue;
-      // left columns build radially around the landed raster; right columns wait for the multilook card to clear
-      const tin = c <= 2 ? 8.05 + 0.065 * Math.hypot(c - kc, r - kr) : 8.5 + 0.05 * (c - 3) + 0.03 * r;
+      // tiles build radially around the landed raster (row 0 waits for the waves to clear at 8.1)
+      const tin = 8.05 + 0.07 * Math.hypot(c - kc, r - kr);
       const pin = sp(lt, tin, 0.45);
-      const pout = n === Q.keep ? 1 : outP(lt, 9.72 + 0.04 * (3 - r), 0.3); // bottom row (under the profile) leaves first
+      const pout = n === Q.keep ? 1 : outP(lt, 9.8 + 0.06 * c + 0.02 * (G.rows - 1 - r), 0.3); // after the gate's last column; left first (clears the caption)
       const p = Math.min(pin, pout);
       if (p <= 0) continue;
       const tc = gateTimeAt(x + t / 2), bad = Q.bad[n];
@@ -791,44 +861,57 @@
       }
       ctx.restore();
     }
-    // gate scanline (TL = its head)
-    const pg = Math.min(sp(lt, 8.25, 0.45), outP(lt, 9.75, 0.3));
+    // gate scanline (TL = its head). After 9.5 its top follows the TL down into the kept tile, then it fades.
+    const pg = Math.min(sp(lt, 8.25, 0.45), outP(lt, 9.9, 0.35));
     if (pg > 0) {
       const g = Q.gate, yb = lerp(g.y0, g.y1, clamp(pg));
-      ctx.save(); ctx.globalCompositeOperation = 'lighter';
-      const gr = ctx.createLinearGradient(gx - 26, 0, gx + 4, 0);
-      gr.addColorStop(0, 'rgba(0,229,255,0)'); gr.addColorStop(1, 'rgba(0,229,255,0.22)');
-      ctx.fillStyle = gr; ctx.fillRect(gx - 26, g.y0, 28, yb - g.y0);
-      ctx.fillStyle = L.rgba(C.cyan, 0.95); ctx.fillRect(gx - 1, g.y0, 2, yb - g.y0);
-      ctx.restore();
+      const yt = lt > Q.fieldAt && env.tl ? clamp(env.cam.toWorld(env.tl.x, env.tl.y)[1] + 18, g.y0, yb) : g.y0;
+      if (yb > yt) {
+        ctx.save(); ctx.globalCompositeOperation = 'lighter';
+        const gr = ctx.createLinearGradient(gx - 26, 0, gx + 4, 0);
+        gr.addColorStop(0, 'rgba(0,229,255,0)'); gr.addColorStop(1, 'rgba(0,229,255,0.22)');
+        ctx.fillStyle = gr; ctx.fillRect(gx - 26, yt, 28, yb - yt);
+        ctx.fillStyle = L.rgba(C.cyan, 0.95); ctx.fillRect(gx - 1, yt, 2, yb - yt);
+        ctx.restore();
+      }
     }
-    // QC card (constructs at 7.5 so every line is readable ≥ 1.5 s before it unmasks at 9.6–9.9)
-    const q = Q.qc, qo = (a) => io(lt, a, Q.qcOut, 0.3, 0.3), pq = qo(Q.qcIn);
-    L.card(ctx, q.x, q.y, q.w, q.h, { p: pq, accent: C.blue });
-    const tx = q.x + 26, big = { kind: 'display', size: 48, weight: 700 };
-    L.text(ctx, 'INTERFEROGRAM QC', tx, q.y + 40, { kind: 'mono', size: 18, weight: 600, color: INK.blueCard, tracking: 0.12, p: qo(7.55), bg: C.card, scanColor: C.blue });
-    // counter: rolls 1,779 → 1,634 on sixteenth notes, landing at 8.1
-    const roll = clamp(L.steps(lt - 7.625, 0.125, 0.1) / 4), nNow = Math.round(1779 - 145 * roll);
-    const w1 = L.measure(ctx, '1,779', big).w, wa = L.measure(ctx, '1,779 → ', big).w, w3 = L.measure(ctx, '1,634', big).w;
-    L.text(ctx, [{ s: '1,779', color: C.textDim }, { s: ' → ', color: C.textDim }, { s: fmt(nNow), color: C.cyan }], tx, q.y + 104, { ...big, p: qo(7.6), bg: C.card, id: 'a3-count' });
-    L.text(ctx, 'formed', tx + w1 / 2, q.y + 142, { kind: 'mono', size: 18, color: C.textDim, align: 'center', bg: C.card, p: qo(7.65) });
-    L.text(ctx, 'inverted', tx + wa + w3 / 2, q.y + 142, { kind: 'mono', size: 18, color: C.textDim, align: 'center', bg: C.card, p: qo(7.65) });
-    L.text(ctx, 'interferograms (12 frames)', tx, q.y + 178, { kind: 'sans', size: 24, weight: 500, color: C.text, p: qo(7.7), bg: C.card });
-    L.text(ctx, 'visual report grids flag:', tx, q.y + 220, { kind: 'sans', size: 22, weight: 500, color: C.textDim, p: qo(7.75), bg: C.card });
+  }
+
+  /** QC card (7.5) → corner chip (9.5): the counters are driven by the gate and keep their ids through the shrink. */
+  function drawQCCard(ctx, env) {
+    const lt = env.lt, q = Q.qc, ch = Q.chip, ck = clamp(sp(lt, Q.chipAt, 0.8)); // shrinks into the bottom-left corner
+    const pq = io(lt, Q.qcIn, 12.0, 0.3, 0.3);
+    if (pq <= 0) return;
+    const cx = lerp(q.x, ch.x, ck), cy = lerp(q.y, ch.y, ck), cw = lerp(q.w, ch.w, ck), chh = lerp(q.h, ch.h, ck);
+    L.card(ctx, cx, cy, cw, chh, { p: pq, accent: C.blue });
+    const tx = cx + lerp(26, 20, ck);
+    const det = (a) => io(lt, a, Q.chipAt + 0.25, 0.3, 0.25); // card-only lines unmask as the card shrinks
+    const val = (a) => io(lt, a, 12.0, 0.3, 0.3);             // values persist into the chip
+    L.text(ctx, 'INTERFEROGRAM QC', tx, cy + 40, { kind: 'mono', size: 18, weight: 600, color: INK.blueCard, tracking: 0.12, p: det(7.55), bg: C.card, scanColor: C.blue });
+    const [nNow, fNow] = qcCounts(lt);
+    const hero = { kind: 'display', size: lerp(64, 36, ck), weight: 700 };
+    const hy = cy + lerp(116, 46, ck);
+    L.text(ctx, num(nNow), tx, hy, { ...hero, color: INK.blueCard, p: val(7.6), bg: C.card, scanColor: C.blue, id: 'a3-count' });
+    L.text(ctx, 'kept of 1,779 formed · 12 frames', tx, cy + 154, { kind: 'sans', size: 22, weight: 500, color: C.textDim, p: det(7.65), bg: C.card });
+    L.text(ctx, [{ s: 'P448 F0290 · ', color: C.textDim }, { s: `149 → ${fNow}`, color: C.text }], tx, cy + lerp(194, 80, ck), { kind: 'mono', size: 19, p: val(7.7), bg: C.card, id: 'a3-sub' });
     // reasons (crimson × glyphs) — each flashes when the gate strikes its tile
-    const rs = { kind: 'mono', size: 18, color: C.text, bg: C.card, p: qo(7.8) };
-    const ry = q.y + 256, rw = L.measure(ctx, 'poor coherence', rs).w;
-    const reasons = [[tx + 8, 'poor coherence', 13], [tx + 8 + 22 + rw + 26, 'ionospheric', 10]];
+    const rs = { kind: 'mono', size: 18, color: C.text, bg: C.card, p: det(7.8) };
+    const ry = cy + 236, rw = L.measure(ctx, 'poor coherence', rs).w;
+    const reasons = [[tx + 8, 'poor coherence', 4], [tx + 8 + 22 + rw + 26, 'ionospheric', 10]];
     for (const [rx, s, n] of reasons) {
-      crossMark(ctx, rx, ry - 6, 5.5, qo(7.8));
+      crossMark(ctx, rx, ry - 6, 5.5, det(7.8));
       L.text(ctx, s, rx + 14, ry, rs);
       const ts = strikeTime(n);
-      if (lt > ts && pq > 0) L.glow(ctx, rx, ry - 6, 26, C.crimson, 0.9 * Math.exp(-(lt - ts) * 4) * pq);
+      if (lt > ts && lt < Q.chipAt + 0.25) L.glow(ctx, rx, ry - 6, 26, C.crimson, 0.9 * Math.exp(-(lt - ts) * 4) * pq);
     }
-    L.text(ctx, 'gates G1–G23 halt on failure', tx, q.y + 300, { kind: 'mono', size: 18, weight: 600, color: C.text, p: qo(7.8), bg: C.card });
+    L.text(ctx, 'gates G1–G23 halt on failure', tx, cy + 272, { kind: 'mono', size: 18, weight: 600, color: C.text, p: det(7.8), bg: C.card });
+    // chip-only tail next to the shrunken counter
+    const hw = L.measure(ctx, num(nNow), hero).w;
+    L.text(ctx, 'of 1,779 · G1–G23', tx + hw + 12, hy, { kind: 'mono', size: 18, color: C.textDim, p: io(lt, Q.chipAt + 0.35, 12.0, 0.3, 0.3), bg: C.card });
+    // strike → counter accent
     let hit = 0;
-    for (const n of Object.keys(Q.bad)) { const ts = strikeTime(+n); if (lt > ts) hit += Math.exp(-(lt - ts) * 5); }
-    if (hit > 0.01) L.glow(ctx, tx + wa + w3 / 2, q.y + 88, 80, C.cyan, 0.45 * clamp(hit) * pq);
+    for (const [n] of Q.strikes) { const ts = strikeTime(n); if (lt > ts) hit += Math.exp(-(lt - ts) * 5); }
+    if (hit > 0.01) L.glow(ctx, tx + hw / 2, hy - 24, 80, C.cyan, 0.45 * clamp(hit) * pq);
   }
 
   function drawSnaphu(ctx, env, k) {
@@ -841,7 +924,7 @@
     if (fc > 0) { const s = lerp(1, 0.3, clamp(fc)); ctx.translate(tw, th); ctx.scale(s, s); ctx.translate(-tw, -th); }
     const pEnd = outP(lt, 12.0, 0.45);
 
-    // ---- field: grows out of the kept thumbnail, then unwraps pixel by pixel as the front passes
+    // ---- field: the kept thumbnail grows in place, then unwraps pixel by pixel as the front passes
     const M = B.NML, r = L.rasterCanvas('a3-field', M, M);
     if (!r.u32 || r.u32.buffer !== r.img.data.buffer) r.u32 = new Uint32Array(r.img.data.buffer);
     const vmax = k.vmax, fl = L.LUT.fringe, vl = L.LUT.vel;
@@ -853,7 +936,8 @@
     }
     r.x.putImageData(r.img, 0, 0);
     scanDraw(ctx, fx, fy, fs, fs, pEnd, C.cyan, () => { ctx.save(); ctx.imageSmoothingEnabled = false; ctx.drawImage(r.c, fx, fy, fs, fs); ctx.restore(); });
-    ctx.save(); ctx.strokeStyle = L.rgba(C.cyan, 0.45 * pEnd); ctx.lineWidth = 1.25; ctx.strokeRect(fx, fy, fs, fs); ctx.restore();
+    const pass = Math.exp(-Math.max(0, lt - Q.fieldAt) * 3); // the gate's "pass" accent rides the growing border
+    ctx.save(); ctx.strokeStyle = L.rgba(C.cyan, (0.45 + 0.4 * pass) * pEnd); ctx.lineWidth = 1.25 + pass; ctx.strokeRect(fx, fy, fs, fs); ctx.restore();
 
     // unwrapping front: a ring growing out of the reference point (relative phase = 0 there)
     const rpx = fx + fs * UW.ref[0], rpy = fy + fs * UW.ref[1];
@@ -866,7 +950,14 @@
       ctx.strokeStyle = L.rgba(C.gold, 0.95 * a); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(rpx, rpy, rad, 0, TAU); ctx.stroke();
       ctx.restore();
     }
-    refMark(ctx, rpx, rpy, Math.min(sp(lt, 9.75, 0.4), pEnd));
+    const pRef = Math.min(sp(lt, 9.75, 0.4), pEnd);
+    refMark(ctx, rpx, rpy, pRef);
+    if (pRef > 0) { // short deco tag on a backplate next to the ⊙ marker
+      const lo = { kind: 'mono', size: 16, weight: 600, color: C.text, role: 'deco', baseline: 'middle', p: pRef };
+      const tw2 = L.measure(ctx, 'reference', lo).w;
+      ctx.save(); ctx.globalAlpha *= clamp(pRef); ctx.fillStyle = 'rgba(5,8,15,0.72)'; L.roundRect(ctx, rpx + 15, rpy - 12, tw2 + 14, 24, 5); ctx.fill(); ctx.restore();
+      L.text(ctx, 'reference', rpx + 22, rpy, lo);
+    }
 
     // transect A–A′ across the bowl
     const pT = Math.min(sp(lt, 9.75, 0.45), pEnd), yT = fy + fs * BOWL.cy;
@@ -878,7 +969,8 @@
       L.text(ctx, 'A′', fx + fs + 10, yT, lo);
     }
 
-    // ---- profile: wrapped sawtooth → unwrapped curve; the y-range follows the curve (no lag, no clipping)
+    // ---- profile: wrapped sawtooth → unwrapped curve; the y-range follows the curve (no lag, no clipping).
+    //      Down = range increase = away from the satellite; π-multiple ticks are deco (schematic magnitudes).
     const pP = io(lt, 9.75, 12.0, 0.45, 0.45);
     if (pP > 0) {
       const pf = k.prof, vals = new Float32Array(pf.NP);
@@ -911,52 +1003,35 @@
       ctx.beginPath(); ctx.rect(PR.x - 4, PR.y - 30, PR.w + 8, PR.h + 34); ctx.clip();
       glowLine(ctx, pts, C.cyan, Math.min(sp(lt, 9.75, 0.5), pEnd), 2.2);
       ctx.restore();
-      // ticks: ±π while wrapped → 0, −2π, −4π, −6π once unwrapped
+      // axis title (real content) + deco ticks: ±π while wrapped → 0, 2π, 4π, 6π (downward = away) once unwrapped
+      L.text(ctx, [{ s: 'range change · ', color: C.textDim }, { s: '↓ away', color: C.text }], PR.x, PR.y - 14, { kind: 'mono', size: 18, p: pP, id: 'a3-axis' });
       const tk = { kind: 'mono', size: 16, color: C.textDim, role: 'deco', baseline: 'middle', align: 'right' };
       L.text(ctx, '+π', PR.x - 10, yp, { ...tk, p: pP * (1 - g) });
       L.text(ctx, '−π', PR.x - 10, ym, { ...tk, p: pP * (1 - g) });
       for (let j = 0; j <= 3; j++) {
         const yy = Y(-TAU * j);
         if (yy > PR.y + PR.h + 2 || yy < PR.y - 2) continue;
-        L.text(ctx, j ? `−${2 * j}π` : '0', PR.x - 10, yy, { ...tk, p: pP * g });
+        L.text(ctx, j ? `${2 * j}π` : '0', PR.x - 10, yy, { ...tk, p: pP * g });
       }
       L.text(ctx, 'A', PR.x, PR.y + PR.h + 20, { kind: 'mono', size: 16, color: C.textDim, role: 'deco', p: pP });
       L.text(ctx, 'A′', PR.x + PR.w, PR.y + PR.h + 20, { kind: 'mono', size: 16, color: C.textDim, role: 'deco', p: pP, align: 'right' });
     }
 
-    ctx.restore(); // end of the contraction transform: text + legend stay put and unmask in the final beat
+    ctx.restore(); // end of the contraction transform: text stays put and unmasks in the final beat
 
-    // ---- text column + legend (all revealed by 10.1 → readable ≥ 1.5 s before the 11.85 unmask)
-    const pt = (a) => io(lt, a, 12.0, 0.25, 0.15);
-    L.text(ctx, 'SNAPHU', 220, 316, { kind: 'display', size: 56, weight: 700, color: C.text, p: pt(10.0) });
-    L.text(ctx, 'phase unwrapping', 220, 360, { kind: 'sans', size: 26, weight: 500, color: C.textDim, p: pt(10.02) });
-    L.text(ctx, [{ s: '2π cycles', color: C.text }, { s: ' →', color: C.gold }], 220, 444, { kind: 'sans', size: 28, weight: 600, p: pt(10.04) });
-    L.text(ctx, 'continuous line-of-sight phase', 220, 482, { kind: 'sans', size: 28, weight: 600, color: C.text, p: pt(10.06) });
-    refMark(ctx, 229, 536, pt(10.08));
-    L.text(ctx, 'relative to a stable reference point', 248, 542, { kind: 'mono', size: 18, color: C.textDim, p: pt(10.08) });
-    const lx = 1306, lw = 370;
-    const pl = pt(10.0);
-    L.text(ctx, 'WRAPPED · CYCLIC', lx, 330, { kind: 'mono', size: 18, weight: 600, color: C.text, tracking: 0.08, p: pl });
-    if (pl > 0) { ctx.save(); ctx.beginPath(); ctx.rect(lx, 346, lw * clamp(pl), 14); ctx.clip(); ctx.drawImage(k.barFr, lx, 346, lw, 14); ctx.restore(); }
-    L.text(ctx, '−π', lx, 386, { kind: 'mono', size: 18, color: C.textDim, p: pl });
-    L.text(ctx, '+π', lx + lw, 386, { kind: 'mono', size: 18, color: C.textDim, p: pl, align: 'right' });
-    const pa = Math.min(sp(lt, 10.0, 0.6), pt(10.0));
-    if (pa > 0) {
-      ctx.save(); ctx.strokeStyle = L.rgba(C.gold, 0.95); ctx.fillStyle = C.gold; ctx.lineWidth = 2.5;
-      const ax = lx + lw / 2, y0 = 402, y1 = lerp(y0, 446, clamp(pa));
-      ctx.beginPath(); ctx.moveTo(ax, y0); ctx.lineTo(ax, y1 - 6); ctx.stroke(); arrowHead(ctx, ax, y0, ax, y1, 11); ctx.restore();
-    }
-    const pl2 = pt(10.05);
-    L.text(ctx, 'UNWRAPPED · CONTINUOUS', lx, 486, { kind: 'mono', size: 18, weight: 600, color: C.text, tracking: 0.08, p: pl2 });
-    if (pl2 > 0) { ctx.save(); ctx.beginPath(); ctx.rect(lx, 502, lw * clamp(pl2), 14); ctx.clip(); ctx.drawImage(k.barVel, lx, 502, lw, 14); ctx.restore(); }
-    L.text(ctx, 'away', lx, 542, { kind: 'mono', size: 18, color: C.textDim, p: pl2 });
-    L.text(ctx, 'toward', lx + lw, 542, { kind: 'mono', size: 18, color: C.textDim, p: pl2, align: 'right' });
+    // ---- section title + caption (title slot; revealed 9.5–9.8 → readable ≥ 2 s before the 11.85 unmask)
+    const pt = (a) => io(lt, a, 12.0, 0.3, 0.15), T = Q.title;
+    L.text(ctx, 'Phase unwrapping', T.x, T.y, { ...TITLE.display, color: C.text, p: pt(Q.chipAt), id: 'a3-titleC' });
+    const cap = { kind: 'sans', size: 24, weight: 500 };
+    L.text(ctx, [{ s: 'SNAPHU', color: INK.blue, weight: 700 }, { s: ': 2π cycles →', color: C.text }], T.x, T.y + 48, { ...cap, p: pt(Q.chipAt + 0.1) });
+    L.text(ctx, [{ s: 'continuous line-of-sight phase', color: C.text }, { s: ' · schematic', color: C.textDim }], T.x, T.y + 80, { ...cap, p: pt(Q.chipAt + 0.25) });
   }
 
   function drawC(ctx, env) {
-    const k = cache();
-    if (env.lt < 10.0) drawQC(ctx, env, k);
-    if (env.lt >= Q.fieldAt) drawSnaphu(ctx, env, k);
+    const k = cache(), lt = env.lt;
+    if (lt < 10.2) drawQCGrid(ctx, env, k);
+    if (lt >= Q.fieldAt) drawSnaphu(ctx, env, k);
+    drawQCCard(ctx, env);
   }
 
   /* ================================================================ scene */
@@ -972,8 +1047,11 @@
       st.lw = 1 + 0.5 * wFr * clamp(1 - f);
       st.energy *= 1 - 0.45 * L.TL.weight(st, 'pulse'); // the wide s₁ packet keeps a tighter glow
       if (lt >= Q.fieldAt) st.energy *= 1 - 0.8 * wFr * clamp(1 - f); // no additive hot spot on the bowl; restored for the hand-off
-      if (f > 0) { st.x = lerp(st.x, END.x, f); st.y = lerp(st.y, END.y, f); st.size = lerp(st.size, END.size, f); }
-      if (env.handoff && lt < 2) return L.TL.blend(env.handoff, st, sp(lt, 0, 0.9));
+      if (f > 0) st.size = lerp(st.size, END_SIZE, f); // hand off at the field centre, ≈ the in-act size (no pump)
+      if (env.handoff && lt < 2) {
+        st.size = lerp(env.handoff.size, st.size, sp(lt, 0.5, 0.6)); // hold the hand-off size for one beat
+        return L.TL.blend(env.handoff, st, sp(lt, 0, 0.9));
+      }
       return st;
     },
     draw(ctx, env) {
