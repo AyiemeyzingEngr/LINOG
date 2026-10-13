@@ -63,6 +63,7 @@
    *  `dur` = time to settle within ~1%. Returns 0 for t <= 0. */
   function spring(t, dur = 0.5, zeta = 0.82) {
     if (t <= 0) return 0;
+    if (zeta >= 0.999) { const wc = 6.6 / dur; return 1 - (1 + wc * t) * Math.exp(-wc * t); } // critically damped
     const w = 4.6 / (zeta * dur);
     const wd = w * Math.sqrt(1 - zeta * zeta);
     const e = Math.exp(-zeta * w * t);
@@ -238,8 +239,8 @@
   /* ------------------------------------------------------------------ fonts + text */
   L.FONT = {
     // Display (Space Grotesk) has Latin only: Greek/maths glyphs fall back to the embedded Inter subset.
-    display: '"LInOG Display", "LInOG Sans", sans-serif',
-    sans: '"LInOG Sans", sans-serif',
+    display: '"LInOG Display", "LInOG Sans", "LInOG Mono", sans-serif',
+    sans: '"LInOG Sans", "LInOG Mono", sans-serif',
     mono: '"LInOG Mono", "LInOG Sans", monospace',
   };
   L.font = (kind = 'sans', size = 24, weight = 500) => `${weight} ${size}px ${L.FONT[kind] || kind}`;
@@ -263,7 +264,7 @@
     const base = L.font(kind, size, weight);
     ctx.letterSpacing = `${(o.tracking || 0) * size}px`;
     let w = 0;
-    for (const sg of segsOf(str)) { ctx.font = sg.weight ? L.font(sg.kind || kind, size, sg.weight) : base; w += ctx.measureText(sg.s).width; }
+    for (const sg of segsOf(str)) { ctx.font = sg.weight || sg.kind ? L.font(sg.kind || kind, size, sg.weight || weight) : base; w += ctx.measureText(sg.s).width; }
     ctx.restore();
     w -= (o.tracking || 0) * size; // no trailing tracking
     const fm = fontMetrics(ctx, base);
@@ -329,7 +330,7 @@
     }
     let cx = box.x, drawn = 0;
     for (const sg of segs) {
-      ctx.font = sg.weight ? L.font(sg.kind || kind, size, sg.weight) : base;
+      ctx.font = sg.weight || sg.kind ? L.font(sg.kind || kind, size, sg.weight || weight) : base;
       let s = sg.s;
       if (drawn + s.length > nChars) s = s.slice(0, Math.max(0, nChars - drawn));
       ctx.fillStyle = sg.color || color;
@@ -554,9 +555,12 @@
           ctx.beginPath(); ctx.arc(s.x, s.y, s.size * (1 - 0.22 * k), 0, TAU); ctx.stroke();
         }
       }
+      ctx.globalAlpha = 1;
+      L.glow(ctx, s.x, s.y, s.size * (0.9 + 0.5 * e), this.dominant(s) === 'contour' ? C.crimson : C.cyan, 0.25 * e * clamp(s.alpha)); // still in screen space
       ctx.restore();
-      L.glow(ctx, s.x, s.y, s.size * (0.9 + 0.5 * e), s.to && clamp(s.k) > 0.5 ? (s.to === 'contour' ? C.crimson : C.cyan) : (s.form === 'contour' ? C.crimson : C.cyan), 0.25 * e * clamp(s.alpha));
     },
+    /** The form a (possibly morphing) state mostly looks like. */
+    dominant(s) { return s.to && clamp(s.k) >= 0.5 ? s.to : s.form; },
     /** Blend a handoff state (from the previous act, pure form) into a target layout state (pure form).
      *  k: 0 → exactly the handoff, 1 → exactly the target. Form morphs handoff.form → target.form. */
     blend(handoff, target, k) {
@@ -567,7 +571,7 @@
       return this.state({
         ...t,
         x: lerp(h.x, t.x, k), y: lerp(h.y, t.y, k), size: lerp(h.size, t.size, k), rot: lerp(h.rot, t.rot, kk),
-        energy: lerp(h.energy, t.energy, kk), amp: lerp(h.amp, t.amp, kk), alpha: lerp(h.alpha, t.alpha, kk),
+        energy: lerp(h.energy, t.energy, kk), amp: lerp(h.amp, t.amp, kk), alpha: lerp(h.alpha, t.alpha, kk), lw: lerp(h.lw, t.lw, kk),
         form: from, to: from === t.form ? null : t.form, k: from === t.form ? 0 : kk,
         tint: kk < 0.5 ? h.tint : t.tint, phase: t.phase, cycles: t.cycles || h.cycles, seed: t.seed || h.seed, aspect: t.aspect || h.aspect,
       });

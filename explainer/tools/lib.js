@@ -122,10 +122,17 @@ function thumbEnergy(a) { // mean deviation from the slate background
 async function runQA(p, { from = 0, to = 60, step = 0.25, boundaries = [10, 18, 30, 42, 52], log = () => {} } = {}) {
   const issues = [], frames = [];
   let prevThumb = null, stillRun = 0, stillStart = 0;
+  const seen = new Map(); // text key → {first, last, scene} for the ≥ 1.5 s readability rule
   for (let t = from; t <= Math.min(to, 59.99) + 1e-9; t = Math.round((t + step) * 1000) / 1000) {
     const info = await p.page.evaluate((tt) => window.seek(tt), t);
     const th = await p.page.evaluate(() => window.__thumb());
     issues.push(...checkLayout(info));
+    for (const b of info.layout.text) {
+      if (b.role === 'hud') continue;
+      const k = b.id ? 'id:' + b.id : b.str.replace(/[0-9]/g, '#'); // rolling counters keep one key
+      const e = seen.get(k);
+      if (e && t - e.last <= step + 1e-6) e.last = t; else { if (e) finishRead(k, e); seen.set(k, { first: t, last: t, scene: b.scene, str: b.str }); }
+    }
     if (!info.tl || info.tl.alpha < 0.5 || info.tl.size < 24) issues.push({ t, kind: 'tl-visibility', msg: info.tl ? `through-line too faint/small (alpha ${info.tl.alpha.toFixed(2)}, size ${info.tl.size.toFixed(0)})` : 'through-line missing' });
     const en = thumbEnergy(th);
     if (en < 1.2) issues.push({ t, kind: 'blank', msg: `frame looks empty (energy ${en.toFixed(2)})` });
@@ -140,6 +147,13 @@ async function runQA(p, { from = 0, to = 60, step = 0.25, boundaries = [10, 18, 
     if (frames.length % 40 === 0) log(`qa ${t.toFixed(2)} s`);
   }
   if (stillRun > 1.0 + 1e-6) issues.push({ t: stillStart, kind: 'static-hold', msg: `little motion for ${stillRun.toFixed(2)} s` });
+  for (const [k, e] of seen) finishRead(k, e);
+  function finishRead(k, e) {
+    // visible span ≈ (last − first + step); strings whose digits change every frame (counters, timecodes) are skipped
+    const span = e.last - e.first + step;
+    if (span < 1.5 - 1e-6 && e.first > from + 1e-6 && e.last < Math.min(to, 59.99) - step + 1e-6)
+      issues.push({ t: e.first, kind: 'readability', msg: `"${e.str.slice(0, 50)}" (${e.scene}) readable for only ~${span.toFixed(2)} s (< 1.5 s)` });
+  }
   // through-line continuity across act boundaries (match cuts)
   for (const T of boundaries) {
     if (T < from || T > to) continue;

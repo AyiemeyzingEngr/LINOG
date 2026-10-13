@@ -36,8 +36,8 @@
     const key = scenes[i].id;
     if (handoffs.has(key)) return handoffs.get(key);
     const prev = scenes[i - 1];
-    const env = makeEnv(prev, prev.t1, handoffFor(i - 1), measureCtx);
-    env.lt = env.dur; // end of the previous scene
+    // measure just inside the outgoing act, so env.cam is that act's final camera (L.cam(t1) already belongs to the next act)
+    const env = makeEnv(prev, prev.t1 - 1e-6, handoffFor(i - 1), measureCtx);
     let st = null;
     try { st = prev.tl ? L.TL.state(prev.tl(env)) : null; } catch (e) { console.error('handoff', prev.id, e); }
     handoffs.set(key, st);
