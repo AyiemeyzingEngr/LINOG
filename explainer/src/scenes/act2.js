@@ -86,7 +86,6 @@
   const N = { x: 172, y: 176, w: 930, h: 744, px0: 262, px1: 1067, py0: 322, py1: 814, t0: 2006.95, t1: 2011.25, b: 2600 };
   const nxOf = (yr) => N.px0 + ((yr - N.t0) / (N.t1 - N.t0)) * (N.px1 - N.px0);
   const nyOf = (b) => (N.py0 + N.py1) / 2 - (b / N.b) * ((N.py1 - N.py0) / 2);
-  const END = [720, 560]; // where the TL node settles for the 18 s hand-off (world)
   const TLS = { pix: 35, node: 58 };
   const FLY = 1.5; // 16.0 flight DEM → network (≈ 860 px on screen): spring long enough to keep the peak speed ≲ 1,500 px/s
   const SAG = 60;  // the flight path (and its leader) sags by this much (world px): it docks from below, clear of the B⊥ = 0 line and the reference label
@@ -275,8 +274,7 @@
       x = q[0]; y = q[1]; size = lerp(size, TLS.node, m2);
       fly = Math.sin(Math.PI * clamp(m2));
     }
-    const m3 = L.sp(lt, 7.5, 0.375);
-    if (m3 > 0) { x = lerp(x, END[0], m3); y = lerp(y, END[1], m3); }
+    // (no final glide: the node hands off where it docked, so the TL doesn't reverse direction across the 18 s cut)
     const kN = clamp(L.sp(lt, 6.0, 0.9));
     // phase: a slow phasor turn while a pixel, beat-locked ripple once a node (both 0 at 16.0 s → continuous)
     const phase = lerp(1.6 * (lt - 6), (TAU * (lt - 6)) / 0.5, kN);

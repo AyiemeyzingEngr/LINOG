@@ -34,7 +34,7 @@
  *         north with the strip. "Project LInOG" scans in (top-left, in space); 6.5 expansion (2 lines);
  *         7.0 lab eyebrow above the title.
  *   7.0–8.5 acronym decode on quarter notes: L · In · O · G turn cyan in the expansion, with ticks.
- *   7.50  plain-language mission (sans 26): "Mapping ground motion in Central Luzon" /
+ *   7.00  plain-language mission (sans 26): "Mapping ground motion in Central Luzon" /
  *         "from satellite radar · 2007–2011".
  *   9.00  labels, captions, title, orbit unmask; satellite un-builds; the TL travels down the beam (the
  *         beam drains completely behind it), rotating to horizontal and growing slightly.
@@ -706,7 +706,7 @@
     const pT = L.inout(lt, 6.0, 9.5, 0.55, 0.45);
     const pS = L.inout(lt, 6.5, 9.5, 0.6, 0.45);
     const pM = L.inout(lt, 7.0, 9.5, 0.5, 0.4);
-    const pX = L.inout(lt, 7.5, 9.6, 0.45, 0.45);
+    const pX = L.inout(lt, 7.0, 9.6, 0.45, 0.45); // from the 7.0 beat so line 2 holds ≥ 1.5 s
     if (pM > 0.001) {
       L.text(ctx, 'UPD NIGS · Earthquake Geodesy and Geology (EGG) Laboratory', TITLE.x + 2, TITLE.y - 106, { kind: 'mono', size: 18, weight: 400, color: C.textDim, p: pM, id: 'a1-lab' });
       ctx.save(); ctx.fillStyle = L.rgba(C.cyan, 0.7); ctx.fillRect(TITLE.x + 2, TITLE.y - 96, 56 * clamp(pM), 2); ctx.restore();
