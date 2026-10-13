@@ -2,8 +2,8 @@
  *
  * Beat plan (local = global time; 1 beat = 0.5 s, 1 bar = 2 s):
  *  A · bars 1–2 · kinetic type "THE EARTH NEVER / STOPS MOVING." (Space Grotesk 700, 136 px)
- *   0.00  TL (cyan L-band pulse) is already gliding in from the left on the line-2 cut height
- *         (pre-rolled spring), trailing a faint flat trace — visible from frame 0.
+ *   0.00  TL (cyan L-band pulse) enters from off-screen left (x ≈ −130, already moving: pre-rolled
+ *         spring) on the line-2 cut height, trailing a faint flat trace; on screen within the first beat.
  *   0.50  "THE" scans in; the λ bracket draws on under the pulse, trough → trough (= one wavelength).
  *   1.00  "EARTH" + mono callout "L-BAND · λ = 23.6 cm" · 1.50 "NEVER".
  *   2.00  bar 2: "STOPS" lands and the pulse launches (velocity spring 2.0, brake on beat 3.5). From
@@ -11,31 +11,35 @@
  *         wave: line 2 splits along that sine (upper half lifts 3 px / shears left, lower half drops /
  *         shears right, continuous affine ramp — no strips), thin cyan seam in the 6 px gap.
  *         The callout stays parked: its bracket now spans one wavelength of the seam left behind.
- *   2.50  "MOVING." lands (0.3 s); the packet's leading edge only reaches it at ~2.97 s.
- *   3.50  callout unmasks; the pulse brakes and parks right of the type (~3.8 s).
+ *   2.50  "MOVING." lands (0.3 s); the packet's leading edge only reaches it at ~2.95 s.
+ *   3.50  callout unmasks; the pulse brakes just past the type (the cut is complete) at ~3.8 s.
  *  B · bars 3–5 · pull out to low Earth orbit (one shared zoom curve)
  *   4.00  bar 3: the camera leaves the surface — the type shrinks into central Luzon while the globe
  *         unmasks from that point (iris 0.5 s) and its radius springs 5× → 1× (log, 1.5 s); line 1
  *         unmasks at 4.0, line 2 at 4.25 (gone by ~4.6). Oblique view from the SSE, north ≈ up.
- *   4.50  ALOS-1 builds on its projected great-circle orbit; the TL lifts off and arcs (above the
- *         receding type) into the antenna's beam. Geometry is physical: sub-satellite point 4.36° WSW
- *         of the footprint (right-looking, ascending), altitude 0.1086 R (691.65 km), PALSAR face square
- *         to the beam; satellite and footprint advance north together.
- *   4.5–5.5 cloud streets condense (staggered on beats) over the South China Sea, off the Ilocos coast
- *         (right under the beam's last third), the Philippine Sea and — thin, capped over land — central
- *         Luzon; they drift slowly west. Earth itself does not spin in this shot.
+ *         Same downbeat: the TL lifts off (spring 1.4 s, peak ≈ 0.9 kpx/s) and arcs over the receding
+ *         type into the antenna's beam, shrinking to its in-act size (~55 px) and starting to scroll.
+ *   4.50  ALOS-1 builds on its projected great-circle orbit. Geometry is physical: sub-satellite point
+ *         4.36° WSW of the footprint (right-looking, ascending), altitude 0.1086 R (691.65 km), PALSAR
+ *         face square to the beam; satellite and footprint advance north together.
+ *   4.5–5.5 one contiguous, flat, translucent cloud deck condenses over central/northern Luzon and the
+ *         sea off Ilocos (C.text 0.15–0.33, three posterised tiers, cached fbm texture; drifts west).
+ *   5.00  map label "LUZON · PHILIPPINES" (backplate + leader to the east coast).
  *   5.50  beam reaches down from the antenna; one bright wavefront leaves on every quarter note and lands
- *         on the next (ground ripple). The lower beam runs UNDER the cloud deck and its wavefronts and
- *         ripples glow through it. Caption "ALOS-1 PALSAR · ASCENDING PASS" (+ 6.0 "L-band radar
- *         penetrates cloud cover", the report's cloud-penetration point).
- *   6.00  bar 4: first wavefront lands — footprint + imaged path-448 strip start (SAR texture seen through
- *         a window cut in the clouds, growing north). "Project LInOG" scans in (top-left, in space);
- *         6.5 subtitle (2 lines); 7.0 lab eyebrow above the title.
- *   7.0–8.5 acronym decode on quarter notes: L · In · O · G turn cyan in the subtitle, with ticks.
- *   9.00  captions, title, orbit unmask; satellite un-builds; the TL travels down the beam (the beam
- *         drains completely behind it), rotating to horizontal and growing.
+ *         on the next (ground ripple). The lower beam runs UNDER the cloud deck; its wavefronts glow
+ *         through it. Satellite tag "ALOS-1 PALSAR · ASCENDING PASS" rides beside the satellite
+ *         (+ 6.0 "L-band radar sees through cloud").
+ *   6.00  bar 4: first wavefront lands — footprint + imaged path-448 strip start: the SAR texture shows
+ *         through a soft hole the beam punches in the deck (pulses on the beat) and a window that grows
+ *         north with the strip. "Project LInOG" scans in (top-left, in space); 6.5 expansion (2 lines);
+ *         7.0 lab eyebrow above the title.
+ *   7.0–8.5 acronym decode on quarter notes: L · In · O · G turn cyan in the expansion, with ticks.
+ *   7.50  plain-language mission (sans 26): "Mapping ground motion in Central Luzon" /
+ *         "from satellite radar · 2007–2011".
+ *   9.00  labels, captions, title, orbit unmask; satellite un-builds; the TL travels down the beam (the
+ *         beam drains completely behind it), rotating to horizontal and growing slightly.
  *   9.50  an iris contracts onto the footprint (globe, clouds, strip) — closed by ~9.85.
- *  10.00  only the TL remains: pure 'pulse', rot 0, size 112, centre ≈ (1200, 610) — hand-off to act 2.
+ *  10.00  only the TL remains: pure 'pulse', rot 0, size ≈ 62 (its in-act size), centre ≈ (1200, 608).
  */
 (function () {
   'use strict';
@@ -123,9 +127,11 @@
     const f = ((lt - 2.0) / 2.0) * SW_N, i = Math.floor(f);
     return lerp(SWLUT[i], SWLUT[Math.min(SW_N, i + 1)], f - i);
   }
-  const PA = { size: 110, x0: 40, hold: 270, end: 1600 };
+  /* x0 −210 with the spring pre-rolled by 0.2 s → x ≈ −130 at frame 0 (off-screen, already moving at
+   * ~650 px/s), x ≈ 170 on the first beat. end: just far enough that the cut clears "MOVING." (~1447 + R). */
+  const PA = { size: 110, x0: -210, hold: 270, end: 1550 };
   const LAM = (2 * PA.size) / 3.5;                       // pulse wavelength on screen (cycles 3.5)
-  const glideAt = (lt) => lerp(PA.x0, PA.hold, L.sp(lt, -0.42, 2.2)); // pre-rolled: moving at frame 0
+  const glideAt = (lt) => lerp(PA.x0, PA.hold, L.sp(lt, -0.2, 1.6));
   const X0 = glideAt(2.0);                               // where the sweep starts; seam phase origin
   const SEAM_A = 0.088 * PA.size;                        // = packet amplitude 0.8·size behind its centre
   const envQ = (q) => (q > 0 && q < 1 ? Math.pow(Math.sin(Math.PI * q), 1.15) : 0);
@@ -264,8 +270,8 @@
     if (pl > 0.001) { ctx.beginPath(); ctx.moveTo(bx, CALL.yB); ctx.lineTo(bx, lerp(CALL.yB, CALL.yT - 26, pl)); ctx.strokeStyle = L.rgba(C.cyan, 0.55); ctx.stroke(); }
     ctx.restore();
     const pt = Math.min(L.sp(lt, 1.0, 0.45), pOut);
-    if (pt > 0.001) {
-      L.text(ctx, [{ s: 'L-BAND', color: C.cyan }, { s: ' · λ = 23.6 cm', color: C.text }], bx, CALL.yT, { kind: 'mono', size: 22, weight: 600, align: 'center', p: pt, tracking: 0.02, id: 'a1-lband' });
+    if (pt > 0.001) { // parameter annotation (mono 20)
+      L.text(ctx, [{ s: 'L-BAND', color: C.cyan, weight: 600 }, { s: ' · λ = 23.6 cm', color: C.text }], bx, CALL.yT, { kind: 'mono', size: 20, weight: 400, align: 'center', p: pt, tracking: 0.02, id: 'a1-lband' });
     }
   }
 
@@ -336,8 +342,12 @@
     for (let lat = -50; lat <= 50; lat += 10) { let st = false; for (let lon = 80; lon <= 190; lon += 1) { const v = o3(lon, lat); if (v[2] > 0) { st ? grat.lineTo(v[0], v[1]) : grat.moveTo(v[0], v[1]); st = true; } else st = false; } }
     return (EARTH = { land: ringsPath(world.concat(G.rings.region)), ph: ringsPath(G.rings.ph), luzon: ringsPath(G.rings.luzon), grat });
   }
-  function drawEarth(ctx, g) {
-    const E = earthPaths(), { cx, cy, r } = g;
+  /* Line widths and the absolute haze/atmosphere bands scale with min(r/R, EC.smax): below that the
+   * live drawing is exactly the r = R drawing scaled uniformly about the anchor, which is what lets the
+   * cached bitmap below take over seamlessly. */
+  const EC = { x0: -70, y0: -70, x1: 1990, y1: 1150, rs: 1.36, smax: 1.25, smin: 0.97 };
+  function drawEarthLive(ctx, g) {
+    const E = earthPaths(), { cx, cy, r } = g, ws = Math.min(r / VIEW.R, EC.smax);
     ctx.save();
     ctx.beginPath(); ctx.arc(cx, cy, r, 0, TAU);
     const og = ctx.createRadialGradient(cx, cy, r * 0.82, cx, cy, r);
@@ -346,24 +356,45 @@
     ctx.clip();
     const m = ctx.getTransform();
     unitToScreen(ctx, g);
-    ctx.lineWidth = 1 / r;
+    ctx.lineWidth = ws / r;
     ctx.strokeStyle = 'rgba(0,229,255,0.07)'; ctx.stroke(E.grat);
     ctx.fillStyle = '#19314D'; ctx.fill(E.land);
     ctx.strokeStyle = 'rgba(0,229,255,0.3)'; ctx.stroke(E.land);
     ctx.fillStyle = 'rgba(0,229,255,0.22)'; ctx.fill(E.ph);
-    ctx.lineWidth = 1.3 / r; ctx.strokeStyle = 'rgba(0,229,255,0.9)'; ctx.stroke(E.ph);
+    ctx.lineWidth = (1.3 * ws) / r; ctx.strokeStyle = 'rgba(0,229,255,0.9)'; ctx.stroke(E.ph);
     ctx.setTransform(m);
-    // horizon haze inside the limb (absolute width, so it stays thin at any radius)
-    const hz = ctx.createRadialGradient(cx, cy, r - 220, cx, cy, r);
+    // horizon haze inside the limb (thin at any radius; shaded on the band only)
+    const hw = 220 * ws, hz = ctx.createRadialGradient(cx, cy, r - hw, cx, cy, r);
     hz.addColorStop(0, 'rgba(0,229,255,0)'); hz.addColorStop(0.75, 'rgba(0,229,255,0.03)'); hz.addColorStop(1, 'rgba(0,229,255,0.13)');
-    ctx.fillStyle = hz; ctx.beginPath(); ctx.arc(cx, cy, r, 0, TAU); ctx.fill();
+    ctx.fillStyle = hz; ctx.beginPath(); ctx.arc(cx, cy, r, 0, TAU); ctx.arc(cx, cy, r - hw, 0, TAU, true); ctx.fill();
     ctx.restore();
     // thin atmosphere outside the limb + crisp limb line
-    const ag = ctx.createRadialGradient(cx, cy, r, cx, cy, r + 110);
+    const aw = 110 * ws, ag = ctx.createRadialGradient(cx, cy, r, cx, cy, r + aw);
     ag.addColorStop(0, 'rgba(0,229,255,0.36)'); ag.addColorStop(0.1, 'rgba(0,229,255,0.16)'); ag.addColorStop(0.4, 'rgba(0,229,255,0.04)'); ag.addColorStop(1, 'rgba(0,229,255,0)');
     ctx.save();
-    ctx.fillStyle = ag; ctx.beginPath(); ctx.arc(cx, cy, r + 110, 0, TAU); ctx.arc(cx, cy, r, 0, TAU, true); ctx.fill();
-    ctx.strokeStyle = 'rgba(0,229,255,0.5)'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.arc(cx, cy, r, 0, TAU); ctx.stroke();
+    ctx.fillStyle = ag; ctx.beginPath(); ctx.arc(cx, cy, r + aw, 0, TAU); ctx.arc(cx, cy, r, 0, TAU, true); ctx.fill();
+    ctx.strokeStyle = 'rgba(0,229,255,0.5)'; ctx.lineWidth = 1.4 * ws; ctx.beginPath(); ctx.arc(cx, cy, r, 0, TAU); ctx.stroke();
+    ctx.restore();
+  }
+  /* The Earth is static in world space up to the zoom, and P is linear in r about the anchor (ax, ay), so
+   * for r ≤ smax·R (from ~4.76 s) it is drawn from one bitmap rendered at r = R and 1.36× resolution
+   * (≥ on-screen size at scale 1.25 under the ×1.08 camera push). Saves ~12 ms of gradient/path
+   * rasterisation per frame. Pure: the cache depends on nothing but constants. */
+  let EARTH_BMP = null;
+  function earthBitmap() {
+    if (EARTH_BMP) return EARTH_BMP;
+    const c = L.canvas(Math.ceil((EC.x1 - EC.x0) * EC.rs), Math.ceil((EC.y1 - EC.y0) * EC.rs)), x = c.getContext('2d');
+    x.setTransform(EC.rs, 0, 0, EC.rs, -EC.x0 * EC.rs, -EC.y0 * EC.rs);
+    const r = VIEW.R;
+    drawEarthLive(x, { cx: VIEW.ax - A_UNIT[0] * r, cy: VIEW.ay + A_UNIT[1] * r, r });
+    return (EARTH_BMP = c);
+  }
+  function drawEarth(ctx, g) {
+    const k = g.r / VIEW.R;
+    if (k > EC.smax || k < EC.smin) { drawEarthLive(ctx, g); return; }
+    ctx.save();
+    ctx.transform(k, 0, 0, k, VIEW.ax * (1 - k), VIEW.ay * (1 - k));
+    ctx.drawImage(earthBitmap(), EC.x0, EC.y0, EC.x1 - EC.x0, EC.y1 - EC.y0);
     ctx.restore();
   }
 
@@ -416,12 +447,14 @@
 
   /* path-448 imaged strip: SAR amplitude texture seen through a window in the cloud deck */
   const STRIP = { hw: 0.4, t0: 6.0, tEnd: 9.75 }; // imaging starts as the first wavefront lands on the bar-4 downbeat
-  function stripPoly(g, latA, latB) {
+  /** Strip outline in lon/lat (west edge north-bound, east edge back south). */
+  function stripLL(latA, latB) {
     const n = 12, pts = [];
-    for (let i = 0; i <= n; i++) { const lat = lerp(latA, latB, i / n); pts.push(P(g, pathLon(lat) - STRIP.hw, lat)); }
-    for (let i = n; i >= 0; i--) { const lat = lerp(latA, latB, i / n); pts.push(P(g, pathLon(lat) + STRIP.hw, lat)); }
+    for (let i = 0; i <= n; i++) { const lat = lerp(latA, latB, i / n); pts.push([pathLon(lat) - STRIP.hw, lat]); }
+    for (let i = n; i >= 0; i--) { const lat = lerp(latA, latB, i / n); pts.push([pathLon(lat) + STRIP.hw, lat]); }
     return pts;
   }
+  const stripPoly = (g, ll) => ll.map(([lon, lat]) => P(g, lon, lat));
   let SAR_TEX = null;
   const sarTex = () => SAR_TEX || (SAR_TEX = L.sarImage(80, 300, { seed: 448, scale: 20, looks: 3 }));
   function drawStrip(ctx, lt, g, poly, a) {
@@ -444,89 +477,97 @@
     ctx.restore();
   }
 
-  /* clouds: clusters of lumpy puffs (dense core + satellites, crisp cauliflower edges), anchored in
-   * lon/lat and drifting slowly west. Puffs are foreshortened toward the limb and cast a faint shadow. */
-  const SPRITES = [], SHADOWS = [];
-  function puffSprite(i) {
-    if (SPRITES[i]) return SPRITES[i];
-    const N = 192, c = L.canvas(N, N), x = c.getContext('2d'), img = x.createImageData(N, N), d = img.data;
-    for (let j = 0; j < N; j++) for (let k = 0; k < N; k++) {
-      const u = ((k + 0.5) / N) * 2 - 1, v = ((j + 0.5) / N) * 2 - 1, r2 = u * u + v * v, o = (j * N + k) * 4;
-      d[o] = d[o + 1] = d[o + 2] = 255;
-      if (r2 >= 1) { d[o + 3] = 0; continue; }
-      const n = L.fbm(u * 2.3 + i * 7.1, v * 2.3 - i * 3.3, 5, 900 + i), n2 = L.fbm(u * 4 + 3, v * 4 - i, 3, 950 + i);
-      const f = (1 - r2) * 1.2 + (n - 0.5) * 1.2;
-      d[o + 3] = 255 * L.smooth((f - 0.26) / 0.3) * (0.78 + 0.22 * n2) * (0.75 + 0.25 * L.smooth(f));
-    }
-    x.putImageData(img, 0, 0);
-    return (SPRITES[i] = c);
-  }
-  function shadowSprite(i) {
-    if (SHADOWS[i]) return SHADOWS[i];
-    const src = puffSprite(i), c = L.canvas(src.width, src.height), x = c.getContext('2d');
-    x.drawImage(src, 0, 0); x.globalCompositeOperation = 'source-in'; x.fillStyle = '#01040A'; x.fillRect(0, 0, c.width, c.height);
-    return (SHADOWS[i] = c);
-  }
-  const CLOUD_ANCHORS = [
-    // [lon, lat, size°, density] — first a cloud street off the Ilocos coast: the ground under the beam's
-    // last third (f 0.7–0.95) during 6–9 s, so the beam visibly dives through it
-    [120.25, 16.45, 0.62, 1.0], [119.95, 17.35, 0.72, 1.0], [119.7, 18.3, 0.7, 0.95], [119.45, 19.3, 0.66, 0.9], [120.4, 15.4, 0.5, 0.8],
-    [116.4, 18.6, 1.15, 0.95], [114.6, 14.8, 1.3, 0.9], [117.2, 12.2, 0.95, 0.85], [111.8, 17.4, 1.2, 0.85], [112.4, 10.8, 1.1, 0.8], [109.4, 13.6, 0.9, 0.75],
-    // a thin deck over central Luzon (capped over land): the imaged strip reads as a clear window through it
-    [120.95, 15.2, 0.55, 1.0], [120.75, 16.25, 0.6, 1.0], [121.25, 15.75, 0.45, 0.9], [120.9, 14.4, 0.4, 0.8], [121.9, 17.6, 0.5, 0.8], [121.7, 21.1, 0.8, 0.85],
-    [125.8, 21.4, 1.0, 0.9], [130.2, 20.6, 1.2, 0.85], [126.6, 11.0, 1.0, 0.8], [130.8, 11.4, 1.1, 0.8], [123.6, 24.0, 0.9, 0.75],
+  /* cloud deck: ONE contiguous, flat, translucent wisp layer (C.text, three posterised alpha tiers
+   * 0.16 / 0.25 / 0.33) over central + northern Luzon and the sea off Ilocos — the ground under the
+   * beam's last third — plus a few faint wisps further out. The fbm texture is generated once (cached,
+   * pure) in lon/lat space; per frame it is shifted west (drift), the imaged strip and a soft hole at the
+   * footprint (pulsing on the beat) are cut out of it in that same space, and the result is placed on the
+   * globe with one affine (the local tangent map at the deck centre; < 8 px curvature error at the edge). */
+  const DECK = { lon0: 113.5, lon1: 127.5, lat0: 10.0, lat1: 22.0, sx: 60, sy: 30, drift: 0.05, margin: 24, A: [120.6, 16.0] };
+  DECK.W = Math.round((DECK.lon1 - DECK.lon0) * DECK.sx); DECK.H = Math.round((DECK.lat1 - DECK.lat0) * DECK.sy);
+  const DECK_LOBES = [ // [lon, lat, rLon, rLat, weight]
+    [120.55, 16.3, 2.7, 3.5, 1.35],                                     // central/northern Luzon + off Ilocos
+    [116.4, 19.0, 1.4, 1.0, 0.55], [125.2, 18.2, 1.5, 0.95, 0.5], [117.0, 13.4, 1.3, 0.9, 0.5], [124.8, 12.6, 1.4, 0.95, 0.45],
   ];
-  const CLOUDS = CLOUD_ANCHORS.map(([lon, lat, sz, dens], i) => {
-    // a cluster = a short cloud street (own orientation, aspect 1.5–2.3): a dense core run plus smaller puffs
-    const rnd = L.rng(5000 + i * 37), puffs = [];
-    const dir = rnd() * Math.PI, ca = Math.cos(dir), sa = Math.sin(dir), asp = 1.5 + 0.8 * rnd();
-    const nCore = 3 + Math.floor(rnd() * 2), nSat = 3 + Math.floor(rnd() * 4);
-    for (let k = 0; k < nCore + nSat; k++) {
-      const core = k < nCore;
-      const u = core ? (k / Math.max(1, nCore - 1) - 0.5) * 0.9 * asp * sz * 0.5 : (rnd() - 0.5) * asp * sz * 0.9;
-      const v = core ? (rnd() - 0.5) * 0.12 * sz : (rnd() - 0.5) * 0.55 * sz;
-      const rx = (core ? 0.42 + 0.18 * rnd() : 0.17 + 0.15 * rnd()) * sz;
-      puffs.push({ dx: u * ca - v * sa, dy: u * sa + v * ca, rx, ry: rx * (0.62 + 0.3 * rnd()), rot: dir + (rnd() - 0.5) * 1.2, a: (core ? 0.82 + 0.15 * rnd() : 0.5 + 0.25 * rnd()) * dens, spr: Math.floor(rnd() * 3) });
-    }
-    return { lon, lat, puffs, drift: 0.04 + 0.04 * rnd(), at: [4.5, 5.0, 5.5][i % 3], ph: rnd() * TAU };
-  });
-  /** Puff placements for this frame (screen coords + affine) — shared by the shadow and cloud passes. */
-  function cloudPuffs(lt, g) {
-    const out = [];
-    for (const c of CLOUDS) {
-      const k = L.sp(lt, c.at, 1.0);
-      if (k <= 0.002) continue;
-      const lon0 = c.lon - c.drift * Math.max(0, lt - 4.0), lat0 = c.lat + 0.04 * Math.sin(lt * 0.6 + c.ph);
-      const grow = 0.7 + 0.3 * k;
-      for (const p of c.puffs) {
-        const lat = lat0 + p.dy * grow, lon = lon0 + (p.dx * grow) / Math.cos(lat * DEG);
-        const v = o3(lon, lat);
-        if (v[2] <= 0.04) continue;
-        const land = lon > 119.4 && lon < 122.8 && lat > 12.4 && lat < 18.8 ? G.land(lon, lat) : 0;
-        const alpha = Math.min(k, 1) * p.a * (1 - 0.8 * land); // ≤ ~0.18 over the Philippines: the highlight stays readable
-        out.push({ x: g.cx + v[0] * g.r, y: g.cy - v[1] * g.r, z: v[2], phi: Math.atan2(-v[1], v[0]), rx: p.rx * grow * g.r * DEG, ry: p.ry * grow * g.r * DEG, rot: p.rot, alpha, spr: p.spr });
+  const deckX = (lon) => (lon - DECK.lon0) * DECK.sx, deckY = (lat) => (DECK.lat1 - lat) * DECK.sy;
+  let DECK_TEX = null, DECK_CMP = null;
+  function deckTex() {
+    if (DECK_TEX) return DECK_TEX;
+    const W = DECK.W + DECK.margin, H = DECK.H, c = L.canvas(W, H), x = c.getContext('2d'), img = x.createImageData(W, H), d = img.data;
+    const tier = (q, th) => L.smooth((q - th) / 0.024 + 0.5);
+    for (let j = 0; j < H; j++) {
+      const lat = DECK.lat1 - (j + 0.5) / DECK.sy;
+      for (let i = 0; i < W; i++) {
+        const lon = DECK.lon0 + (i + 0.5) / DECK.sx, o = (j * W + i) * 4;
+        d[o] = 230; d[o + 1] = 241; d[o + 2] = 255; d[o + 3] = 0;
+        let env = -1;                                   // > 0 inside a lobe, falls off to −1 far outside
+        for (const [lo, la, rx, ry, wt] of DECK_LOBES) {
+          const dd = ((lon - lo) / rx) ** 2 + ((lat - la) / ry) ** 2;
+          if (dd < 2.4) env = Math.max(env, wt * (1 - dd / 1.25));
+        }
+        if (env <= -0.45) continue;                     // q < 0.2 there: always clear (skip the noise)
+        // NE–SW cloud streets (Amihan): long along u, tight across v; a slow warp keeps the outline organic
+        const u = (lon + lat) * 0.7071, v = (lat - lon) * 0.7071;
+        const warp = L.fbm(lon * 0.55 + 5.3, lat * 0.55 - 2.1, 3, 845) - 0.5;
+        const n1 = L.fbm(u * 0.6 + 3.1 + 1.2 * warp, v * 1.7 - 1.7, 4, 811), n2 = L.fbm(u * 1.5 - 7.7, v * 4.4 + 2.2, 2, 823);
+        const q = 0.85 * n1 + 0.15 * n2 + 0.45 * Math.min(0, env - 0.8) + 0.6 * warp * (1 - L.smooth(env));
+        const a = 0.17 * tier(q, 0.4) + 0.09 * tier(q, 0.5) + 0.08 * tier(q, 0.585);
+        d[o + 3] = Math.round(255 * a);
       }
     }
-    return out;
+    x.putImageData(img, 0, 0);
+    return (DECK_TEX = c);
   }
-  function drawPuffs(ctx, puffs, shadow) {
-    for (const q of puffs) {
-      if (q.alpha <= 0.003) continue;
-      ctx.save();
-      ctx.translate(q.x + (shadow ? 4 : 0), q.y + (shadow ? 6 : 0));
-      ctx.rotate(q.phi); ctx.scale(q.z, 1); ctx.rotate(q.rot - q.phi); ctx.scale(q.rx, q.ry);
-      ctx.globalAlpha = Math.min(1, q.alpha * (shadow ? 0.5 : 0.95));
-      ctx.drawImage(shadow ? shadowSprite(q.spr) : puffSprite(q.spr), -1, -1, 2, 2);
-      ctx.restore();
+  /** Composite this frame's deck (drift, condensation, strip window, footprint hole) in deck space. */
+  function deckFrame(lt, pg, strip, holeA) {
+    if (!DECK_CMP) DECK_CMP = L.canvas(DECK.W, DECK.H);
+    const x = DECK_CMP.getContext('2d'), W = DECK.W, H = DECK.H;
+    x.setTransform(1, 0, 0, 1, 0, 0); x.globalCompositeOperation = 'source-over'; x.globalAlpha = 1;
+    x.clearRect(0, 0, W, H);
+    x.drawImage(deckTex(), -DECK.drift * DECK.sx * Math.max(0, lt - 4.0), 0);
+    // condensation: a soft-edged disc unmasks the deck outward from central Luzon (4.5–5.5)
+    const kC = L.sp(lt, 4.5, 1.0);
+    if (kC < 0.999) {
+      const cx = deckX(DECK.A[0]), cy = deckY(DECK.A[1]), R = 7.5 * kC;
+      x.save(); x.globalCompositeOperation = 'destination-in';
+      x.translate(cx, cy); x.scale(DECK.sx, DECK.sy);
+      const gr = x.createRadialGradient(0, 0, 0, 0, 0, Math.max(0.01, R));
+      gr.addColorStop(0, 'rgba(0,0,0,1)'); gr.addColorStop(0.6, 'rgba(0,0,0,0.85)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+      x.fillStyle = gr; x.fillRect(-8, -8, 16, 16);
+      x.restore();
     }
+    x.globalCompositeOperation = 'destination-out';
+    if (strip && strip.a > 0.002) { // the imaged strip: a soft-edged window that grows north with it
+      x.beginPath();
+      strip.pts.forEach(([lo, la], i) => (i ? x.lineTo(deckX(lo), deckY(la)) : x.moveTo(deckX(lo), deckY(la))));
+      x.closePath();
+      x.fillStyle = `rgba(0,0,0,${0.92 * strip.a})`; x.fill();
+      x.lineJoin = 'round'; x.lineWidth = 7; x.strokeStyle = `rgba(0,0,0,${0.45 * strip.a})`; x.stroke();
+    }
+    if (holeA > 0.002) { // where the beam hits: a soft hole, breathing on the beat
+      const r = 0.62 + 0.16 * kick(lt);
+      x.save(); x.translate(deckX(pg.lon), deckY(pg.lat)); x.scale(DECK.sx / Math.cos(pg.lat * DEG), DECK.sy);
+      const gr = x.createRadialGradient(0, 0, 0, 0, 0, r);
+      gr.addColorStop(0, `rgba(0,0,0,${holeA})`); gr.addColorStop(0.55, `rgba(0,0,0,${0.9 * holeA})`); gr.addColorStop(1, 'rgba(0,0,0,0)');
+      x.fillStyle = gr; x.fillRect(-r, -r, 2 * r, 2 * r);
+      x.restore();
+    }
+    x.globalCompositeOperation = 'source-over';
+    return DECK_CMP;
   }
-  /** Clip that excludes a polygon (the imaged strip = window through the clouds). */
-  function clipOut(ctx, poly) {
-    if (!poly) return;
-    ctx.beginPath(); ctx.rect(-4000, -4000, 10000, 10000);
-    for (let i = 0; i < poly.length; i++) (i ? ctx.lineTo : ctx.moveTo).call(ctx, poly[i][0], poly[i][1]);
-    ctx.closePath();
-    ctx.clip('evenodd');
+  /** Place the deck on the globe (one affine: the tangent map at DECK.A). */
+  function drawDeck(ctx, lt, g, pg, strip, holeA, a) {
+    if (a <= 0.002) return;
+    const [la0, fa0] = [DECK.A[0], DECK.A[1]], d = 0.5;
+    const O = P(g, la0, fa0), e1 = P(g, la0 + d, fa0), e0 = P(g, la0 - d, fa0), n1 = P(g, la0, fa0 + d), n0 = P(g, la0, fa0 - d);
+    const E = [(e1[0] - e0[0]) / (2 * d), (e1[1] - e0[1]) / (2 * d)], N = [(n1[0] - n0[0]) / (2 * d), (n1[1] - n0[1]) / (2 * d)];
+    const dl = DECK.lon0 - la0, dp = DECK.lat1 - fa0;
+    const cmp = deckFrame(lt, pg, strip, holeA);
+    ctx.save();
+    ctx.transform(E[0] / DECK.sx, E[1] / DECK.sx, -N[0] / DECK.sy, -N[1] / DECK.sy, O[0] + dl * E[0] + dp * N[0], O[1] + dl * E[1] + dp * N[1]);
+    ctx.globalAlpha *= a;
+    ctx.drawImage(cmp, 0, 0);
+    ctx.restore();
   }
 
   /* radar beam: cone + one bright wavefront per quarter note (launched on the beat, lands on the next) */
@@ -603,15 +644,50 @@
     ctx.restore();
   }
 
-  /* captions + title */
-  const TAG = { x: 1344, y: 596 };
-  function drawTag(ctx, lt) {
+  /* captions, labels + title */
+  /** Backplate for labels over the globe: C.card, hairline border, optional cyan accent bar; constructs
+   *  along scanlines with the label (pass bg: C.card to the text). */
+  function plate(ctx, x, y, w, h, p, accent) {
+    if (p <= 0.001) return;
+    ctx.save();
+    if (p < 1) scanClip(ctx, x - 1, y - 1, w + 2, h + 2, p, 2);
+    L.roundRect(ctx, x, y, w, h, 5);
+    ctx.fillStyle = L.rgba(C.card, 0.92); ctx.fill();
+    ctx.lineWidth = 1; ctx.strokeStyle = C.cardBorder; ctx.stroke();
+    if (accent) { ctx.fillStyle = L.rgba(C.cyan, 0.85); ctx.fillRect(x, y + 5, 2, h - 10); }
+    ctx.restore();
+    if (p < 1) scanBar(ctx, x, y, w, h, p);
+  }
+  /* satellite tag: rides beside ALOS-1 (right of the body, clear of the paddle and above the beam) */
+  const SAT_TAG = { dx: 86, dy: -10 };
+  const SAT_O1 = { kind: 'mono', size: 20, weight: 400, tracking: 0.04 }, SAT_O2 = { kind: 'mono', size: 18, weight: 400, tracking: 0.02 };
+  const SAT_L1 = [{ s: 'ALOS-1 PALSAR', color: C.text, weight: 600 }, { s: ' · ASCENDING PASS', color: C.textDim }];
+  const SAT_L2 = () => [{ s: 'L-band', color: L.ink(C.cyan, C.card) }, { s: ' radar sees through cloud', color: C.textDim }];
+  function drawSatTag(ctx, lt, pg) {
     const p1 = L.inout(lt, 5.5, 9.4, 0.5, 0.4), p2 = L.inout(lt, 6.0, 9.4, 0.5, 0.4);
-    if (p1 > 0.001) {
-      ctx.save(); ctx.fillStyle = L.rgba(C.cyan, 0.85); ctx.fillRect(TAG.x - 16, TAG.y - 18, 2, 54 * clamp(p1)); ctx.restore();
-      L.text(ctx, [{ s: 'ALOS-1 PALSAR', color: C.text }, { s: ' · ASCENDING PASS', color: C.textDim }], TAG.x, TAG.y, { kind: 'mono', size: 20, weight: 600, tracking: 0.04, p: p1, id: 'a1-sat' });
-    }
-    if (p2 > 0.001) L.text(ctx, [{ s: 'L-band', color: L.ink(C.cyan) }, { s: ' radar penetrates cloud cover', color: C.textDim }], TAG.x, TAG.y + 32, { kind: 'mono', size: 18, weight: 500, tracking: 0.02, p: p2, id: 'a1-cloud' });
+    if (p1 <= 0.001) return;
+    const c = mctx(), m1 = L.measure(c, SAT_L1, SAT_O1), w = Math.max(m1.w, L.measure(c, SAT_L2(), SAT_O2).w);
+    const x = pg.S[0] + SAT_TAG.dx, y = pg.S[1] + SAT_TAG.dy;
+    plate(ctx, x - 16, y - m1.asc - 8, w + 32, lerp(36, 66, clamp(L.sp(lt, 6.0, 0.45))), p1, true); // grows for line 2
+    L.text(ctx, SAT_L1, x, y, { ...SAT_O1, p: p1, bg: C.card, id: 'a1-sat' });
+    if (p2 > 0.001) L.text(ctx, SAT_L2(), x, y + 28, { ...SAT_O2, p: p2, bg: C.card, id: 'a1-cloud' });
+  }
+  /* map label: east of Luzon on a backplate, leader to the coast (Isabela) */
+  const MAP_LBL = { anchor: [122.05, 16.4], dx: 46, str: 'LUZON · PHILIPPINES', o: { kind: 'mono', size: 19, weight: 400, tracking: 0.08 } };
+  function drawMapLabel(ctx, lt, g) {
+    const p = L.inout(lt, 5.0, 9.1, 0.5, 0.4);
+    if (p <= 0.001) return;
+    const A = P(g, MAP_LBL.anchor[0], MAP_LBL.anchor[1]), m = L.measure(mctx(), MAP_LBL.str, MAP_LBL.o);
+    const x = A[0] + MAP_LBL.dx, y = A[1] + m.capH / 2;
+    ctx.save();
+    ctx.strokeStyle = L.rgba(C.cyan, 0.75); ctx.lineWidth = 1.2;
+    L.polyPartial(ctx, [[A[0] + 4, A[1]], [x - 12, A[1]]], clamp(p * 1.5)); ctx.stroke();
+    ctx.globalAlpha = clamp(p * 2); ctx.fillStyle = C.cyan;
+    ctx.beginPath(); ctx.arc(A[0], A[1], 2.8, 0, TAU); ctx.fill();
+    ctx.restore();
+    const pp = clamp(p * 1.25 - 0.25);
+    plate(ctx, x - 12, y - m.asc - 4, m.w + 24, m.asc + m.desc + 8, pp, false);
+    if (pp > 0.001) L.text(ctx, MAP_LBL.str, x, y, { ...MAP_LBL.o, color: C.text, p: pp, bg: C.card, id: 'a1-luzon' });
   }
   const TITLE = { x: 172, y: 232 };
   const ACR = [0, 1, 2, 3].map((i) => 7.0 + 0.5 * i); // acronym decode on quarter notes
@@ -621,12 +697,18 @@
     [['L', 0], ['everaging '], ['In', 1], ['SAR for '], ['O', 2], ['bservation']],
     [['and Modeling of Earthquake '], ['G', 3], ['enerators']],
   ];
+  /* plain-language mission under the expansion (caption role: sans 500, 26 px) */
+  const MISSION = [
+    [{ s: 'Mapping ground motion in Central Luzon', color: C.text }],
+    [{ s: 'from satellite radar · 2007–2011', color: C.textDim }],
+  ];
   function drawTitle(ctx, lt) {
     const pT = L.inout(lt, 6.0, 9.5, 0.55, 0.45);
     const pS = L.inout(lt, 6.5, 9.5, 0.6, 0.45);
     const pM = L.inout(lt, 7.0, 9.5, 0.5, 0.4);
+    const pX = L.inout(lt, 7.5, 9.6, 0.45, 0.45);
     if (pM > 0.001) {
-      L.text(ctx, 'UP NIGS · Earthquake Geodesy and Geology (EGG) Laboratory', TITLE.x + 2, TITLE.y - 106, { kind: 'mono', size: 19, weight: 400, color: C.textDim, p: pM, id: 'a1-lab' });
+      L.text(ctx, 'UPD NIGS · Earthquake Geodesy and Geology (EGG) Laboratory', TITLE.x + 2, TITLE.y - 106, { kind: 'mono', size: 18, weight: 400, color: C.textDim, p: pM, id: 'a1-lab' });
       ctx.save(); ctx.fillStyle = L.rgba(C.cyan, 0.7); ctx.fillRect(TITLE.x + 2, TITLE.y - 96, 56 * clamp(pM), 2); ctx.restore();
     }
     if (pT > 0.001) {
@@ -634,9 +716,11 @@
         TITLE.x, TITLE.y, { kind: 'display', size: 100, weight: 700, p: pT, tracking: -0.01, id: 'a1-title' });
     }
     if (pS > 0.001) {
-      const o = { kind: 'sans', size: 32, weight: 500 };
-      const lines = SUB.map((ln) => ln.map(([s, i]) => ({ s, color: i === undefined ? C.text : hi(lt, i) })));
-      L.textLines(ctx, lines, TITLE.x + 2, TITLE.y + 58, { ...o, lh: 42, p: pS, stagger: 0.25, id: 'a1-sub' });
+      const o = { kind: 'sans', size: 32, weight: 500 }, stag = 0.25;
+      SUB.forEach((ln, li) => { // one id per line (QA tracks each line's readable span)
+        const segs = ln.map(([s, i]) => ({ s, color: i === undefined ? C.text : hi(lt, i) }));
+        L.text(ctx, segs, TITLE.x + 2, TITLE.y + 58 + li * 42, { ...o, p: clamp(pS * (1 + stag) - stag * li), id: 'a1-sub' + li });
+      });
       const c = mctx();
       ctx.save();
       SUB.forEach((ln, li) => {
@@ -652,10 +736,25 @@
       });
       ctx.restore();
     }
+    if (pX > 0.001) {
+      MISSION.forEach((ln, i) => {
+        const lp = clamp(pX * 1.15 - 0.15 * i);
+        if (lp > 0.001) L.text(ctx, ln, TITLE.x + 2, TITLE.y + 156 + i * 36, { kind: 'sans', size: 26, weight: 500, p: lp, id: 'a1-mission' + i });
+      });
+    }
   }
 
   /* ================================================================ layout (single source of truth) */
-  const B = { fHold: 0.3, sizeHold: 40 };
+  const B = { fHold: 0.3, sizeHold: 52, sizeEnd: 62, tAim: 5.2 };
+  /** Where the TL rides on the beam (screen). During the lift it aims at the beam's settled position
+   *  (frozen at tAim), handing over smoothly to the live beam 4.6–5.2 — no chase of the zooming globe. */
+  function beamTarget(lt, pg, f, cam) {
+    const live = cam.toScreen(...beamPt(pg, f));
+    if (lt >= B.tAim) return live;
+    const pgA = passGeom(B.tAim, globeAt(B.tAim)), aim = cam.toScreen(...beamPt(pgA, f));
+    const w = L.smoother((lt - 4.6) / (B.tAim - 4.6));
+    return [lerp(aim[0], live[0], w), lerp(aim[1], live[1], w)];
+  }
   let memoT = NaN, memo = null;
   function layout(t) {
     if (t === memoT) return memo;
@@ -668,20 +767,18 @@
     if (lt >= 3.9) {
       const g = globeAt(lt), pg = passGeom(lt, g);
       Object.assign(out, { g, pg });
-      const kLift = L.sp(lt, 4.5, 1.0);                  // park → beam (arc above the receding type)
+      const kLift = L.sp(lt, 4.0, 1.4);                  // bar 3 downbeat: park → beam (arc over the receding type)
       const kGo = L.sp(lt, 9.0, 0.75);                   // final beats: down the beam to the ground
       const f = lerp(B.fHold + 0.025 * kick(t), 1, kGo);
-      const [sx, sy] = cam.toScreen(...beamPt(pg, f));
-      const qx = Math.max(tlA.x, sx) - 120, qy = Math.min(tlA.y, sy) - 260;
+      const [sx, sy] = beamTarget(lt, pg, f, cam);
+      const qx = Math.max(tlA.x, sx) - 120, qy = Math.min(tlA.y, sy) - 220;
       const u = clamp(kLift, 0, 1.02), iu = 1 - u;
       const px = iu * iu * tlA.x + 2 * iu * u * qx + u * u * sx;
       const py = iu * iu * tlA.y + 2 * iu * u * qy + u * u * sy;
-      const kEnd = L.sp(lt, 9.0, 0.75);
-      const size = lerp(lerp(tlA.size, B.sizeHold * z, clamp(kLift)), 112, kEnd);
-      let rot = pg.ang * clamp(kLift) * (1 - clamp(kEnd));
+      const size = lerp(lerp(tlA.size, B.sizeHold * z, clamp(kLift)), B.sizeEnd, kGo);
+      let rot = pg.ang * clamp(kLift) * (1 - clamp(kGo));
       if (lt >= DUR - 0.1) rot = 0;
-      const phEnd = Math.PI - (TAU * (PA.end - X0)) / LAM;
-      const phase = phEnd + TAU * 2.4 * Math.max(0, lt - 4.5) * L.sp(lt, 4.5, 0.6);
+      const phase = tlA.phase + TAU * 2.4 * Math.max(0, lt - 4.0) * L.sp(lt, 4.0, 0.6);
       out.tl = {
         x: px, y: py, size, rot, form: 'pulse', alpha: 1, phase,
         amp: lerp(tlA.amp, 1 + 0.1 * kick(t), clamp(kLift)),
@@ -699,8 +796,8 @@
   L.scene({
     id: 'act1', t0: 0, t1: DUR,
     init() {
-      typeLayout(); sweepS(2.5); sarTex(); earthPaths();
-      for (let i = 0; i < 3; i++) { puffSprite(i); shadowSprite(i); }
+      typeLayout(); sweepS(2.5); sarTex(); earthPaths(); earthBitmap();
+      deckTex();
       for (const t of [0, 3, 6, 9.99]) layout(t);
     },
     tl(env) {
@@ -721,16 +818,15 @@
         const beamA = (1 - L.sp(lt, 9.5, 0.3)) * (1 - tailF > 0.01 ? 1 : 0);
         const fpA = Math.min(L.sp(lt, 6.0, 0.4), 1 - L.sp(lt, 9.5, 0.35));
         const latA = footLat(STRIP.t0), latB = footLat(Math.min(lt, STRIP.tEnd));
-        const hole = lt > STRIP.t0 && latB - latA > 0.005 ? stripPoly(g, latA, latB) : null;
+        const sLL = lt > STRIP.t0 && latB - latA > 0.005 ? stripLL(latA, latB) : null;
+        const stripA = L.sp(lt, STRIP.t0, 0.3), deckA = L.sp(lt, 4.5, 0.8);
         if (rClip > 0.5) {
           const cxC = opening ? VIEW.ax : pg.F[0], cyC = opening ? VIEW.ay : pg.F[1];
           ctx.save();
           if (rClip < RF - 1) { ctx.beginPath(); ctx.arc(cxC, cyC, rClip, 0, TAU); ctx.clip(); }
           drawEarth(ctx, g);
-          ctx.save(); ctx.beginPath(); ctx.arc(g.cx, g.cy, g.r, 0, TAU); ctx.clip();
-          const puffs = cloudPuffs(lt, g);
-          ctx.save(); clipOut(ctx, hole); drawPuffs(ctx, puffs, true); ctx.restore();
-          drawStrip(ctx, lt, g, hole, L.sp(lt, STRIP.t0, 0.3));
+          ctx.save(); // ground layers sit around Luzon, far inside the limb: no disc clip needed
+          drawStrip(ctx, lt, g, sLL && stripPoly(g, sLL), stripA);
           drawFootprint(ctx, lt, g, pg, fpA, 'ground');
           // lower beam: under the cloud deck
           const fLo = Math.max(tailF, BEAM.fCloud);
@@ -738,7 +834,7 @@
             drawBeamBody(ctx, pg, lt, tailF, beamP, beamA, 'lower');
             drawBeamWaves(ctx, pg, lt, fLo, beamP, 0.45 * beamA);
           }
-          ctx.save(); clipOut(ctx, hole); drawPuffs(ctx, puffs, false); ctx.restore();
+          drawDeck(ctx, lt, g, pg, sLL && { pts: sLL, a: stripA }, fpA, deckA);
           // radar penetrates the cloud: wavefronts and ripples continue through the deck (additive, fainter)
           if (beamP > BEAM.fCloud && beamA > 0) drawBeamWaves(ctx, pg, lt, fLo, beamP, 0.55 * beamA);
           drawFootprint(ctx, lt, g, pg, fpA, 'cloud');
@@ -762,7 +858,8 @@
           L.drawALOS(ctx, { x: 0, y: 0, s: SAT_S, rot: pg.rot, p: satP, t });
           ctx.restore();
         }
-        drawTag(ctx, lt);
+        drawMapLabel(ctx, lt, g);
+        drawSatTag(ctx, lt, pg);
         drawTitle(ctx, lt);
       }
       /* ---------------- A · type, seam, callout (shrinks into central Luzon on the shared zoom curve) */

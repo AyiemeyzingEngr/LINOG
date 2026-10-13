@@ -1,37 +1,46 @@
 /* Act 5 · Geocoded deliverables & discovery (42–52 s) — HUD on.
  *
- * Beat plan (lt = t − 42 s · bars start at lt 0, 2, 4, 6, 8 · beat 0.5 s · 16th 0.125 s)
- *  0.00  BAR 22. The TL (pixel from act 4) docks into a radar-geometry grid (slant range × azimuth: mirrored
- *        north-down, skewed, rotated by the ascending heading, range spacing non-uniform), centred on screen.
- *        The cells are the TL's own 1/1200° neighbourhood (= Cabanatuan, inside the subsidence bowl), coloured
- *        by LOS velocity. Viewport frame, outline and cells construct outward from the TL (one ring per 16th).
- *  0.13  tag "radar geometry · range × azimuth"; range / azimuth axis arrows; compass needle points down.
- *  1.00  lookup table: dashed ghost of the geographic lattice wipes in; two corner pixels get curved leaders
- *        (routed outside the sheet) to their lat/lon cells; "lookup table · lat/lon of every radar pixel".
- *  2.00  BAR 23. Geocoding: ONE spring mirrors the whole sheet about its centre row (a clean card flip with
- *        light perspective; edge-on cells shade darker), a second spring (2.25) de-rotates, de-skews and evens
- *        the range spacing. The TL pixel rides its cell; the compass swings north-up; the stage slides left.
- *  2.75  Deliverables card constructs; 2.88 "16 GIS-ready products · per frame · 12 frames delivered";
- *        3.0 GeoTIFF / KMZ / PNG chips (with format glyphs) + demErr | demErr_ramp headers; one family per
- *        beat (LOS velocity · vertical · horizontal (E–W) · hillshade·KMZ), its 4 tiles on 16ths (3.0 → 4.9).
- *        Every tile is a velocity product; the two tiles of a pair differ by format (badge glyph).
- *  3.00  TL locks onto its 1/1200° lattice cell (ripple on the beat); "geographic grid · 1/1200° ≈ 90 m".
- *  4.00  BAR 24. V_vert = V_LOS / cos θ: the lattice rows "write" on 16ths and deepen LOS → vertical;
- *        27-check verification: segments fill on 16ths, tiles tick, check draws on at 5.5.
- *  6.00  BAR 25 · FINDINGS. Section A unmasks; the deliverables card morphs (height, emerald → crimson) into
- *        the result card. The camera swoops out (log-spring map zoom, 72 000 → 1 150 px/°): the lattice shrinks
- *        into the TL and turns out to be pixels of the 1/1200° velocity map (same values, same grid); the map
- *        unmasks radially; ~5 km crimson bowl around the TL marker; PFZ (schematic) trace slides in + label.
- *  6.50  city tag; 6.63 legend (vertical velocity scale · 5 km bar); 6.75 dashed outer bowl contour;
- *  6.75  result card: VERTICAL RATE / −4.4 to −4.7 / cm/yr vertical / ≈ 18–19 cm · 2007–2011 / caveat (16ths).
- *  7.50  cross-check rows: Path 448 · Path 449 (8ths).
- *  8.00  BAR 26. Swoop in to the bowl (log-spring 1 150 → 5 200 px/°, crisp 1/1200° pixels); PFZ leaves;
- *        CABN GNSS row; 8.25 groundwater footnote; 8.25 the TL morphs pixel → contour = the bowl's half-depth
- *        contour; 8.5 inner contours draw on (16ths).
- *  9.45  Everything except the TL unmasks; the map contracts radially into the contour.
- * 10.00  Pure 'contour' at A (620, 460), size ≈ 126 px, rot 0, alpha 1.
+ * Layout: from bar 23 the map stage (viewport) is on the RIGHT (x 740–1730) and the card column on the LEFT
+ * (x 168–708): the deliverables card of section A morphs in place into the result card of the findings. With
+ * the bowl centre-left of the stage there is open map to its NE, so the (schematic) Philippine Fault Zone
+ * ~30 km away stays in frame at a scale where the 5 km bowl contour is ≥ 60 px (hand-off size). The TL only
+ * ever moves right/down from the act-4 hand-off (no ping-pong).
  *
- * All layout lives in pure helpers (nodesAt, ppdAt, tlWorld) used by tl() and draw().
+ * Beat plan (lt = t − 42 s · bars start at lt 0, 2, 4, 6, 8 · beat 0.5 s · 16th 0.125 s)
+ *  0.00  BAR 22. The TL (the act-4 pixel: coherent, near-zero plains pixel near Tarlac City, cell NW corner
+ *        120.620°E 15.470°N) holds its hand-off size for a beat while it glides into its radar-geometry cell
+ *        (slant range × azimuth: mirrored north-down, skewed, rotated by the ascending heading, non-uniform
+ *        range spacing). From 0.25 the cells — the pixel's own 1/1200° neighbourhood, coloured by LOS velocity
+ *        (slate/blue, near zero) — construct outward from the TL, one ring per 16th.
+ *  0.13  tag "radar geometry · range × azimuth"; 0.25 range / azimuth arrows; compass needle points down.
+ *  1.00  lookup table: dashed ghost of the geographic lattice wipes in; two corner pixels get curved leaders
+ *        to their lat/lon cells; footnote "lookup table · lat/lon of every radar pixel".
+ *  2.00  BAR 23. Geocoding: one spring mirrors the sheet about its centre row (card flip, light perspective),
+ *        a second (2.25) de-rotates, de-skews and evens the range spacing. TL rides its cell; compass swings N-up.
+ *        The stage (centred during bar 22) slides right to make room for the card column.
+ *  2.75  Deliverables card constructs (left); 2.88 "16" (display ≈ 72 px) "GIS-ready products · per frame";
+ *        3.0 GeoTIFF / KMZ / PNG chips + demErr | demErr_ramp headers; one family every three 16ths (3.0 →
+ *        4.125), its 4 tiles on 32nds; 4.25 "(layout illustrative)" under the tile grid (the per-family split
+ *        of the 16 files is not published).
+ *  3.00  TL locks onto its 1/1200° cell (ripple on the beat); "geographic grid · 1/1200° ≈ 90 m"; deco ticks
+ *        120.620°E · 120.625°E · 15.470°N (6 cells = 0.005°).
+ *  4.00  BAR 24. V_vert = V_LOS / cos θ: lattice rows "write" on 16ths; 27-check verification fills on 16ths.
+ *  6.00  BAR 25 · FINDINGS. Section A unmasks; the card shell morphs (height, emerald → crimson). SWOOP:
+ *        6.0 zoom out of the lattice (the cells ARE pixels of the 1/1200° velocity map) → 6.1 fly east ~37 km
+ *        from the Tarlac pixel to Cabanatuan (camera tracks the TL) → 6.35 zoom in on the bowl (settled ≈ 7.0).
+ *        6.2 legend (vertical velocity · cm/yr · schematic) + 5 km bar with the map; 6.2 PFZ trace (gold dashed)
+ *        draws on, 6.3 its label; 6.5 card header; 6.6 city tag.
+ *  7.00  BAR 25 beat 3 (49.0 s): the TL morphs pixel → contour (bowl half-depth contour, ~5 km across) + outer
+ *        dashed contour; hero "−4.4 to −4.7" (display 88, the largest number in the film); inner contours 7.25.
+ *  7.50  "cm/yr vertical*" + "≈ 18–19 cm · 2007–2011".
+ *  7.75  one block landing on the 50.0 s downbeat: Path 448 · Path 449 · CABN GNSS (independent) + caveats
+ *        ("consistent with groundwater-related subsidence (under study)", "rates relative to nearby stable
+ *        ground", "* assumes purely vertical motion"), readable ≈ 1.9 s. 7.95 the PFZ fades to 30 % (the bowl
+ *        owns the close-up) but stays visible beside the cause caveat. Slow 3 % push through the hold.
+ *  9.50  map contracts radially into the contour; legend / tags unmask; 9.66 the result card wipes away top→down.
+ * 10.00  Pure 'contour' at B (900, 600), size ≈ 66 px on screen, rot 0, alpha 1.
+ *
+ * All layout lives in pure helpers (nodesAt, ppdAt, viewAt, tlWorld) used by tl() and draw().
  */
 (function () {
   'use strict';
@@ -39,20 +48,23 @@
   const clamp = L.clamp, lerp = L.lerp, sp = L.sp;
 
   const T0 = 42, DUR = 10;
-  const A = [620, 460];                       // TL anchor (world): its lattice cell = Cabanatuan City = bowl centre
-  const FOCUS = [620, 460];                   // camera push pivots on the TL so the hand-off point stays put
-  const NX = 10, NY = 8, IC = 4, JC = 2;      // lattice cells; the TL's cell
   const FR = 1200;                            // 1/1200° geocoded grid
+  const TPW = 120.620, TPN = 15.470;          // NW corner of the act-4 hand-off pixel's 1/1200° cell
+  const TPC = { lon: TPW + 0.5 / FR, lat: TPN - 0.5 / FR };
+  const CAB = G.places.cabanatuan;
+  const A = [985, 460];                       // section A: TL = the hand-off pixel's lattice cell (world)
+  const B = [900, 600];                       // findings: TL = the Cabanatuan bowl contour (world) = hand-off point
+  const FOCUS = B;                            // camera push pivots on the final TL position
+  const NX = 10, NY = 8, IC = 1, JC = 2;      // lattice cells; the TL's cell (column 1, row 2 from the north)
   const P_LAT = 72000;                        // px per degree at which a 1/1200° cell is 60 px tall
   const CH = P_LAT / FR, CW = CH * G.K;
-  const P_WIDE = 1150, P_FINE = 5200;         // map scales for the wide frame and the bowl
+  const P_MID = 1100, P_END = 2700;           // regional view during the fly-over → bowl close-up
   const BOWL_KM = 2.5, KM_DEG = 111.32;       // TL contour unit (half-depth radius of the ~5 km bowl)
-  const PH_C = 9.6, SEED = 7;                 // contour phase/seed (field + TL share them)
+  const PH_C = 8.4, SEED = 7;                 // contour phase/seed (field + TL share them); 8.4 = 0.6 · steps(7.0)
   const PHI = -0.2;                           // radar grid rotation (ascending heading, exaggerated)
   const COS_T = Math.cos((38 * Math.PI) / 180);
-  const VP = { x: 150, y: 172, w: 968, h: 740 };   // viewport (world)
-  const PX = 1162, PW = 564;                        // right-hand panel column
-  const CAB = G.places.cabanatuan;
+  const VP = { x: 740, y: 172, w: 990, h: 740 };   // map stage (world)
+  const PX = 168, PW = 540;                         // left card column
   const EM = C.emerald, CR = C.crimson;
   const INK_EM = L.ink(EM, C.card), INK_CR = L.ink(CR, C.card);
   const INK_CY = L.ink(C.cyan, C.card), INK_GO = L.ink(C.gold, C.card);
@@ -60,13 +72,26 @@
 
   /* ------------------------------------------------------------------ pure layout */
   const camAt = (lt) => L.cam(T0 + Math.min(lt, DUR - 1e-6), FOCUS); // never the next act's camera
-  const lnLAT = Math.log(P_LAT), lnWIDE = Math.log(P_WIDE), lnFINE = Math.log(P_FINE);
+  const lnLAT = Math.log(P_LAT), lnMID = Math.log(P_MID), lnEND = Math.log(P_END);
+  // FINDINGS swoop: zoom out of the lattice (6.0) → fly east to Cabanatuan (6.1) → zoom in on the bowl (6.35);
+  // then a slow 3 % push through the hold (continuous drift) so the close-up never freezes
+  const outK = (lt) => sp(lt, 6.0, 0.5);
+  const panK = (lt) => (lt < 6 ? 0 : sp(lt, 6.2, 0.6));
+  const inK = (lt) => sp(lt, 6.45, 0.6);
   function ppdAt(lt) {
     if (lt < 6) return P_LAT;
-    return Math.exp(lnLAT + (lnWIDE - lnLAT) * sp(lt, 6.0, 1.0) + (lnFINE - lnWIDE) * sp(lt, 8.0, 1.2));
+    const drift = 0.03 * (1 - L.ease.inOutSine(clamp((lt - 7) / 3)));
+    return Math.exp(lnLAT + (lnMID - lnLAT) * outK(lt) + (lnEND - drift - lnMID) * inK(lt));
+  }
+  /** Where the camera's geographic focus sits (world). The TL rides it: Tarlac pixel → Cabanatuan. */
+  const focusWorld = (lt) => { const u = panK(lt); return [lerp(A[0], B[0], u), lerp(A[1], B[1], u)]; };
+  function viewAt(lt) {
+    const u = panK(lt), W = focusWorld(lt);
+    return G.view({ lon: lerp(TPC.lon, CAB.lon, u), lat: lerp(TPC.lat, CAB.lat, u), ppd: ppdAt(lt), cx: W[0], cy: W[1] });
   }
   const NN = (NX + 1) * (NY + 1);
   const ix = (i, j) => (j * (NX + 1) + i) * 2;
+  const nodeLon = (i) => TPW + (i - IC) / FR, nodeLat = (j) => TPN - (j - JC) / FR;
   const HX = (NX / 2) * CW, HY = (NY / 2) * CH;
   const LC = [A[0] + (NX / 2 - IC - 0.5) * CW, A[1] + (NY / 2 - JC - 0.5) * CH]; // lattice centre (world)
   // GEO: lattice nodes (world). UND: lattice nodes relative to LC. DIS: the radar-distorted sheet relative to LC,
@@ -85,9 +110,9 @@
   const flipK = (lt) => sp(lt, 2.0, 0.7);
   const skewK = (lt) => sp(lt, 2.25, 0.9);
   const F_PERSP = 1500;
-  // bar 22: the stage sits centred; at bar 23 it slides left (spring) to make room for the deliverables panel
-  const SLIDE = 326;
-  const offX = (lt) => (lt < 6 ? SLIDE * (1 - sp(lt, 2.0, 0.75)) : 0);
+  // bar 22: the stage sits centred on screen; at bar 23 it slides right (spring) to make room for the card column
+  const SLIDE = 275;
+  const offX = (lt) => (lt < 6 ? -SLIDE * (1 - sp(lt, 2.0, 0.75)) : 0);
   function warpNodes(k1, k2, ox, out) {
     const m = -Math.cos(Math.PI * k1), s = Math.sin(Math.PI * k1);  // m: −1 mirrored (radar) → +1 upright
     const phi = PHI * (1 - k2), cr = Math.cos(phi), sr = Math.sin(phi);
@@ -100,16 +125,18 @@
     }
     return out;
   }
+  /** Lattice nodes (world). From bar 25 they are the 1/1200° pixel corners of the velocity map under the swoop. */
   function nodesAt(lt, out) {
     if (lt < 6) return warpNodes(flipK(lt), skewK(lt), offX(lt), out);
-    const zf = ppdAt(lt) / P_LAT;
-    for (let n = 0; n < NN * 2; n += 2) { out[n] = A[0] + (GEO[n] - A[0]) * zf; out[n + 1] = A[1] + (GEO[n + 1] - A[1]) * zf; }
+    const v = viewAt(lt);
+    for (let j = 0; j <= NY; j++) for (let i = 0; i <= NX; i++) { const n = ix(i, j); out[n] = v.x(nodeLon(i)); out[n + 1] = v.y(nodeLat(j)); }
     return out;
   }
   const TMP = new Float64Array(NN * 2);
-  const S_LAT = (CW / 1.24) * 1.08, S_MARK = 26;
-  const phaseAt = (lt) => (lt < 8 ? 0.6 * L.steps(lt, 0.5, 0.3) : PH_C);
-  const morphK = (lt) => sp(lt, 8.25, 1.0);
+  const S_LAT = (CW / 1.24) * 1.08, S_MARK = 28;
+  const phaseAt = (lt) => (lt < 7 ? 0.6 * L.steps(lt, 0.5, 0.3) : PH_C);
+  const morphK = (lt) => sp(lt, 7.0, 0.9);
+  const bowlPx = (ppd) => (BOWL_KM * ppd) / KM_DEG;
   /** TL in WORLD space. */
   function tlWorld(lt) {
     const phase = phaseAt(lt);
@@ -120,17 +147,15 @@
       const e = (Math.hypot(P[b] - P[a], P[b + 1] - P[a + 1]) + Math.hypot(P[c] - P[d], P[c + 1] - P[d + 1])) / 2;
       return { x, y, size: (e / 1.24) * 1.08, rot: PHI * (1 - skewK(lt)), form: 'pixel', phase };
     }
-    let size = lerp(S_LAT, S_MARK, sp(lt, 6.0, 0.9));
-    const bowl = (BOWL_KM * ppdAt(lt)) / KM_DEG;
-    const k = morphK(lt);
-    size = lerp(size, bowl, k);
-    const st = { x: A[0], y: A[1], size, rot: 0, form: 'pixel', to: 'contour', k, phase, seed: SEED };
+    const W = focusWorld(lt), k = morphK(lt);
+    const size = lerp(lerp(S_LAT, S_MARK, sp(lt, 6.0, 0.45)), bowlPx(ppdAt(lt)), k);
+    const st = { x: W[0], y: W[1], size, rot: 0, form: 'pixel', to: 'contour', k, phase, seed: SEED };
     if (k <= 0) { st.to = null; st.k = 0; }
     if (k >= 0.999) { st.form = 'contour'; st.to = null; st.k = 0; }
     return st;
   }
 
-  /* ------------------------------------------------------------------ the synthetic bowl (shares the TL contour shape) */
+  /* ------------------------------------------------------------------ the synthetic velocity field */
   function contourR(th) { // identical to core formPoint('contour') with seed SEED, phase PH_C
     let r = 1;
     for (let k = 2; k <= 5; k++) r += (0.05 + 0.06 * L.hash1(k, SEED)) * Math.sin(k * th + TAU * L.hash1(k + 9, SEED) + 0.15 * PH_C);
@@ -143,16 +168,17 @@
     const th = Math.atan2(ys, xs);
     return Math.hypot(xs, ys) / R_LUT[Math.round(((th + Math.PI) / TAU) * 1024)];
   }
-  function velAt(lon, lat) { // vertical velocity, cm/yr (schematic)
+  /** Vertical velocity, cm/yr (schematic): the Cabanatuan bowl on near-zero plains (slightly positive = slate/blue). */
+  function velAt(lon, lat) {
     const X = ((lon - CAB.lon) * KM_DEG * G.K) / BOWL_KM, Y = ((CAB.lat - lat) * KM_DEG) / BOWL_KM;
     const r = rhoOf(X, Y);
     const bowl = -4.6 * Math.exp(-Math.LN2 * r * r);
-    const n = (L.fbm(lon * 24, lat * 24, 3, 41) - 0.5) * 0.55 + (L.fbm(lon * 4, lat * 4, 2, 43) - 0.5) * 0.45 + 0.08;
+    const n = (L.fbm(lon * 24, lat * 24, 3, 41) - 0.5) * 0.5 + (L.fbm(lon * 4, lat * 4, 2, 43) - 0.5) * 0.4 + 0.5;
     return bowl + n;
   }
-  /** One 1/1200° pixel's vertical velocity (fine-raster pixel index i, j) — shared by the map and the lattice. */
-  const cellVel = (i, j, lon, lat) => velAt(lon, lat) + (L.fbm(i * 0.35, j * 0.35, 2, 61) - 0.5) * 1.1 + (L.hash2(i, j, 3) - 0.5) * 0.4;
-  const FP = [448, 449].map((p) => G.footprint(p, 14.51, 16.15)); // ALOS-1 ascending paths, frames F0280–F0300
+  /** One 1/1200° pixel's vertical velocity (raster pixel index i, j) — shared by the map and the lattice. */
+  const cellVel = (i, j, lon, lat) => velAt(lon, lat) + (L.fbm(i * 0.35, j * 0.35, 2, 61) - 0.5) * 1.5 + (L.hash2(i, j, 3) - 0.5) * 0.45;
+  const FP = [448, 449].map((p) => G.footprint(p, 14.51, 16.15)); // ALOS-1 ascending paths (schematic footprints)
   function inQuad(q, lon, lat) {
     let s = 0;
     for (let i = 0; i < 4; i++) {
@@ -162,18 +188,19 @@
     }
     return true;
   }
-  // 1/1200° (≈ 90 m) velocity map around Cabanatuan, pixel (FI_I0, FI_J0) centred on the city — so the 90 m
-  // lattice of section A is literally a 10 × 8 window of this raster. Covers the whole wide frame.
-  const FI_W = 1152, FI_H = 852, FI_I0 = 540, FI_J0 = 320;
-  const FI = { lon0: CAB.lon - (FI_I0 + 0.5) / FR, lat1: CAB.lat + (FI_J0 + 0.5) / FR };
+  // 1/1200° (≈ 90 m) velocity map from Tarlac to the Sierra Madre foothills, aligned so that pixel (TP_I, TP_J) IS
+  // the hand-off pixel: the section-A lattice is literally a 10 × 8 window of this raster.
+  const TP_I = 264, TP_J = 492, FI_W = 1512, FI_H = 936;
+  const FI = { lon0: TPW - TP_I / FR, lat1: TPN + TP_J / FR };
   FI.lon1 = FI.lon0 + FI_W / FR; FI.lat0 = FI.lat1 - FI_H / FR;
+  const CB_I = (CAB.lon - FI.lon0) * FR, CB_J = (FI.lat1 - CAB.lat) * FR;
   let RFI = null, THUMBS = null, CELLS = null;
 
   function velIdx(v) { return Math.max(0, Math.min(255, Math.round(((v / 5 + 1) / 2) * 255))) * 3; }
   function buildRasters() {
     const lut = L.LUT.vel;
     // schematic DEM at 1/600° (1-node margin) → hillshade, bilinear onto the 1/1200° pixels
-    const GR = 600, gnx = FI_W / 2 + 3, gny = FI_H / 2 + 3;
+    const GR = 600, gnx = FI_W / 2 + 3, gny = Math.ceil(FI_H / 2) + 3;
     const glon0 = FI.lon0 - 1 / GR, glat1 = FI.lat1 + 1 / GR;
     const g = G.grid(glon0, glon0 + (gnx - 1) / GR, glat1 - (gny - 1) / GR, glat1, gnx, gny);
     const SH = new Float32Array(gnx * gny);
@@ -192,11 +219,14 @@
         const land = G.land(lon, lat);
         if (land <= 0) { d[o + 3] = 0; continue; }
         const h = bil(g.h, gx, gy), sh = bil(SH, gx, gy) - 0.707;
-        const core = (i - FI_I0) * (i - FI_I0) + (j - FI_J0) * (j - FI_J0) < 1600; // bowl core (incl. the lattice): no dropouts
-        // coherence mask (schematic): decorrelated uplands with a dithered (feathered) height threshold,
-        // sparse low-coherence dropouts; water is not land
+        // no dropouts in the bowl core or in the hand-off pixel's lattice window
+        const core = (i - CB_I) * (i - CB_I) + (j - CB_J) * (j - CB_J) < 1600 ||
+          (Math.abs(i - TP_I) < 14 && Math.abs(j - TP_J) < 12);
+        // coherence mask (schematic): decorrelated uplands with a patchy (low-frequency + light dither) height
+        // threshold, sparse low-coherence dropouts; water is not land
+        const thr = 140 + 280 * L.fbm(lon * 30, lat * 30, 3, 7) + 60 * (L.hash2(i, j, 5) - 0.5);
         const ok = land > 0.5 && (inQuad(FP[0], lon, lat) || inQuad(FP[1], lon, lat)) &&
-          h <= 150 + 300 * L.hash2(i, j, 5) && (core || L.hash2(i, j, 9) >= 0.006);
+          (core || (h <= thr && L.hash2(i, j, 9) >= 0.006));
         if (ok) { // velocity draped on a faint hillshade (the "hillshade velocity map" look)
           const k = velIdx(cellVel(i, j, lon, lat)), f = clamp(1 + 0.5 * sh, 0.84, 1.1);
           d[o] = lut[k] * f; d[o + 1] = lut[k + 1] * f; d[o + 2] = lut[k + 2] * f; d[o + 3] = 255;
@@ -209,17 +239,17 @@
     x.putImageData(im, 0, 0);
     RFI = { c: cv };
   }
-  // lattice cells = the TL's own 1/1200° neighbourhood of the velocity map: LOS = vertical · cos θ, vertical
+  // lattice cells = the hand-off pixel's own 1/1200° neighbourhood of the velocity map: LOS = vertical · cos θ
   function buildCells() {
     CELLS = [];
     for (let j = 0; j < NY; j++) for (let i = 0; i < NX; i++) {
-      const pi = FI_I0 + i - IC, pj = FI_J0 + j - JC;
+      const pi = TP_I + i - IC, pj = TP_J + j - JC;
       const v = cellVel(pi, pj, FI.lon0 + (pi + 0.5) / FR, FI.lat1 - (pj + 0.5) / FR);
       CELLS.push({ v, los: L.velRGB(v * COS_T, 5), ver: L.velRGB(v, 5), ph: L.hash2(i, j, 77) * TAU });
     }
   }
-  // 16 deliverable thumbnails: family f (LOS / vertical / horizontal / hillshade·KMZ) × correction × format.
-  // Every tile is a velocity product; the two tiles of a pair differ by format (GeoTIFF / hillshade PNG / KMZ).
+  // 16 deliverable thumbnails (layout illustrative): family f × correction × format. Every tile is a velocity
+  // product of a frame containing Cabanatuan: near-zero (slate) plains, only the bowl strongly coloured.
   const TW = 64, TH = 50, TSW = 80, TSH = 62;
   const FMT = (f, c) => (f < 3 ? (c & 1 ? 'png' : 'tif') : c & 1 ? 'kmz' : 'png');
   function buildThumbs() {
@@ -246,8 +276,8 @@
           if (bg) { d[o] = bg[0]; d[o + 1] = bg[1]; d[o + 2] = bg[2]; d[o + 3] = 255; } else d[o + 3] = 0;
           continue;
         }
-        let val = (L.fbm(u * 3.5, v * 3.5, 3, 11) - 0.5) * 3 - 4.2 * Math.exp(-((u - 0.47) ** 2 + (v - 0.58) ** 2) / 0.006);
-        if (corr === 0) val += 3.4 * (u - 0.5) + 1.6 * (v - 0.5); // demErr keeps a residual orbital ramp; demErr_ramp removes it
+        let val = (L.fbm(u * 3.5, v * 3.5, 3, 11) - 0.5) * 1.0 + 0.15 - 4.2 * Math.exp(-((u - 0.47) ** 2 + (v - 0.58) ** 2) / 0.006);
+        if (corr === 0) val += 1.6 * (u - 0.5) + 0.75 * (v - 0.5); // demErr keeps a residual orbital ramp; demErr_ramp removes it
         let rgb = L.velRGB(val * scale[f], 5);
         if (fmt !== 'tif') { // hillshade drape
           const h = L.fbm(u * 5 + f, v * 5, 4, 3);
@@ -270,6 +300,7 @@
     if (p <= 0) return;
     const k = L.ease.outCubic(clamp(p * 1.25));
     ctx.save();
+    if (o.alpha !== undefined) ctx.globalAlpha *= o.alpha;
     ctx.beginPath(); ctx.rect(x - 2, y - 2, w + 4, (h + 4) * k); ctx.clip();
     L.roundRect(ctx, x, y, w, h, o.r === undefined ? 7 : o.r);
     ctx.fillStyle = L.rgba(C.card, o.a === undefined ? 0.94 : o.a); ctx.fill();
@@ -287,16 +318,6 @@
     plate(ctx, x0 - px, top, m.w + px * 2, h, o.p, { a: o.plateA });
     L.text(ctx, str, x, y, { ...o, p: clamp(o.p * 1.15 - 0.1), bg: C.card });
     return { x: x0 - px, y: top, w: m.w + px * 2, h };
-  }
-  /** Two-line right-aligned label on one backplate. */
-  function tag2(ctx, lines, xr, y, o) {
-    const lh = o.lh || 26, px = 12, py = 9;
-    const w = Math.max(...lines.map((s) => L.measure(ctx, s, o).w)), m = L.measure(ctx, lines[0], o);
-    const capH = m.capH || m.asc * 0.72;
-    const top = y - capH - py, h = capH + py * 2 + lh * (lines.length - 1) + 4;
-    plate(ctx, xr - w - px, top, w + px * 2, h, o.p);
-    lines.forEach((s, i) => L.text(ctx, s, xr, y + i * lh, { ...o, align: 'right', p: clamp(o.p * 1.25 - 0.1 - 0.1 * i), bg: C.card, id: o.id + '-' + i }));
-    return { x: xr - w - px, y: top, w: w + px * 2, h };
   }
   function arrowHead(ctx, x1, y1, a, head) {
     ctx.beginPath(); ctx.moveTo(x1, y1);
@@ -339,6 +360,8 @@
     return pts;
   }
   const VP_PATH = rrPath(VP.x, VP.y, VP.w, VP.h, 14);
+  /** Clip to a horizontal band of a column. */
+  function clipTo(ctx, x, w, top, bottom) { ctx.beginPath(); ctx.rect(x - 24, top, w + 48, Math.max(0, bottom - top)); ctx.clip(); }
 
   /* ------------------------------------------------------------------ viewport frame */
   function drawFrame(ctx, lt) {
@@ -365,7 +388,7 @@
 
   /* ------------------------------------------------------------------ section A: radar grid → geographic lattice */
   function drawGrid(ctx, lt, P) {
-    if (lt > 7.4) return;
+    if (lt > 6.6) return;
     const zf = ppdAt(lt) / P_LAT;
     const fade = clamp((CH * zf - 2) / 14);              // tiles fade as the swoop shrinks them into the TL
     if (fade <= 0) return;
@@ -374,7 +397,7 @@
     ctx.save();
     for (let j = 0; j < NY; j++) for (let i = 0; i < NX; i++) {
       const ring = Math.max(Math.abs(i - IC), Math.abs(j - JC));
-      const rc = sp(lt, 0.05 + 0.125 * ring, 0.45);
+      const rc = sp(lt, 0.25 + 0.125 * ring, 0.45);
       if (rc <= 0.001) continue;
       const a = ix(i, j), b = ix(i + 1, j), c = ix(i + 1, j + 1), d = ix(i, j + 1);
       const cx = (P[a] + P[b] + P[c] + P[d]) / 4, cy = (P[a + 1] + P[b + 1] + P[c + 1] + P[d + 1]) / 4;
@@ -400,6 +423,8 @@
       ctx.lineTo(cx + (P[c] - cx) * k, cy + (P[c + 1] - cy) * k);
       ctx.lineTo(cx + (P[d] - cx) * k, cy + (P[d + 1] - cy) * k);
       ctx.closePath(); ctx.fill();
+      // hairline cell edge: the near-zero (slate) cells still read as a lattice on the dark stage
+      ctx.strokeStyle = 'rgba(0,229,255,0.16)'; ctx.lineWidth = 1; ctx.stroke();
     }
     // outer hairline (blue in radar geometry → emerald on the lattice)
     const wk = clamp(skewK(lt));
@@ -411,9 +436,9 @@
     outline.push(outline[0]);
     ctx.globalAlpha = fade;
     ctx.strokeStyle = L.css(L.mix(C.blue, EM, wk), 0.85); ctx.lineWidth = 1.6;
-    strokePartial(ctx, outline, clamp(sp(lt, 0.1, 1.0)));
+    strokePartial(ctx, outline, clamp(sp(lt, 0.25, 1.0)));
     // TL cell lock highlight + ripples (beat-locked) after landing
-    const lock = sp(lt, 3.0, 0.4) * (1 - sp(lt, 6.0, 0.4));
+    const lock = sp(lt, 3.0, 0.4) * (1 - sp(lt, 6.0, 0.3));
     if (lock > 0.01) {
       const a = ix(IC, JC), c = ix(IC + 1, JC + 1);
       const x0 = P[a], y0 = P[a + 1], x1 = P[c], y1 = P[c + 1];
@@ -461,7 +486,7 @@
     ctx.setLineDash([]);
     ctx.restore();
     // two corner pixels → their lat/lon cells (the ascending sheet is mirrored: bottom-left ↔ top-left); the
-    // leaders run along the outer columns, far from the TL cell, and never cross each other
+    // leaders run along the outer columns, clear of the TL cell (column 1), and never cross each other
     const pl = clamp(L.inout(lt, 1.0, 2.3, 0.5, 0.3));
     if (pl > 0) {
       const ink = L.ink(EM);
@@ -491,6 +516,8 @@
     }
     ctx.restore();
   }
+  // deco ticks on the geographic lattice: every 6 cells = 0.005° (the hand-off pixel's corner lines)
+  const TICKS_LON = [[IC, '120.620°E'], [IC + 6, '120.625°E']], TICK_LAT = [JC, '15.470°N'];
   function drawAxes(ctx, lt, P) {
     const pr = L.inout(lt, 0.25, 2.3, 0.5, 0.35), pg = L.inout(lt, 3.0, 6.2, 0.5, 0.3);
     if (pr <= 0 && pg <= 0) return;
@@ -513,6 +540,14 @@
     const s1 = shorten(e1[0], e1[1], e1[2], e1[3], clamp(vis)), s2 = shorten(e2[0], e2[1], e2[2], e2[3], clamp(vis));
     arrow(ctx, s1[0], s1[1], s1[2], s1[3], 9);
     arrow(ctx, s2[0], s2[1], s2[2], s2[3], 9);
+    // geographic tick marks at the 0.005° lines (deco), with mono-16 coordinates
+    if (pg > 0) {
+      ctx.globalAlpha = clamp(pg); ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      for (const [i] of TICKS_LON) { const x = P[ix(i, NY)], y = P[ix(i, NY) + 1]; ctx.moveTo(x, y + 4); ctx.lineTo(x, y + 30 * clamp(pg)); }
+      { const x = P[ix(0, TICK_LAT[0])], y = P[ix(0, TICK_LAT[0]) + 1]; ctx.moveTo(x - 4, y); ctx.lineTo(x - 30 * clamp(pg), y); }
+      ctx.stroke();
+    }
     ctx.restore();
     // axis labels (mono 18, on the dark viewport)
     const lab = (s, x, y, p, id, o = {}) => L.text(ctx, s, x, y, { kind: 'mono', size: 18, weight: 600, color: L.ink(col), p, baseline: 'middle', id, ...o });
@@ -523,6 +558,9 @@
     if (pg > 0) {
       lab('lon', s1[2] + e1[4] * 18, s1[3] + e1[5] * 18, pg, 'a5-ax-lon', { align: 'center' });
       lab('lat', s2[2] + e2[4] * 14, s2[3] + e2[5] * 14 - 10, pg, 'a5-ax-lat', { align: 'center' });
+      const tk = { kind: 'mono', size: 16, weight: 500, color: L.ink(EM), baseline: 'middle', role: 'deco' };
+      for (const [i, s] of TICKS_LON) L.text(ctx, s, P[ix(i, NY)], P[ix(i, NY) + 1] + 46, { ...tk, align: 'center', p: pg });
+      L.text(ctx, TICK_LAT[1], P[ix(0, TICK_LAT[0])] - 40, P[ix(0, TICK_LAT[0]) + 1], { ...tk, align: 'right', p: pg });
     }
   }
   function drawCompass(ctx, lt) {
@@ -567,28 +605,42 @@
     parts.forEach(([s, o, dy], i) => { L.text(ctx, s, cx, y + dy, { ...o, p: clamp(p * 1.15 - 0.1), bg: C.card, scanColor: EM, id: 'a5-fx' + i }); cx += ws[i]; });
   }
 
-  /* ------------------------------------------------------------------ section A: deliverables panel (shell morphs into the result card) */
-  const PY = 196, PH = 612;
-  const CARD = { x: PX, y: 236, w: PW, h: 490 };
+  /* ------------------------------------------------------------------ the card column: deliverables → result */
+  const PY = 196, PH = 630;
+  const CARD = { x: PX, y: 200, w: PW, h: 590 };
   const ROWS = ['LOS velocity', 'vertical', 'horizontal (E–W)', 'hillshade · KMZ'];
   const TX0 = PX + PW - 28 - (4 * TW + 3 * 6 + 12);
   const tileX = (c) => TX0 + c * (TW + 6) + (c >= 2 ? 12 : 0);
-  const ROW_Y0 = PY + 252, ROW_DY = 66;
-  const tileAt = (i) => 3.0 + 0.125 * i;                         // 16 tiles on 16ths, one family per beat
+  const ROW_Y0 = PY + 236, ROW_DY = 66;
+  const rowAt = (r) => 3.0 + 0.375 * r;                          // one family every three 16ths (all four hold ≥ 1.8 s)
+  const tileAt = (i) => rowAt(i >> 2) + 0.0625 * (i & 3);         // its 4 tiles on 32nds
   const tickAt = (i) => Math.max(4.0 + 0.0625 * i, tileAt(i) + 0.375);
-  /** The morphing card shell: deliverables (emerald, tall) → result (crimson). `bottom` = its visible lower edge. */
+  // the result card leaves with a top → down clip-wipe (spring) in the last beat, so the bottom caveats hold longest
+  const WIPE0 = 9.66;
+  const wipeK = (lt) => sp(lt, WIPE0, 0.3);
+  /** The morphing card shell: deliverables (emerald, tall) → result (crimson). */
   function shellGeom(lt) {
-    const p = L.inout(lt, 2.75, DUR, 0.6, 0.45), km = sp(lt, 6.0, 0.8);
+    const pin = sp(lt, 2.75, 0.6), km = sp(lt, 6.0, 0.8);
     const y = lerp(PY, CARD.y, km), h = lerp(PH, CARD.h, km);
-    return { p, km, y, h, bottom: p >= 1 ? y + h + 2 : y - 2 + (h + 4) * L.ease.outCubic(clamp(p * 1.15)) };
+    const bottom = pin >= 1 ? y + h + 2 : y - 2 + (h + 4) * L.ease.outCubic(clamp(pin * 1.15));
+    const top = y - 2 + (h + 4) * clamp(wipeK(lt));
+    return { pin, km, y, h, top, bottom };
   }
   function drawShell(ctx, lt) {
     const g = shellGeom(lt);
-    if (g.p <= 0) return;
-    L.card(ctx, PX, g.y, PW, g.h, { p: g.p, accent: g.km > 0 ? L.mix(EM, CR, clamp(g.km)) : EM });
+    if (g.pin <= 0 || g.top >= g.bottom - 1) return;
+    ctx.save();
+    if (lt > WIPE0) { ctx.beginPath(); ctx.rect(PX - 4, g.top, PW + 8, g.y + g.h + 6 - g.top); ctx.clip(); }
+    L.card(ctx, PX, g.y, PW, g.h, { p: g.pin, accent: g.km > 0 ? L.mix(EM, CR, clamp(g.km)) : EM });
+    ctx.restore();
+    const w = wipeK(lt);
+    if (w > 0 && w < 0.995) { // scan bar riding the wipe edge
+      ctx.save(); ctx.globalCompositeOperation = 'lighter';
+      ctx.fillStyle = L.rgba(CR, 0.8 * Math.sin(Math.PI * clamp(w))); ctx.fillRect(PX - 8, g.top - 1, PW + 16, 2);
+      ctx.fillStyle = L.rgba(CR, 0.2 * Math.sin(Math.PI * clamp(w))); ctx.fillRect(PX - 8, g.top - 5, PW + 16, 10);
+      ctx.restore();
+    }
   }
-  /** Clip card content to the shell's visible area, so content never hangs outside a collapsing/morphing card. */
-  function clipTo(ctx, x, w, top, bottom) { ctx.beginPath(); ctx.rect(x - 24, top, w + 48, Math.max(0, bottom - top)); ctx.clip(); }
   function drawPanel(ctx, lt) {
     if (lt < 2.8 || lt > 6.45) return;
     ctx.save();
@@ -599,12 +651,12 @@
   function drawPanelContent(ctx, lt) {
     const x0 = PX + 28;
     const tx = (a, b) => L.inout(lt, a, b, 0.45, 0.35);
-    // headline
+    // headline: the deliverable count (display ≈ 72 px — the finding at 49 s is the film's hero number)
     const ph = tx(2.875, 6.4);
     if (ph > 0) {
-      const b = L.text(ctx, '16', x0, PY + 112, { kind: 'display', size: 96, weight: 700, color: INK_EM, p: ph, bg: C.card, scanColor: EM, id: 'a5-16' });
-      L.text(ctx, 'GIS-ready products', x0 + b.w + 18, PY + 72, { kind: 'display', size: 34, weight: 700, color: C.text, p: ph, bg: C.card, scanColor: EM, id: 'a5-gis' });
-      L.text(ctx, 'per frame · 12 frames delivered', x0 + b.w + 18, PY + 108, { kind: 'sans', size: 22, weight: 500, color: DIM, p: tx(3.0, 6.38), bg: C.card, scanColor: EM, id: 'a5-per' });
+      const b = L.text(ctx, '16', x0, PY + 100, { kind: 'display', size: 70, weight: 700, color: INK_EM, p: ph, bg: C.card, scanColor: EM, id: 'a5-16' });
+      L.text(ctx, 'GIS-ready products', x0 + b.w + 18, PY + 66, { kind: 'display', size: 34, weight: 700, color: C.text, p: ph, bg: C.card, scanColor: EM, id: 'a5-gis' });
+      L.text(ctx, 'per frame · 12 frames delivered', x0 + b.w + 18, PY + 100, { kind: 'sans', size: 22, weight: 500, color: DIM, p: tx(3.0, 6.38), bg: C.card, scanColor: EM, id: 'a5-per' });
     }
     // format chips (each with the glyph that badges its tiles)
     const pch = tx(3.0, 6.36);
@@ -615,25 +667,25 @@
         const o = { kind: 'mono', size: 18, weight: 600, color: INK_EM, bg: C.card, p: pk, scanColor: EM, id: 'a5-chip' + i };
         const m = L.measure(ctx, s, o), cw = m.w + 24 + 20;
         ctx.save(); ctx.globalAlpha = clamp(pk);
-        L.roundRect(ctx, cx, PY + 140, cw, 32, 16); ctx.strokeStyle = L.rgba(EM, 0.6); ctx.lineWidth = 1.2; ctx.stroke();
-        glyph(ctx, g, cx + 19, PY + 156, 12, INK_EM);
+        L.roundRect(ctx, cx, PY + 128, cw, 32, 16); ctx.strokeStyle = L.rgba(EM, 0.6); ctx.lineWidth = 1.2; ctx.stroke();
+        glyph(ctx, g, cx + 19, PY + 144, 12, INK_EM);
         ctx.restore();
-        L.text(ctx, s, cx + 32, PY + 162, o);
+        L.text(ctx, s, cx + 32, PY + 150, o);
         cx += cw + 10;
       });
     }
     // separator + column headers
     const pcol = tx(3.0, 6.36);
     if (pcol > 0) {
-      ctx.save(); ctx.fillStyle = 'rgba(0,229,255,0.14)'; ctx.fillRect(x0, PY + 196, (PW - 56) * clamp(pcol), 1); ctx.restore();
+      ctx.save(); ctx.fillStyle = 'rgba(0,229,255,0.14)'; ctx.fillRect(x0, PY + 182, (PW - 56) * clamp(pcol), 1); ctx.restore();
       const o = { kind: 'mono', size: 18, weight: 600, color: C.text, bg: C.card, p: pcol, align: 'center', scanColor: EM };
-      L.text(ctx, 'demErr', (tileX(0) + tileX(1) + TW) / 2, PY + 232, { ...o, id: 'a5-c0' });
-      L.text(ctx, 'demErr_ramp', (tileX(2) + tileX(3) + TW) / 2, PY + 232, { ...o, id: 'a5-c1' });
+      L.text(ctx, 'demErr', (tileX(0) + tileX(1) + TW) / 2, PY + 216, { ...o, id: 'a5-c0' });
+      L.text(ctx, 'demErr_ramp', (tileX(2) + tileX(3) + TW) / 2, PY + 216, { ...o, id: 'a5-c1' });
     }
     // rows of tiles (one family per beat, its tiles on 16ths)
     for (let r = 0; r < 4; r++) {
       const ry = ROW_Y0 + r * ROW_DY;
-      const pl = tx(3.0 + r * 0.5, 6.38 - r * 0.02);
+      const pl = tx(rowAt(r), 6.38 - r * 0.02);
       if (pl > 0) L.text(ctx, ROWS[r], x0, ry + TH / 2 + 8, { kind: 'sans', size: 22, weight: 500, color: C.text, bg: C.card, p: pl, scanColor: EM, id: 'a5-row' + r });
       for (let c = 0; c < 4; c++) {
         const i = r * 4 + c;
@@ -642,10 +694,13 @@
         drawTile(ctx, tileX(c), ry, pt, THUMBS[i], lt, i);
       }
     }
+    // the per-family split of the 16 files is not published: say so under the grid
+    const pil = tx(4.25, 6.36);
+    if (pil > 0) L.text(ctx, '(layout illustrative)', PX + PW - 28, ROW_Y0 + 3 * ROW_DY + TH + 28, { kind: 'mono', size: 18, weight: 400, color: DIM, align: 'right', bg: C.card, p: pil, scanColor: EM, id: 'a5-illus' });
     // verification (bar 24): 27 segments fill on 16ths, tiles tick, check mark draws on at 5.5
     const pv = tx(4.0, 6.4);
     if (pv > 0) {
-      const vy = PY + PH - 78;
+      const vy = PY + PH - 86;
       const steps = clamp(Math.floor((lt - 4.0) / 0.125 + 1) / 8);
       const lit = Math.ceil(27 * steps);
       const segW = (PW - 56 - 26 * 4) / 27;
@@ -699,17 +754,16 @@
     }
   }
 
-  /* ------------------------------------------------------------------ section B: map, bowl, legend, result card */
-  function viewAt(lt) { return G.view({ lon: CAB.lon, lat: CAB.lat, ppd: ppdAt(lt), cx: A[0], cy: A[1] }); }
-  function contourPts(S, rho, n = 120) {
+  /* ------------------------------------------------------------------ findings: map, bowl, PFZ, legend, result card */
+  function contourPts(cx, cy, S, rho, n = 120) {
     const pts = [];
     for (let i = 0; i <= n; i++) {
       const th = Math.PI + (TAU * i) / n, r = contourR(th) * rho;
-      pts.push([A[0] + r * Math.cos(th) * 1.08 * S, A[1] + r * Math.sin(th) * 0.9 * S]);
+      pts.push([cx + r * Math.cos(th) * 1.08 * S, cy + r * Math.sin(th) * 0.9 * S]);
     }
     return pts;
   }
-  const PFZ = G.faults.pfz.slice(0, 5);                   // the stretch through the frame (14.95–15.82°N)
+  const PFZ = G.faults.pfz.slice(0, 7);                   // 14.95–16.22°N: the stretch east and north of the bowl
   function pfzLonAt(lat) {
     for (let i = 1; i < PFZ.length; i++) {
       const [a, b] = [PFZ[i - 1], PFZ[i]];
@@ -717,16 +771,19 @@
     }
     return PFZ[PFZ.length - 1][0];
   }
-  const pfzK = (lt) => sp(lt, 6.4, 0.8) * (1 - sp(lt, 8.0, 0.4));
-  const LEVELS = [[0.45, 8.5], [0.72, 8.625], [1.35, 8.75], [1.75, 6.75]];   // bowl contours (TL = 1.0)
+  // PFZ (schematic): draws on with the swoop, then fades to 30 % once the bowl is the focus — it stays visible,
+  // dimmed, beside the cause caveat; it never shares the bowl's colour or emphasis
+  const pfzDraw = (lt) => sp(lt, 6.2, 0.8);
+  const pfzFade = (lt) => lerp(1, 0.3, sp(lt, 7.95, 0.35));
+  const LEVELS = [[0.45, 7.25], [0.72, 7.375], [1.5, 7.0]];   // bowl contours (TL = 1.0)
   function drawMap(ctx, lt, camZ) {
     const env = L.inout(lt, 6.0, DUR, 1.0, 0.5);
     if (env <= 0) return;
-    const ppd = ppdAt(lt), v = viewAt(lt);
-    const R = 1350 * env;
+    const v = viewAt(lt), ppd = v.ppd, W = focusWorld(lt);
+    const R = 1150 * env;
     ctx.save();
     L.roundRect(ctx, VP.x, VP.y, VP.w, VP.h, 14); ctx.clip();
-    ctx.beginPath(); ctx.arc(A[0], A[1], Math.max(0.5, R), 0, TAU); ctx.clip();
+    ctx.beginPath(); ctx.arc(W[0], W[1], Math.max(0.5, R), 0, TAU); ctx.clip();
     G.drawLand(ctx, v, { which: 'luzon', fill: C.card });
     // 1/1200° velocity map (+ masked hillshade): crisp pixels whenever they are magnified
     ctx.imageSmoothingEnabled = (ppd / FR) * camZ < 1.6;
@@ -734,42 +791,39 @@
     ctx.imageSmoothingEnabled = true;
     // multi-scale lat/lon graticule (1/1200°, 1/120°, 1/12°): the 90 m lattice's coarser siblings
     ctx.lineWidth = 1;
+    const [lonA, latA] = v.inv(VP.x, VP.y + VP.h), [lonB, latB] = v.inv(VP.x + VP.w, VP.y);
     for (const step of [1 / 1200, 1 / 120, 1 / 12]) {
       const px = step * ppd, a = clamp((px - 8) / 40) * (step < 0.005 ? 0.22 : step < 0.05 ? 0.1 : 0.16);
       if (a <= 0.004) continue;
-      const [lonA, latA] = v.inv(VP.x, VP.y + VP.h), [lonB, latB] = v.inv(VP.x + VP.w, VP.y);
       ctx.strokeStyle = `rgba(0,229,255,${a})`;
       ctx.beginPath();
-      // 1/1200°: origin on the TL cell's corner so these lines coincide with the lattice / raster pixel edges
-      const fine = step < 0.005;
-      const lo0 = fine ? CAB.lon - 0.5 / 1200 : 0, la0 = fine ? CAB.lat + 0.5 / 1200 : 0;
+      // origin on the hand-off cell's NW corner so these lines coincide with the lattice / raster pixel edges
+      const lo0 = TPW, la0 = TPN;
       for (let k = Math.ceil((lonA - lo0) / step); lo0 + k * step <= lonB; k++) { const x = Math.round(v.x(lo0 + k * step)) + 0.5; ctx.moveTo(x, VP.y); ctx.lineTo(x, VP.y + VP.h); }
       for (let k = Math.ceil((latA - la0) / step); la0 + k * step <= latB; k++) { const y = Math.round(v.y(la0 + k * step)) + 0.5; ctx.moveTo(VP.x, y); ctx.lineTo(VP.x + VP.w, y); }
       ctx.stroke();
     }
     // coastline
     G.drawLand(ctx, v, { which: 'luzon', stroke: 'rgba(0,229,255,0.45)', lw: 1.3 });
-    // Philippine Fault Zone (schematic) — context only, ~30 km east; it leaves before the bowl close-up
-    const pz = pfzK(lt);
-    if (pz > 0.002) {
-      const pts = PFZ.map(([lo, la]) => v.pt(lo, la));
+    // Philippine Fault Zone (schematic) — act 4's treatment: gold dashes, drawn on south → north
+    const pd = pfzDraw(lt);
+    if (pd > 0.002) {
       ctx.save();
-      ctx.setLineDash([14, 7]); ctx.lineDashOffset = -L.steps(T0 + lt, 0.5, 0.3) * 6;
-      ctx.strokeStyle = 'rgba(230,241,255,0.85)'; ctx.lineWidth = 2.4; ctx.lineCap = 'round';
-      ctx.globalAlpha = clamp(1.4 - 1.4 * sp(lt, 8.0, 0.4));
-      strokePartial(ctx, pts, clamp(sp(lt, 6.4, 0.8)));
+      ctx.setLineDash([12, 6]); ctx.lineDashOffset = -L.steps(T0 + lt, 0.5, 0.3) * 6;
+      ctx.strokeStyle = L.rgba(C.gold, 0.92 * pfzFade(lt)); ctx.lineWidth = 2.4; ctx.lineCap = 'round';
+      strokePartial(ctx, PFZ.map(([lo, la]) => v.pt(lo, la)), clamp(pd));
       ctx.restore();
     }
-    // contours of the bowl (TL = half-depth contour); the outer dashed one already marks the bowl in the wide view
-    const S = (BOWL_KM * ppd) / KM_DEG;
+    // contours of the bowl (the TL is the half-depth contour); beat-stepped dashes keep the hold alive
+    const S = bowlPx(ppd), [bx, by] = v.pt(CAB.lon, CAB.lat);
     LEVELS.forEach(([rho, at]) => {
       const pc = sp(lt, at, 0.6) * (1 - sp(lt, 9.5, 0.4));
       if (pc <= 0.002 || S * rho < 8) return;
       ctx.save();
-      ctx.strokeStyle = rho < 1 ? L.rgba(C.text, 0.55) : L.rgba(CR, rho > 1.5 ? 0.9 : 0.75);
+      ctx.strokeStyle = rho < 1 ? L.rgba(C.text, 0.55) : L.rgba(CR, 0.85);
       ctx.lineWidth = rho < 1 ? 1.4 : 1.8;
       if (rho > 1) { ctx.setLineDash([7, 5]); ctx.lineDashOffset = -L.steps(T0 + lt, 0.5, 0.3) * 4; }
-      strokePartial(ctx, contourPts(S, rho), clamp(pc));
+      strokePartial(ctx, contourPts(bx, by, S, rho), clamp(pc));
       ctx.restore();
     });
     ctx.restore();
@@ -778,58 +832,67 @@
       ctx.save();
       L.roundRect(ctx, VP.x, VP.y, VP.w, VP.h, 14); ctx.clip();
       ctx.strokeStyle = L.css(L.mix(EM, CR, sp(lt, 6.4, 0.9)), 0.55 * (1 - env) + 0.2); ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.arc(A[0], A[1], R, 0, TAU); ctx.stroke();
+      ctx.beginPath(); ctx.arc(W[0], W[1], R, 0, TAU); ctx.stroke();
       ctx.restore();
     }
   }
-  /** On-map label for the schematic fault, fixed in the wide frame, with a short leader to the trace. */
+  /** Fixed two-line label for the schematic fault (gold ink + "(schematic)" dim), leader to the trace. */
+  const PFZ_LAB = { xr: 1478, y: 238 };
   function drawPFZLabel(ctx, lt) {
-    const p = L.inout(lt, 6.5, 8.4, 0.45, 0.4);
+    const p = L.inout(lt, 6.3, 9.75, 0.45, 0.35);
     if (p <= 0) return;
-    const xr = 888, y = 300;
-    const b = tag2(ctx, ['Philippine Fault Zone', '(schematic)'], xr, y, { kind: 'mono', size: 18, weight: 500, color: C.text, p, scanColor: C.text, id: 'a5-pfz' });
-    const v = viewAt(lt), ly = b.y + b.h / 2;
+    const al = pfzFade(lt);
+    const o = { kind: 'mono', size: 18, weight: 500 };
+    const w = Math.max(L.measure(ctx, 'Philippine Fault Zone', o).w, L.measure(ctx, '(schematic)', o).w);
+    const m = L.measure(ctx, 'Philippine Fault Zone', o), capH = m.capH || m.asc * 0.72;
+    const top = PFZ_LAB.y - capH - 9, h = capH + 18 + 26 + 4;
+    const bx = PFZ_LAB.xr - w - 12, bw = w + 24;
+    plate(ctx, bx, top, bw, h, p, { alpha: al });
+    L.text(ctx, 'Philippine Fault Zone', PFZ_LAB.xr, PFZ_LAB.y, { ...o, align: 'right', color: INK_GO, bg: C.card, p: clamp(p * 1.3 - 0.15), alpha: al, scanColor: C.gold, id: 'a5-pfz-0' });
+    L.text(ctx, '(schematic)', PFZ_LAB.xr, PFZ_LAB.y + 26, { ...o, weight: 400, align: 'right', color: DIM, bg: C.card, p: clamp(p * 1.3 - 0.3), alpha: al, scanColor: C.gold, id: 'a5-pfz-1' });
+    // leader from the plate to the trace at the plate's mid-height (only once the trace sits right of it)
+    const v = viewAt(lt), ly = top + h / 2;
     const tx = v.x(pfzLonAt(v.inv(0, ly)[1]));
-    const x0 = b.x + b.w + 2, x1 = Math.min(tx - 4, VP.x + VP.w - 4);
-    if (x1 - x0 > 2) {
-      ctx.save(); ctx.globalAlpha = clamp(p) * clamp(pfzK(lt) * 1.5); ctx.strokeStyle = L.rgba(C.text, 0.7); ctx.lineWidth = 1.4;
+    const x0 = bx + bw + 2, x1 = Math.min(tx - 4, VP.x + VP.w - 4);
+    if (x1 - x0 > 2 && pfzDraw(lt) > 0.6) {
+      ctx.save(); ctx.globalAlpha = clamp(p) * al * clamp((pfzDraw(lt) - 0.6) * 2.5); ctx.strokeStyle = L.rgba(C.gold, 0.8); ctx.lineWidth = 1.3;
       ctx.beginPath(); ctx.moveTo(x0, ly); ctx.lineTo(lerp(x0, x1, clamp(p)), ly); ctx.stroke(); ctx.restore();
     }
   }
-  /** Left edge (world x) of the TL outline at height A.y + dy, following the pixel → contour morph. */
-  function tlLeftAt(lt, dy) {
+  /** Right edge (world x) of the TL outline at height y0 + dy, following the pixel → contour morph. */
+  function tlRightAt(lt, dy) {
     const w = tlWorld(lt), k = w.form === 'contour' ? 1 : w.to ? w.k : 0;
-    const hp = 0.62 * w.size, xPix = A[0] - hp;
+    const xPix = w.x + 0.62 * w.size;
     if (k <= 0) return xPix;
-    const pts = contourPts(w.size, 1, 96);
-    let xc = A[0] - 1.08 * w.size;
+    const pts = contourPts(w.x, w.y, w.size, 1, 96);
+    let xc = w.x + 1.08 * w.size;
     for (let i = 0; i < pts.length - 1; i++) {
       const a = pts[i], b = pts[i + 1];
-      if (a[0] > A[0] || b[0] > A[0]) continue;
-      const ya = a[1] - A[1], yb = b[1] - A[1];
+      if (a[0] < w.x || b[0] < w.x) continue;
+      const ya = a[1] - w.y, yb = b[1] - w.y;
       if ((ya - dy) * (yb - dy) <= 0 && ya !== yb) { xc = lerp(a[0], b[0], (dy - ya) / (yb - ya)); break; }
     }
     return lerp(xPix, xc, k);
   }
   function drawCityTag(ctx, lt) {
-    const p = L.inout(lt, 6.5, 9.8, 0.5, 0.4);
+    const p = L.inout(lt, 6.6, 9.8, 0.5, 0.4);
     if (p <= 0) return;
-    const w = tlWorld(lt);
-    const dy = -0.55 * w.size * (w.form === 'contour' ? 0.9 : lerp(0.62, 0.9, w.to ? w.k : 0));
-    const edge = Math.min(tlLeftAt(lt, dy), A[0] - 1.25 * (BOWL_KM * ppdAt(lt)) / KM_DEG); // clear of the bowl core
-    const x = edge - 40, y = A[1] + dy + 9;
-    const b = tag(ctx, 'Cabanatuan City', x, y, { kind: 'sans', size: 24, weight: 600, color: C.text, align: 'right', p, scanColor: CR, id: 'a5-city' });
+    const w = tlWorld(lt), S = bowlPx(ppdAt(lt));
+    const dy = -0.5 * Math.max(w.size, 0.62 * S);
+    const edge = Math.max(tlRightAt(lt, dy), w.x + 1.62 * S * 1.08); // clear of the outer dashed contour
+    const x = edge + 34, y = w.y + dy + 9;
+    const b = tag(ctx, 'Cabanatuan City', x, y, { kind: 'sans', size: 24, weight: 600, color: C.text, p, scanColor: CR, id: 'a5-city' });
     // short leader from the tag to the TL outline
-    const tip = tlLeftAt(lt, dy) - 6;
-    const ly = b.y + b.h / 2, lx0 = b.x + b.w + 3, lx1 = Math.max(lx0 + 4, tip);
+    const tip = tlRightAt(lt, dy) + 6;
+    const ly = b.y + b.h / 2, lx0 = b.x - 3, lx1 = Math.min(lx0 - 4, tip);
     ctx.save(); ctx.globalAlpha = clamp(p); ctx.strokeStyle = L.rgba(C.text, 0.75); ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.moveTo(lx0, ly); ctx.lineTo(lerp(lx0, lx1, clamp(p)), ly); ctx.stroke();
     ctx.fillStyle = C.text; ctx.beginPath(); ctx.arc(lerp(lx0, lx1, clamp(p)), ly, 2.5, 0, TAU); ctx.fill();
     ctx.restore();
   }
-  const LG = { x: VP.x + 18, y: VP.y + VP.h - 18 - 124, w: 380, h: 124 };
+  const LG = { x: VP.x + VP.w - 18 - 440, y: VP.y + VP.h - 18 - 124, w: 440, h: 124 };
   function drawLegend(ctx, lt) {
-    const p = L.inout(lt, 6.625, 9.85, 0.55, 0.4);
+    const p = L.inout(lt, 6.2, 9.85, 0.55, 0.4);
     if (p <= 0) return;
     L.card(ctx, LG.x, LG.y, LG.w, LG.h, { p, accent: CR });
     ctx.save();
@@ -839,10 +902,10 @@
   }
   function drawLegendContent(ctx, lt) {
     const tx = (a, b = 9.78) => clamp(L.inout(lt, a, b, 0.45, 0.35));
-    const x0 = LG.x + 20, bw = 340;
-    // colour bar
-    const pb = tx(6.75);
-    L.text(ctx, 'vertical velocity · cm/yr', x0, LG.y + 30, { kind: 'mono', size: 18, weight: 400, color: DIM, bg: C.card, p: pb, scanColor: CR, id: 'a5-lg0' });
+    const x0 = LG.x + 20, bw = 400;
+    // colour bar (revealed with the map: one 16th apart)
+    const pb = tx(6.25);
+    L.text(ctx, 'vertical velocity · cm/yr · schematic', x0, LG.y + 30, { kind: 'mono', size: 18, weight: 400, color: DIM, bg: C.card, p: pb, scanColor: CR, id: 'a5-lg0' });
     if (pb > 0) {
       const by = LG.y + 42;
       ctx.save();
@@ -850,15 +913,15 @@
       for (let i = 0; i < bw; i += 2) { const c = L.velRGB(((i / bw) * 2 - 1) * 5, 5); ctx.fillStyle = L.css(c, 1); ctx.fillRect(x0 + i, by, 2.5, 12); }
       ctx.restore();
       ctx.save(); ctx.globalAlpha = clamp(pb); ctx.strokeStyle = 'rgba(0,229,255,0.25)'; ctx.strokeRect(x0 + 0.5, by + 0.5, bw - 1, 11); ctx.restore();
-      const pl = tx(6.875);
+      const pl = tx(6.3125);
       L.text(ctx, '−5 subsidence', x0, LG.y + 78, { kind: 'mono', size: 18, weight: 600, color: INK_CR, bg: C.card, p: pl, scanColor: CR, id: 'a5-lg-sub' });
       L.text(ctx, '0', x0 + bw / 2, LG.y + 78, { kind: 'mono', size: 16, weight: 400, color: DIM, align: 'center', p: pl, role: 'deco' });
       L.text(ctx, 'uplift +5', x0 + bw, LG.y + 78, { kind: 'mono', size: 18, weight: 600, color: INK_CY, align: 'right', bg: C.card, p: pl, scanColor: CR, id: 'a5-lg-up' });
     }
-    // scale bar (grows with the zoom)
-    const ps = tx(7.0);
+    // true-scale 5 km bar (breathes with the swoop's zoom)
+    const ps = tx(6.375);
     if (ps > 0) {
-      const sy = LG.y + 108, km5 = (5 * ppdAt(lt)) / KM_DEG, sw = Math.min(260, km5) * clamp(ps * 1.3);
+      const sy = LG.y + 108, km5 = (5 * ppdAt(lt)) / KM_DEG, sw = Math.min(300, km5) * clamp(ps * 1.3);
       ctx.save(); ctx.fillStyle = C.text; ctx.globalAlpha = clamp(ps);
       ctx.fillRect(x0, sy - 4, sw, 3); ctx.fillRect(x0, sy - 10, 2, 9); ctx.fillRect(x0 + sw - 2, sy - 10, 2, 9);
       ctx.restore();
@@ -866,45 +929,64 @@
     }
   }
   function drawCard(ctx, lt) {
-    if (lt < 6.45) return;
+    if (lt < 6.5) return;
+    const g = shellGeom(lt);
+    if (g.top >= g.bottom - 1) return;
     ctx.save();
-    clipTo(ctx, CARD.x, CARD.w, CARD.y - 40, shellGeom(lt).bottom);
-    drawCardContent(ctx, lt);
+    clipTo(ctx, CARD.x, CARD.w, Math.max(CARD.y - 40, g.top), g.bottom);
+    drawCardContent(ctx, lt, g);
     ctx.restore();
   }
-  function drawCardContent(ctx, lt) {
-    const x0 = CARD.x + 30, y = CARD.y;
-    // two beats of information: bar 25 = the claim (+ its caveat) and the two tracks; bar 26 = GNSS + cause
-    const ln = (a, i) => L.inout(lt, a, 9.97 - i * 0.012, 0.45, 0.33);
-    L.text(ctx, 'VERTICAL RATE', x0, y + 46, { kind: 'mono', size: 18, weight: 600, color: INK_CR, tracking: 0.08, bg: C.card, p: ln(6.5, 0), scanColor: CR, id: 'a5-r0' });
-    L.text(ctx, '−4.4 to −4.7', x0 - 2, y + 122, { kind: 'display', size: 68, weight: 700, color: INK_CR, bg: C.card, p: ln(6.625, 1), scanColor: CR, id: 'a5-r1' });
-    L.text(ctx, 'cm/yr vertical', x0, y + 172, { kind: 'sans', size: 26, weight: 600, color: C.text, bg: C.card, p: ln(6.75, 2), scanColor: CR, id: 'a5-r2' });
-    L.text(ctx, '≈ 18–19 cm · 2007–2011', x0, y + 210, { kind: 'sans', size: 26, weight: 500, color: C.text, bg: C.card, p: ln(6.875, 3), scanColor: CR, id: 'a5-r3' });
-    L.text(ctx, 'vertical assumes purely vertical motion', x0, y + 244, { kind: 'mono', size: 18, weight: 400, color: DIM, bg: C.card, p: ln(7.0, 4), scanColor: CR, id: 'a5-f0' });
-    const sep = (yy, p) => { if (p <= 0) return; ctx.save(); ctx.fillStyle = 'rgba(0,229,255,0.16)'; ctx.fillRect(x0, yy, (CARD.w - 60) * clamp(p), 1); ctx.restore(); };
-    sep(y + 270, ln(7.5, 5));
+  function drawCardContent(ctx, lt, g) {
+    const x0 = CARD.x + 28, y = CARD.y;
+    // in: scan reveals on the beat grid; out: the card's top → down wipe (each line drops as the edge crosses it)
+    const io = (a, inDur = 0.4) => (lt <= a ? 0 : Math.min(1, sp(lt, a, inDur)));
+    const wp = (base, asc) => 1 - clamp((g.top - (base - asc)) / (asc * 1.5));
+    const T = (str, xx, base, asc, a, o) => L.text(ctx, str, xx, base, { bg: C.card, scanColor: CR, ...o, p: Math.min(io(a), wp(base, asc)) });
+    const mono18 = { kind: 'mono', size: 18, weight: 400, color: DIM };
+    // 48.75 card header · 49.0 hero (with the contour) · 49.5 units + cumulative · 49.75 → 50.0 evidence + caveats
+    T('VERTICAL RATE', x0, y + 48, 14, 6.5, { kind: 'mono', size: 18, weight: 600, color: INK_CR, tracking: 0.12, id: 'a5-r0' });
+    const hero = { kind: 'display', size: 88, weight: 700, color: INK_CR };
+    const wA = L.measure(ctx, '−4.4', hero).w, wTo = L.measure(ctx, 'to', { kind: 'display', size: 40, weight: 500 }).w;
+    T('−4.4', x0 - 2, y + 150, 64, 7.0, { ...hero, id: 'a5-r1a' });
+    T('to', x0 - 2 + wA + 16, y + 150, 30, 7.0625, { kind: 'display', size: 40, weight: 500, color: DIM, id: 'a5-r1b' });
+    T('−4.7', x0 - 2 + wA + 32 + wTo, y + 150, 64, 7.125, { ...hero, id: 'a5-r1c' });
+    T([{ s: 'cm/yr vertical', color: C.text }, { s: '*', color: INK_CR }], x0, y + 208, 19, 7.5, { kind: 'sans', size: 26, weight: 600, id: 'a5-r2' });
+    T('≈ 18–19 cm · 2007–2011', x0, y + 246, 19, 7.5625, { kind: 'sans', size: 26, weight: 500, color: C.text, id: 'a5-r3' });
+    const sep = (yy, a) => {
+      const p = Math.min(io(a, 0.5), wp(yy + 1, 2));
+      if (p <= 0) return;
+      ctx.save(); ctx.fillStyle = 'rgba(0,229,255,0.16)'; ctx.fillRect(x0, yy, (CARD.w - 56) * clamp(p), 1); ctx.restore();
+    };
+    sep(y + 276, 7.75);
+    // two adjacent ascending tracks (InSAR, independent of each other) + the independent GNSS station
     const rows = [
-      [7.5, C.cyan, [{ s: 'Path 448', color: INK_CY }, { s: ' · −4.7 ± 0.5 cm/yr', color: C.text }], 'trk'],
-      [7.625, C.gold, [{ s: 'Path 449', color: INK_GO }, { s: ' · −4.4 ± 0.5 cm/yr', color: C.text }], 'trk'],
-      [8.0, C.text, [{ s: 'CABN GNSS', color: C.text }, { s: ' · −4.7 ± 0.4 cm/yr', color: C.text }], 'tri'],
+      [7.75, C.cyan, [{ s: 'Path 448', color: INK_CY }, { s: ' · −4.7 ± 0.5 cm/yr', color: C.text }], 'trk'],
+      [7.77, C.cyan, [{ s: 'Path 449', color: INK_CY }, { s: ' · −4.4 ± 0.5 cm/yr', color: C.text }], 'trk'],
+      [7.79, C.text, [{ s: 'CABN GNSS', color: C.text }, { s: ' · −4.7 ± 0.4 cm/yr', color: C.text }], 'tri'],
     ];
     rows.forEach(([at, col, segs, glyphK], i) => {
-      const p = ln(at, 5 + i), yy = y + 312 + i * 40;
+      const yy = y + 316 + i * 38, p = Math.min(io(at), wp(yy, 16));
       if (p <= 0) return;
       ctx.save(); ctx.globalAlpha = clamp(p); ctx.fillStyle = col; ctx.strokeStyle = col; ctx.lineWidth = 2;
       if (glyphK === 'trk') { // ascending ground-track arrow
-        const k = clamp(p), x1 = x0 + 6, y1 = yy + 2, x2 = x0 + 11, y2 = yy - 18;
+        const k = clamp(p), x1 = x0 + 6, y1 = yy + 2, x2 = x0 + 11, y2 = yy - 17;
         ctx.setLineDash([4, 3]); ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(lerp(x1, x2, k), lerp(y1, y2, k)); ctx.stroke(); ctx.setLineDash([]);
         arrowHead(ctx, lerp(x1, x2, k), lerp(y1, y2, k), Math.atan2(y2 - y1, x2 - x1), 8);
-      } else { ctx.beginPath(); ctx.moveTo(x0 + 9, yy - 17); ctx.lineTo(x0 + 18, yy); ctx.lineTo(x0, yy); ctx.closePath(); ctx.fill(); }
+      } else { ctx.beginPath(); ctx.moveTo(x0 + 9, yy - 16); ctx.lineTo(x0 + 18, yy); ctx.lineTo(x0, yy); ctx.closePath(); ctx.fill(); }
       ctx.restore();
-      L.text(ctx, segs, x0 + 32, yy, { kind: 'mono', size: 21, weight: 600, bg: C.card, p, scanColor: CR, id: 'a5-p' + i });
+      L.text(ctx, segs, x0 + 30, yy, { kind: 'mono', size: 20, weight: 600, bg: C.card, p, scanColor: CR, id: 'a5-p' + i });
     });
-    sep(y + 422, ln(8.25, 8));
-    L.text(ctx, 'likely groundwater-related (under study)', x0, y + 458, { kind: 'mono', size: 18, weight: 400, color: DIM, bg: C.card, p: ln(8.25, 8), scanColor: CR, id: 'a5-f1' });
+    T('(independent)', x0 + 30, y + 416, 14, 7.8, { ...mono18, id: 'a5-ind' });
+    sep(y + 444, 7.76);
+    // cause + method caveats (they overlap the dimmed PFZ trace: the fault is context, not the cause)
+    T('consistent with groundwater-related', x0, y + 480, 14, 7.76, { ...mono18, id: 'a5-cv0' });
+    T('subsidence (under study)', x0, y + 507, 14, 7.78, { ...mono18, id: 'a5-cv1' });
+    T('rates relative to nearby stable ground', x0, y + 534, 14, 7.8, { ...mono18, id: 'a5-cv2' });
+    T('* assumes purely vertical motion', x0, y + 564, 14, 7.82, { ...mono18, id: 'a5-cv3' });
     // beat-locked marker on the headline (quarter notes) keeps the card alive
-    const pp = clamp(ln(6.625, 1));
-    if (pp > 0.5) { ctx.save(); ctx.globalAlpha = pp * (0.35 + 0.65 * L.pulse(T0 + lt, 4)); ctx.fillStyle = CR; ctx.fillRect(CARD.x + CARD.w - 34, y + 34, 8, 8); ctx.restore(); }
+    const pp = Math.min(io(7.0), wp(y + 44, 10));
+    if (pp > 0.5) { ctx.save(); ctx.globalAlpha = pp * (0.35 + 0.65 * L.pulse(T0 + lt, 4)); ctx.fillStyle = CR; ctx.fillRect(CARD.x + CARD.w - 34, y + 38, 8, 8); ctx.restore(); }
   }
 
   /* ------------------------------------------------------------------ scene */
@@ -917,7 +999,11 @@
       const [x, y] = cam.toScreen(w.x, w.y);
       const pulse = L.pulse(T0 + Math.min(lt, DUR - 1e-6));
       const target = { ...w, x, y, size: w.size * cam.z, energy: 0.35 + 0.5 * pulse, alpha: 1, amp: 1 };
-      if (env.handoff && lt < 2) return L.TL.blend(env.handoff, target, sp(lt, 0, 1.0));
+      if (env.handoff && lt < 2) {
+        const st = L.TL.blend(env.handoff, target, sp(lt, 0, 1.0));
+        st.size = lerp(env.handoff.size, target.size, sp(lt, 0.5, 0.8)); // hold the hand-off size for one beat
+        return st;
+      }
       return target;
     },
     draw(ctx, env) {
@@ -925,12 +1011,12 @@
       const lt = env.lt;
       drawFrame(ctx, lt);
       drawMap(ctx, lt, env.cam ? env.cam.z : 1);
-      const P = lt < 7.4 ? nodesAt(lt, new Float64Array(NN * 2)) : null;
+      const P = lt < 6.6 ? nodesAt(lt, new Float64Array(NN * 2)) : null;
       if (P) { drawGrid(ctx, lt, P); if (lt < 2.9) drawLookup(ctx, lt, P); if (lt < 6.2) drawAxes(ctx, lt, P); }
       if (lt < 6.75) { drawCompass(ctx, lt); drawLabelsA(ctx, lt); }
       drawShell(ctx, lt);
       drawPanel(ctx, lt);
-      if (lt > 6.4) { drawPFZLabel(ctx, lt); drawLegend(ctx, lt); drawCityTag(ctx, lt); drawCard(ctx, lt); }
+      if (lt > 6.15) { drawLegend(ctx, lt); drawPFZLabel(ctx, lt); drawCityTag(ctx, lt); drawCard(ctx, lt); }
     },
   });
 })();

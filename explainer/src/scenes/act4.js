@@ -1,38 +1,39 @@
-/* Act 4 · 30–42 s · Phase 05/06 · MintPy SBAS time-series inversion (scene 'act4')
+/* Act 4 · 30–42 s · Phase 05 · MintPy SBAS time-series inversion (scene 'act4')
  *
- * Beat plan (lt = t − 30 s; 1 beat = 0.5 s; bars start at lt 0, 2, 4, 6, 8, 10).
+ * Beat plan (lt = t − 30 s; 1 beat = 0.5 s; bars start at lt 0, 2, 4, 6, 8, 10; 16th = 0.125 s).
  * All layout comes from the pure geometry helpers below; tl() and draw() share them.
  *
  * Section A · 30–36 s · network inversion & corrections (camera 1.00 → 1.04)
- *  0.00 bar 16  TL (act-3 fringe) springs into a purple network node on the 2009-02-08 reference date of the
- *               P448 F0290 pair network (act 2's 24-date / 149-pair graph after QC: 21 dates, 129 pairs);
- *               the time axis grows out of it, date nodes + pair arcs construct outward from the TL.
- *  0.25         title "Network inversion"; 0.5 counters "1,634 interferograms · 265 dates · 12 frames"
- *  1.00         "one SBAS inversion per frame"
+ *  0.00 bar 16  the act-3 fringe lands on the 2009-02-08 reference date of P448 F0290 and becomes a purple network
+ *               node (it keeps its hand-off size for a beat). The network card opens as an iris around the TL, the
+ *               time axis grows out of it, date nodes + pair arcs construct outward from it.
+ *  0.25         title "Network inversion"; 0.5 header "P448 F0290 · 21 of 24 dates · 129 of 149 interferograms inverted"
+ *  0.50–1.875   counter staircase, one frame per 16th, through the real Table 3 cumulative sums →
+ *               "1,634 interferograms · 265 frame-dates · 12 frames · one inversion per frame"
  *  1.50 / 1.75  design-matrix card ("A · φ = Δφ") and time-series card construct
- *  2.00 bar 17  inversion: A fills row by row, each row lights its arc in the network; Δφ fills alongside
- *  2.95         solved φ column fills; each date's dot drops from its network node into the time series
- *  2.95 / 3.10  demErr and demErr_ramp widgets construct (overlapping the φ fill)
- *  4.00 bar 18  demErr: phase-vs-B⊥ trend flattens; the B⊥-correlated scatter leaves the time series
- *  4.50         demErr_ramp: the unwrapped planar ramp on the tile is subtracted to flat; the series tightens
- *  4.90         linear velocity fit draws through the corrected history
- *  5.50         section change (overlapping): every card retracts together with its contents, right column
- *               first (5.5–6.2), while the map iris opens around Cabanatuan City and the TL glides beside the
- *               bowl (5.5–6.4); 5.75 "Coherence masking" and the panel construct as the old cards leave
+ *  2.00 bar 17  demErr / demErr_ramp cards construct (they stay to 5.5). Inversion: A fills in two beat-locked
+ *               chunks (2.0, 2.5); every row that fills flashes its arc in the network
+ *  3.00 / 3.50  the time-series cursor steps across the axis on the beat: φ is solved date by date and each
+ *               date's dot drops from its network node into the series
+ *  4.00 bar 18  demErr: phase-vs-B⊥ trend → 0; the B⊥-correlated scatter leaves the series
+ *  4.50         demErr_ramp: the planar ramp on the tile is subtracted to flat; the series tightens
+ *  5.00         linear velocity fit draws through the corrected history
+ *  5.50         section change: cards retract with their contents (right column first, 5.5–6.2) while the TL glides
+ *               to the hand-off pixel on the map and the map iris opens around it; 5.85 "Coherence masking"
  * Section B · 36–42 s · coherence masking (camera 1.04 → 1.0816)
- *  6.00 bar 19  footprints P447/448/449 + frame ticks, PFZ (schematic), bowl rings, coherence inset construct
- *  7.00         water mask: sea pixels drop on an interlaced sweep ✓
- *  7.50         swath-edge mask: dashed inner offset of the footprint union flashes, its strip drops ✓
- *  8.00 bar 20  slider "temporal coherence ≥ 0.1 → 0.7" steps on 16ths; decorrelated pixels drop per step
- *  8.50         tally scan: valid area counts up to 27,893 km², passing the 25,000 km² target ✓
- *  9.00         map labels clear; the map zooms ×197 into the Cabanatuan bowl while its frame closes to a
- *               9 × 9 window: the 1/1200° (~90 m) lattice resolves into crisp cells; the TL steps aside
- *  9.60         the bowl's deepest cell is outlined: "1 pixel ≈ 90 m × 90 m"
- * 10.00 bar 21  every other cell drops (rings, outside → in); the viewfinder contracts onto the survivor
- * 10.25         the TL (node) claims the surviving cell and morphs node → pixel (purple → cyan)
- * 10.75–11.6   inset and panel cards retract with their contents
- * 10.90         the TL grows to 96 px and glides to the hand-off spot; 11.65–11.95 the pixel tag unmasks
- * 12.00         pure 'pixel', size 96, (940, 556), rot 0, alpha 1
+ *  6.00 bar 19  footprints P447/448/449, PFZ (schematic), neutral place markers, coherence-map inset, panel
+ *  6.50         water mask ✓ (sweep); the valid-area tally steps down the map on every beat 6.5 → 8.5 and counts up
+ *  7.00         swath-edge mask ✓
+ *  7.5/8.0/8.5  temporal coherence ≥ 0.3 / 0.5 / 0.7 on the beat; decorrelated pixels drop per step
+ *  ~8.8         valid area 27,893 km² (target 25,000 km² ✓)
+ *  9.00         map labels clear; zoom ×227 about the TL's pixel (Tarlac plains, 120.620°E 15.470°N — coherent, near-zero
+ *               velocity; Cabanatuan stays a context label, its dive belongs to act 5) while the frame closes to a
+ *               9 × 9 window of 1/1200° (~90 m) cells. The TL stays on its pixel
+ *  9.50         the pixel is outlined: "1 pixel ≈ 90 m × 90 m"
+ * 10.00 bar 21  the other cells drop ring by ring (16ths); "valid pixel · coherence ≥ 0.7"
+ * 10.50         the TL (node) becomes the surviving cell: node → pixel at the cell's own size
+ * 10.75–11.95   cards, cell fill and tags retract
+ * 12.00         pure 'pixel' on that cell (≈ 666, 661 on screen), size ≈ 42 px (≈ 52 px square), rot 0, alpha 1
  */
 (function () {
   'use strict';
@@ -42,14 +43,22 @@
   const spo = (lt, at, d) => L.sp(lt, at, d); // spring with its ~1 % overshoot (positions)
   const io = (lt, a, b, i = 0.45, o = 0.45) => clamp(L.inout(lt, a, b, i, o));
   const fmt = (n) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  const wrapPI = (a) => a - TAU * Math.floor((a + Math.PI) / TAU);
   const smooth01 = (v) => L.smooth(clamp(v));
-  const INK = L.ink(C.purple), INK_CARD = L.ink(C.purple, C.card);
+  const INK = L.ink(C.purple), INK_CARD = L.ink(C.purple, C.card), INK_GOLD = L.ink(C.gold, C.card);
+
+  /** Smallest t with spring(t, dur) ≥ v (v in 0..1): lets per-item times follow the same spring as a sweep. */
+  const SPR = (() => { const n = 2048, a = new Float32Array(n + 1); for (let i = 0; i <= n; i++) a[i] = L.spring(i / n, 1); return a; })();
+  function invSpring(v, dur) {
+    let lo = 0, hi = SPR.length - 1;
+    if (v <= 0) return 0;
+    while (lo < hi) { const mid = (lo + hi) >> 1; if (SPR[mid] >= v) hi = mid; else lo = mid + 1; }
+    return (lo / (SPR.length - 1)) * dur;
+  }
 
   /* ================================================================== geometry (world space) */
   const LA = {
-    title: { x: 170, y: 200 },
-    counters: { x: 1750, y: 188 }, sub: { x: 1750, y: 222 },
+    title: { x: 170, y: 200 }, // section titles (both sections use this slot)
+    counters: { x: 1750, y: 200 },
     net: { x: 170, y: 240, w: 960, h: 300, axisY: 496 },
     ts: { x: 170, y: 560, w: 960, h: 365 },
     mat: { x: 1170, y: 240, w: 580, h: 370 },
@@ -58,19 +67,30 @@
   };
   const AX = { x0: 232, x1: 1088, y0: 2007.0, y1: 2011.4 };
   const xYr = (yr) => AX.x0 + ((yr - AX.y0) / (AX.y1 - AX.y0)) * (AX.x1 - AX.x0);
-  const xYrLabel = (yr) => xYr(Math.min(yr + 0.5, (yr + AX.y1) / 2)); // year label centred in its span
-  const MX = { ax: 1194, ay: 312, cw: 11, rh: 2.2, px: 1450, dx: 1496, colW: 14 }; // design matrix block
+  const MX = { ax: 1194, ay: 312, cw: 14, rh: 2.2, px: 1516, dx: 1572, colW: 18 }; // design matrix block
   const DP = { x0: 1500, x1: 1730, y0: 652, y1: 758 }; // demErr scatter
   const RT = { x: 1500, y: 803, w: 230, h: 108 }; // ramp tile
   // section A leaves from beat 4 of bar 18: each card retracts upward carrying its contents (no empty shells),
   // right column first; texts scan out over the same window. End times (lt) per card:
   const TA = { out: 5.5, dem: 5.85, ramp: 5.9, mat: 5.95, net: 6.1, ts: 6.2, text: 5.8 };
   const TL_NET = 44; // TL node size inside the network (its ring clears the neighbouring date nodes)
+  const TL_MAP = 40; // TL node size on the map (the marker of the hand-off pixel)
+  // Table 3 (Year-2 report) cumulative sums in table order (P447 F0300, F0310, P448 F0280–F0320, P449 F0280–F0320)
+  const T3 = {
+    ifg: [152, 300, 432, 561, 705, 827, 950, 1073, 1239, 1387, 1511, 1634],
+    fd: [24, 48, 70, 91, 114, 135, 157, 176, 200, 223, 244, 265],
+  };
+  const CNT = { t: 0.5, step: 0.125 }; // counter staircase: one frame per 16th note
+  const FILL = { t: 2.0, d: 0.35, split: 65 }; // design-matrix fill: rows 0–64 on beat 2.0, rows 65–128 on beat 2.5
+  const CUR = { t: 3.0, n: 2, d: 0.3 }; // time-series cursor: crosses the axis in two beat steps (3.0, 3.5)
+  const K1 = { t: 4.0, d: 0.5 }, K2 = { t: 4.5, d: 0.5 }; // demErr, demErr_ramp
 
   // Section B: map of Central Luzon covering the ALOS footprints
-  const VIEW = G.view({ lon: 120.915, lat: 15.825, ppd: 268, cx: 758, cy: 549 });
+  const VIEW = G.view({ lon: 120.915, lat: 15.825, ppd: 255, cx: 758, cy: 562 }); // top edge clears the section-title slot
   const CAB = G.places.cabanatuan, DAG = G.places.dagupan;
-  const AW = VIEW.pt(CAB.lon, CAB.lat); // the Cabanatuan bowl's deepest cell: iris + zoom anchor (world)
+  const ANC = { lon: 120.62, lat: 15.47 }; // act-4 → act-5 hand-off pixel (Tarlac plains; SCENE_GUIDE §6)
+  const AW = VIEW.pt(ANC.lon, ANC.lat); // world anchor: map iris origin, TL marker, zoom anchor
+  const CABW = VIEW.pt(CAB.lon, CAB.lat), DAGW = VIEW.pt(DAG.lon, DAG.lat);
   const RB = (() => {
     const [x0, y0] = VIEW.pt(119.8, 17.15), [x1, y1] = VIEW.pt(122.03, 14.5);
     return { x0: Math.floor(x0), y0: Math.floor(y0), x1: Math.ceil(x1), y1: Math.ceil(y1) };
@@ -87,27 +107,26 @@
   INSET.s = INSET.rw / (RB.x1 - RB.x0);
   const VIEW_IN = G.view({ lon: VIEW.lon, lat: VIEW.lat, ppd: VIEW.ppd * INSET.s, cx: INSET.rx + (VIEW.cx - RB.x0) * INSET.s, cy: INSET.ry + (VIEW.cy - RB.y0) * INSET.s });
   const PANEL = {
-    title: { x: 1090, y: 214 },
     masks: { x: 1090, y: 245, w: 660, h: 250 },
     valid: { x: 1090, y: 515, w: 660, h: 230 },
     legend: { x: 1090, y: 765, w: 660, h: 150 },
   };
-  const SL = { x0: 1115, x1: 1725, y: 338 };
+  const SL = { x0: 1115, x1: 1725, y: 357 };
   const VB = { x0: 1115, x1: 1725, y: 660, max: 30000 };
-  const END = { x: 940, y: 556, size: 96 }; // hand-off pixel (screen space)
 
   // timeline of section B (lt)
-  const OPEN = { t: TA.out, d: 0.9 }; // map iris opens around the bowl while section A leaves
-  const T = { water: 7.0, swath: 7.5, thr: 8.0, tally: 8.5, zoom: 9.0, tag: 9.6, drop: 10.0, on: 10.25, morph: 10.375, fin: 10.9 };
-  const THR = [0.1, 0.3, 0.5, 0.7]; // slider steps on 16ths from T.thr
+  const OPEN = { t: 5.6, d: 0.9 }; // map iris opens around the TL's pixel while section A leaves
+  const T = { water: 6.5, swath: 7.0, thr: [7.5, 8.0, 8.5], tally: 6.5, zoom: 9.0, tag: 9.5, drop: 10.0, valid: 10.0, morph: 10.5 };
+  const THR = [0.3, 0.5, 0.7]; // slider steps on the beat
+  const TALLY_STEPS = 5; // the tally scan steps down the map on 5 beats (6.5 … 8.5)
 
-  // 1/1200° lattice around the bowl: cell (i, j) is centred at (CAB.lon + i/1200, CAB.lat − j/1200)
+  // 1/1200° lattice around the hand-off pixel: cell (i, j) is centred at (ANC.lon + i/1200, ANC.lat − j/1200)
   const CW = (G.K * VIEW.ppd) / 1200, CH = VIEW.ppd / 1200; // world px per cell at map scale
-  const S_END = 197; // map zoom at which one cell is ~44 world px (~47 px on screen)
+  const CELL = 48.4; // mean cell side at the end of the zoom (world px, ~52 px on screen); the TL pixel's square matches it
+  const S_END = CELL / (0.5 * (CW + CH)); // map zoom at which one cell is CELL world px (≈ ×227)
   const ZOOM = { d: 1.5, dv: 1.0, x0: 3.2, x1: 5.0 }; // zoom spring (settled by T.drop), frame spring; raster → lattice cross-fade over S ∈ [x0, x1]
   const R_MAX = 4; // the viewfinder closes on a 9 × 9 window of cells
   const W9 = { hx: (R_MAX + 0.5) * CW * S_END, hy: (R_MAX + 0.5) * CH * S_END }; // its half size (world px)
-  const TL_OUT = W9.hx + 44; // the TL steps outside the window while the lattice resolves
 
   /* ================================================================== SBAS pair network (pure, cached) */
   // Act 2 builds the 24-date / 149-pair P448 F0290 network with this deterministic seed search (its layout constants
@@ -188,7 +207,6 @@
     const arcs = pairs.map(([a, b], i) => ({ i, a, b, cx: (x[a] + x[b]) / 2, rx: (x[b] - x[a]) / 2, tl: a === jTL || b === jTL }));
     const byDist = arcs.slice().sort((p, q) => Math.abs(p.cx - xT) - Math.abs(q.cx - xT));
     byDist.forEach((a, k) => { a.rank = k / (byDist.length - 1); });
-    const bpMax = Math.max(...bp.map((b) => Math.abs(b - bp[0])));
     // fit every state of the series (uncorrected … corrected) inside the plot band, above the year ticks
     let lo = 0, hi = 0;
     for (let j = 0; j < n; j++) for (const k1 of [0, 1]) for (const k2 of [0, 1]) {
@@ -197,25 +215,41 @@
     }
     const top = LA.ts.y + 80, bot = LA.ts.y + LA.ts.h - 70;
     const scale = Math.min(228, (bot - top) / (hi - lo));
-    NET = { n, yrs, bp, bpMax, pairs, arcs, x, jTL, xT, trend, seas, dem, ramp, noise, dphi, ts: { y0: top + hi * scale, scale } };
+    // per-date solve time: the time-series cursor passes the date (two springs, one per beat step)
+    const tPhi = x.map((xx) => {
+      const u = clamp((xx - AX.x0) / (AX.x1 - AX.x0)) * CUR.n, c = Math.min(CUR.n - 1, Math.floor(u));
+      return CUR.t + 0.5 * c + invSpring(u - c, CUR.d);
+    });
+    // per-row fill time of the design matrix (two beat-locked chunks)
+    const tRow = pairs.map((_, i) => {
+      const c = i < FILL.split ? 0 : 1, f = c ? (i - FILL.split) / (pairs.length - 1 - FILL.split) : i / (FILL.split - 1);
+      return FILL.t + 0.5 * c + invSpring(Math.min(0.999, f * 0.96 + 0.02), FILL.d);
+    });
+    NET = { n, yrs, bp, pairs, arcs, x, jTL, xT, trend, seas, dem, ramp, noise, dphi, tPhi, tRow, ts: { y0: top + hi * scale, scale } };
     return NET;
   }
   /** Displacement of date j (normalised units, ≤ 0 = away from the satellite) after corrections k1 (demErr), k2 (ramp). */
   function disp(N, j, k1, k2) { return N.trend[j] + N.seas[j] + N.noise[j] + N.dem[j] * (1 - k1) + N.ramp[j] * (1 - k2); }
   const tsY = (N, d) => N.ts.y0 - d * N.ts.scale;
-  const tRow = (i) => 2.0 + (0.9 * i) / 128; // design-matrix row fill
-  const tPhi = (j) => 2.95 + 0.45 * (j / 20); // solved column + dot drop
+  /** Time-series cursor position as an axis fraction (beat-locked staircase). */
+  const tsCursor = (lt) => clamp(L.steps(lt - CUR.t, 0.5, CUR.d) / CUR.n);
+  /** Design-matrix fill front (rows filled, continuous). */
+  function fillFront(lt) {
+    if (lt <= FILL.t) return 0;
+    const c = lt < FILL.t + 0.5 ? 0 : 1, n0 = c ? FILL.split : 0, n1 = c ? 129 - FILL.split : FILL.split;
+    return n0 + n1 * clamp(L.spring(lt - FILL.t - 0.5 * c, FILL.d));
+  }
 
   /* ================================================================== map fields (precomputed in init) */
   let MAP = null;
   const KX = Math.cos(15.5 * Math.PI / 180) * 111.32, KM = 111.32;
+  // LOS velocity field (schematic). Cabanatuan keeps its ~5 km bowl as map context (the finding belongs to act 5);
+  // Dagupan is only a place marker (one-track signal, not a result) — no bowl.
   const BOWLS = [
     { lon: CAB.lon, lat: CAB.lat, sx: 3.0, sy: 3.0, a: -3.7 }, // Cabanatuan City: ~5 km across at half depth
-    { lon: DAG.lon + 0.025, lat: DAG.lat - 0.02, sx: 2.3, sy: 2.3, a: -2.9 }, // Dagupan City (smaller, weaker)
     { lon: 120.9, lat: 15.84, sx: 15, sy: 24, a: -0.45 }, // soft negative tint across the valley north of Cabanatuan
     { lon: 120.72, lat: 14.93, sx: 15, sy: 11, a: -0.55 }, // lower Pampanga basin (broad, soft)
   ];
-  const DAGB = BOWLS[1];
   function bowls(lon, lat) {
     let v = 0;
     for (const b of BOWLS) { const dx = ((lon - b.lon) * KX) / b.sx, dy = ((lat - b.lat) * KM) / b.sy; const e = dx * dx + dy * dy; if (e < 14) v += b.a * Math.exp(-e); }
@@ -244,14 +278,6 @@
     }
     return sw > 0 ? so / sw : 0;
   }
-  /** Smallest t with spring(t, dur) ≥ v (v in 0..1): lets per-pixel times follow the same spring as the iris. */
-  const SPR = (() => { const n = 2048, a = new Float32Array(n + 1); for (let i = 0; i <= n; i++) a[i] = L.spring(i / n, 1); return a; })();
-  function invSpring(v, dur) {
-    let lo = 0, hi = SPR.length - 1;
-    if (v <= 0) return 0;
-    while (lo < hi) { const mid = (lo + hi) >> 1; if (SPR[mid] >= v) hi = mid; else lo = mid + 1; }
-    return (lo / (SPR.length - 1)) * dur;
-  }
   const rgb32 = (r, g, b, a = 255) => ((a << 24) | ((Math.min(255, b) | 0) << 16) | ((Math.min(255, g) | 0) << 8) | (Math.min(255, r) | 0)) >>> 0;
   function buildMap() {
     const w = RB.x1 - RB.x0, h = RB.y1 - RB.y0;
@@ -261,7 +287,7 @@
     const g0 = G.grid(lonA, lonB, latA, latB, gx, gy);
     // Workaround: the shared schematic DEM starts the Cordillera Central at 16.0°N, i.e. on the flat
     // Pangasinan / Nueva Ecija plains (Dagupan ≈ 760 m, Rosales ≈ 2,000 m). Coherence there is good in the
-    // report (Dagupan subsidence is measured), so flatten that tip for the coherence + relief fields only.
+    // report, so flatten that tip for the coherence + relief fields only.
     const g = { ...g0, h: new Float32Array(g0.h.length) };
     const GN = gx * gy, nz = new Float32Array(GN), nz2 = new Float32Array(GN), hs = new Float32Array(GN), cb = new Float32Array(GN);
     for (let j = 0; j < gy; j++) for (let i = 0; i < gx; i++) {
@@ -282,7 +308,7 @@
       return (arr[o] * (1 - u) + arr[o + 1] * u) * (1 - v) + (arr[o + gx] * (1 - u) + arr[o + gx + 1] * u) * v;
     };
     const lowA = L.hex('#0A0F19'), hiA = L.hex('#171F2E');
-    /** One sample of every field (hero pixel or lattice cell). hz: per-sample hash, hb: 2×2-block hash (decorrelation grain). */
+    /** One sample of every field (display pixel or lattice cell). hz: per-sample hash, hb: 2×2-block hash (decorrelation grain). */
     const S = { land: false, edge: 0, c: 0, v: 0, base: 0, col: 0 };
     function sample(lon, lat, wx, wy, hz, hb, vNoise) {
       const fx = ((wx - RB.x0) / w) * (gx - 1), fy = ((wy - RB.y0) / h) * (gy - 1);
@@ -313,7 +339,7 @@
       return S;
     }
     const col = new Uint32Array(N), tIn = new Float32Array(N), tOut = new Float32Array(N), coh = new Float32Array(N);
-    const uni = new Uint8Array(N), keep = new Uint8Array(N), rowKept = new Float64Array(RH);
+    const uni = new Uint8Array(N), rowKept = new Float64Array(RH);
     const base = L.canvas(RW, RH), bx = base.getContext('2d'), bimg = bx.createImageData(RW, RH), b32 = new Uint32Array(bimg.data.buffer);
     const fin = L.canvas(RW, RH), fx2 = fin.getContext('2d'), fimg = fx2.createImageData(RW, RH), f32 = new Uint32Array(fimg.data.buffer);
     const iC = Math.round((AW[0] - RB.x0) * RS - 0.5), jC = Math.round((AW[1] - RB.y0) * RS - 0.5);
@@ -328,15 +354,15 @@
         if (s.land) b32[k] = s.base;
         if (s.edge <= 0) { tIn[k] = 1e9; tOut[k] = -1e9; continue; }
         uni[k] = 1; coh[k] = s.c; col[k] = s.col & 0x00ffffff;
-        // reveal: square iris opening from the bowl (interlaced rows)
+        // reveal: square iris opening from the TL's pixel (interlaced rows)
         const dxN = i < iC ? (iC - i) / iC : (i - iC) / Math.max(1, RW - 1 - iC);
         tIn[k] = OPEN.t + invSpring(Math.max(dxN, dyN), OPEN.d) + par * 0.04;
         if (!s.land) tOut[k] = T.water + 0.05 + 0.4 * (j / RH) + par * 0.06;
         else if (s.edge < EW) tOut[k] = T.swath + 0.12 + 0.35 * (j / RH) + par * 0.05;
         else if (s.c < 0.7) {
-          let st = 0; while (st < 3 && s.c >= THR[st]) st++;
-          tOut[k] = T.thr + 0.02 + st * 0.125 + 0.08 * (j / RH) + par * 0.04;
-        } else { tOut[k] = 1e9; keep[k] = 1; rowKept[j] += 1; f32[k] = (col[k] | 0xff000000) >>> 0; }
+          let st = 0; while (st < THR.length - 1 && s.c >= THR[st]) st++;
+          tOut[k] = T.thr[st] + 0.02 + 0.12 * (j / RH) + par * 0.04;
+        } else { tOut[k] = 1e9; rowKept[j] += 1; f32[k] = (col[k] | 0xff000000) >>> 0; }
       }
     }
     bx.putImageData(bimg, 0, 0);
@@ -354,90 +380,87 @@
       const k = sj * RW + si; icoh[j * IW + i] = coh[k]; iuni[j * IW + i] = uni[k];
     }
     const icv = L.canvas(IW, IH), icx = icv.getContext('2d'), iimg = icx.createImageData(IW, IH);
-    // 1/1200° lattice around the bowl (same fields, sampled at 90 m cells; noisier per cell than the display raster)
+    // 1/1200° lattice around the hand-off pixel (same fields, sampled at 90 m cells; noisier per cell than the display raster)
     const li0 = Math.floor((RB.x0 - AW[0]) / (CW * ZOOM.x0)) - 2, li1 = Math.ceil((RB.x1 - AW[0]) / (CW * ZOOM.x0)) + 2;
     const lj0 = Math.floor((RB.y0 - AW[1]) / (CH * ZOOM.x0)) - 2, lj1 = Math.ceil((RB.y1 - AW[1]) / (CH * ZOOM.x0)) + 2;
     const LWd = li1 - li0 + 1, LHt = lj1 - lj0 + 1;
     const lcv = L.canvas(LWd, LHt), lcx = lcv.getContext('2d'), limg = lcx.createImageData(LWd, LHt), l32 = new Uint32Array(limg.data.buffer);
     const win = new Map(); // css colours of the cells the drop animates
+    let anc = null;
     for (let j = lj0; j <= lj1; j++) {
-      const lat = CAB.lat - j / 1200, wy = AW[1] + j * CH;
+      const lat = ANC.lat - j / 1200, wy = AW[1] + j * CH;
       for (let i = li0; i <= li1; i++) {
-        const lon = CAB.lon + i / 1200, wx = AW[0] + i * CW;
-        const s = sample(lon, lat, wx, wy, L.hash2(i, j, 406), L.hash2(i >> 1, j >> 1, 407), 1.2);
+        const lon = ANC.lon + i / 1200, wx = AW[0] + i * CW;
+        const s = sample(lon, lat, wx, wy, L.hash2(i, j, 406), L.hash2(i >> 1, j >> 1, 407), 0.9);
         const ok = s.edge >= EW && s.land && s.c >= 0.7;
         const v = ok ? (s.col | 0xff000000) >>> 0 : s.land ? s.base : 0;
         l32[(j - lj0) * LWd + (i - li0)] = v;
         if (Math.max(Math.abs(i), Math.abs(j)) <= R_MAX + 1) win.set(i + ',' + j, v ? `rgb(${v & 255},${(v >>> 8) & 255},${(v >>> 16) & 255})` : null);
+        if (!i && !j) anc = { ok, c: s.c, v: s.v };
       }
     }
     lcx.putImageData(limg, 0, 0);
-    const c0 = l32[(0 - lj0) * LWd + (0 - li0)];
-    MAP = { RW, RH, N, col, tIn, tOut, coh, uni, keep, cum, base, fin, cv, cx, img, d32: new Uint32Array(img.data.buffer),
+    if (!anc || !anc.ok) console.warn('act4: hand-off pixel is not a valid cell', JSON.stringify(anc));
+    MAP = { RW, RH, N, col, tIn, tOut, coh, uni, cum, base, fin, cv, cx, img, d32: new Uint32Array(img.data.buffer),
       IW, IH, icoh, iuni, icv, icx, iimg, i32: new Uint32Array(iimg.data.buffer), insetKey: '',
-      lat: { cv: lcv, i0: li0, j0: lj0, w: LWd, h: LHt, win, c0: [c0 & 255, (c0 >>> 8) & 255, (c0 >>> 16) & 255] }, lonA, lonB, latA, latB };
+      lat: { cv: lcv, i0: li0, j0: lj0, w: LWd, h: LHt, win }, anc };
     return MAP;
   }
   const map = () => MAP || buildMap();
 
   /* ================================================================== zoom, viewport, TL layout (shared by tl() and draw()) */
-  /** Map zoom about the bowl: S = 1 → S_END (log-space spring), from T.zoom. */
+  /** Map zoom about the hand-off pixel: S = 1 → S_END (log-space spring), from T.zoom. */
   function zoomS(lt) {
     if (lt <= T.zoom) return 1;
     return Math.exp(L.smooth(sp(lt, T.zoom, ZOOM.d)) * Math.log(S_END));
   }
-  /** Rings of cells still standing during the drop (R_MAX → 0, continuous). */
-  const tRing = (r) => T.drop + (R_MAX - r) * 0.1;
+  /** Rings of cells still standing during the drop (R_MAX → 0, continuous); one ring per 16th. */
+  const tRing = (r) => T.drop + (R_MAX - r) * 0.125;
   function ringsLeft(lt) { let v = 0; for (let r = 1; r <= R_MAX; r++) v += 1 - sp(lt, tRing(r), 0.28); return v; }
-  /** Visible map rect (world, pre-camera): iris opening from the bowl, then the zoom frame contracting onto one cell. */
+  /** Visible map rect (world, pre-camera): iris opening from the TL's pixel, then the zoom frame contracting onto it. */
   function viewport(lt, S) {
     if (lt < T.zoom) {
       const f = sp(lt, OPEN.t, OPEN.d);
       return { x0: lerp(AW[0], RB.x0, f), x1: lerp(AW[0], RB.x1, f), y0: lerp(AW[1], RB.y0, f), y1: lerp(AW[1], RB.y1, f), f };
     }
-    if (lt < T.drop) { // the zoom: frame closes from the map extent to the 9 × 9 window around the bowl
+    if (lt < T.drop) { // the zoom: frame closes from the map extent to the 9 × 9 window around the pixel
       const kv = sp(lt, T.zoom, ZOOM.dv);
       return { x0: lerp(RB.x0, AW[0] - W9.hx, kv), x1: lerp(RB.x1, AW[0] + W9.hx, kv), y0: lerp(RB.y0, AW[1] - W9.hy, kv), y1: lerp(RB.y1, AW[1] + W9.hy, kv), f: 1 };
     }
     const rv = ringsLeft(lt), hx = (rv + 0.5) * CW * S, hy = (rv + 0.5) * CH * S;
     return { x0: AW[0] - hx, x1: AW[0] + hx, y0: AW[1] - hy, y1: AW[1] + hy, f: 1 };
   }
-  /** Coherence threshold shown on the slider (0.1 → 0.7 in four 16th-note steps from T.thr). */
+  /** Index of the current coherence threshold step (−1 before the sweep). */
+  function thrIdx(lt) { let i = -1; for (let k = 0; k < T.thr.length; k++) if (lt >= T.thr[k]) i = k; return i; }
+  /** Coherence threshold on the slider (0 → 0.3 → 0.5 → 0.7, one spring per beat). */
   function threshold(lt) {
-    if (lt < T.thr) return 0;
     let v = 0;
-    for (let i = 0; i < THR.length; i++) {
-      const at = T.thr + i * 0.125;
-      if (lt < at) break;
-      v = lerp(i ? THR[i - 1] : 0, THR[i], clamp(L.spring(lt - at, 0.12)));
+    for (let k = 0; k < T.thr.length; k++) {
+      if (lt < T.thr[k]) break;
+      v = lerp(k ? THR[k - 1] : 0, THR[k], sp(lt, T.thr[k], 0.3));
     }
     return v;
   }
-  /** World anchor + size of the TL before the finale glide. */
+  /** Valid-area tally scan (fraction of the map height), one step per beat from T.tally. */
+  const tallyS = (lt) => clamp(L.steps(lt - T.tally, 0.5, 0.3) / TALLY_STEPS);
+  /** World anchor + size of the TL: network node → the hand-off pixel's marker on the map → that pixel. */
   function tlWorld(lt) {
     const N = net();
-    const g = spo(lt, TA.out, 0.9), gs = sp(lt, TA.out, 0.9); // network → beside the bowl
-    const kOn = spo(lt, T.on, 0.5), kS = sp(lt, T.on, 0.5); // onto the surviving cell
-    const cell = 0.5 * (CW + CH) * S_END; // world px
-    const off = lerp(46, TL_OUT, sp(lt, T.zoom, ZOOM.dv));
-    const bx = AW[0] + off * (1 - kOn), by = AW[1], bs = lerp(40, cell / 1.24, kS);
-    return { x: lerp(N.xT, bx, g), y: lerp(LA.net.axisY, by, g) - 60 * Math.sin(Math.PI * clamp(g)), size: lerp(TL_NET, bs, gs) };
-  }
-  /** Finale weights; each reaches exactly 1 at lt = 12. */
-  function finale(lt) {
-    const lock = L.smooth(clamp((lt - 11.45) / 0.55));
-    const k = (v) => v + (1 - v) * lock;
-    return { kx: k(sp(lt, T.morph, 0.5)), kp: k(sp(lt, T.fin, 0.9)), km: k(spo(lt, T.fin, 0.9)) };
+    const g = spo(lt, TA.out, 0.9), gs = sp(lt, TA.out, 0.9); // network → onto the pixel (one gesture)
+    const kS = sp(lt, T.morph, 0.5); // grows to the cell's own size as it becomes the pixel
+    const bs = lerp(TL_MAP, CELL / 1.24, kS);
+    const arc = 34 * Math.sin(Math.PI * clamp(g));
+    return { x: lerp(N.xT, AW[0], g) + arc, y: lerp(LA.net.axisY, AW[1], g), size: lerp(TL_NET, bs, gs) };
   }
   function tlTarget(env) {
-    const lt = env.lt, w = tlWorld(lt), f = finale(lt);
-    let [x, y] = env.cam.toScreen(w.x, w.y);
-    let size = w.size * env.cam.z;
-    x = lerp(x, END.x, f.km); y = lerp(y, END.y, f.km); size = lerp(size, END.size, f.kp); // grow + glide to the hand-off
-    const st = { x, y, size, rot: 0, alpha: 1, phase: TAU * 2 * env.t, energy: 0.45 + 0.4 * env.pulse, amp: 1 };
-    const tint = f.kx <= 0 ? C.purple : f.kx >= 0.9999 ? undefined : L.mix(C.purple, C.cyan, f.kx);
-    if (f.kx >= 0.9999) return { ...st, form: 'pixel', to: null, k: 0, tint };
-    if (f.kx > 0) return { ...st, form: 'node', to: 'pixel', k: f.kx, tint };
+    const lt = env.lt, w = tlWorld(lt);
+    const [x, y] = env.cam.toScreen(w.x, w.y);
+    const lock = L.smooth(clamp((lt - 11.5) / 0.5)); // guarantees a pure form at the cut
+    const kx = lerp(sp(lt, T.morph, 0.5), 1, lock);
+    const st = { x, y, size: w.size * env.cam.z, rot: 0, alpha: 1, phase: TAU * 2 * env.t, energy: 0.45 + 0.4 * env.pulse, amp: 1 };
+    const tint = kx <= 0 ? C.purple : kx >= 0.995 ? undefined : L.mix(C.purple, C.cyan, kx);
+    if (kx >= 0.995) return { ...st, form: 'pixel', to: null, k: 0, tint };
+    if (kx > 0) return { ...st, form: 'node', to: 'pixel', k: kx, tint };
     return { ...st, form: 'node', tint };
   }
 
@@ -454,45 +477,77 @@
   }
   /** Mono label on a backplate (map annotations). */
   function tag(ctx, str, x, y, o) {
-    const m = L.measure(ctx, str, { kind: 'mono', size: 18, weight: o.weight || 400 });
+    const m = L.measure(ctx, str, { kind: 'mono', size: o.size || 19, weight: o.weight || 400 });
     const bx = o.align === 'right' ? x - m.w : o.align === 'center' ? x - m.w / 2 : x;
     const k = L.ease.outCubic(clamp(o.p * 1.2));
     if (o.p > 0) {
       ctx.save(); ctx.beginPath(); ctx.rect(bx - 12, y - 18, (m.w + 24) * k, 30); ctx.clip();
-      plate(ctx, bx - 8, y - 15, m.w + 16, 24, 0.94);
+      plate(ctx, bx - 8, y - 15, m.w + 16, 25, 0.94);
       ctx.restore();
     }
-    L.text(ctx, str, bx, y + 2, { kind: 'mono', size: 18, weight: o.weight || 400, color: o.color || C.text, p: o.p, bg: C.card, baseline: 'middle', id: o.id });
+    L.text(ctx, str, bx, y + 2, { kind: 'mono', size: o.size || 19, weight: o.weight || 400, color: o.color || C.text, p: o.p, bg: C.card, baseline: 'middle', id: o.id });
+  }
+  /** Card header: mono 600 18 px, tracked caps, phase ink (one type system across the film). */
+  function hdr(ctx, str, x, y, p, id, o = {}) {
+    return L.text(ctx, str.toUpperCase(), x, y, { kind: 'mono', size: 18, weight: 600, tracking: 0.12, color: INK_CARD, p, bg: C.card, scanColor: C.purple, id, ...o });
   }
 
   /* ---------------------------------------------------------------- section A */
-  function drawTitleA(ctx, lt) {
+  function drawTitleA(ctx, lt, env) {
     const pT = io(lt, 0.25, TA.text, 0.5, 0.35);
-    L.text(ctx, 'Network inversion', LA.title.x, LA.title.y, { kind: 'display', size: 40, weight: 700, p: pT, scanColor: C.purple, id: 'a4-titleA' });
-    const pc = io(lt, 0.5, TA.text, 0.4, 0.35), c = sp(lt, 0.5, 0.9);
-    const s1 = fmt(1634 * c).padStart(5, ' '), s2 = fmt(265 * c).padStart(3, ' '), s3 = fmt(12 * c).padStart(2, ' ');
-    L.text(ctx, [{ s: s1, color: C.text }, { s: ' interferograms · ', color: C.textDim }, { s: s2, color: C.text }, { s: ' dates · ', color: C.textDim }, { s: s3, color: C.text }, { s: ' frames', color: C.textDim }],
-      LA.counters.x, LA.counters.y, { kind: 'mono', size: 22, weight: 600, align: 'right', p: pc, scanColor: C.purple, id: 'a4-count' });
-    L.text(ctx, [{ s: 'one SBAS inversion ', color: C.textDim }, { s: 'per frame', color: INK }], LA.sub.x, LA.sub.y, { kind: 'sans', size: 22, weight: 500, align: 'right', p: io(lt, 1.0, TA.text, 0.4, 0.35), scanColor: C.purple, id: 'a4-sub' });
+    L.text(ctx, 'Network inversion', LA.title.x, LA.title.y, { kind: 'display', size: 40, weight: 700, p: pT, scanColor: C.purple, id: 'a4-title' });
+    // counter: staircase through the real per-frame cumulative sums (every value is a true partial total)
+    const pc = io(lt, CNT.t, TA.text, 0.4, 0.35);
+    if (pc <= 0) return;
+    const i = clamp(Math.floor((lt - CNT.t) / CNT.step), 0, 11), nf = i + 1;
+    const segs = [
+      { s: fmt(T3.ifg[i]).padStart(5, ' '), color: C.text, weight: 600 }, { s: ' interferograms · ', color: C.textDim },
+      { s: String(T3.fd[i]).padStart(3, ' '), color: C.text, weight: 600 }, { s: ' frame-dates · ', color: C.textDim },
+      { s: String(nf).padStart(2, ' '), color: C.text, weight: 600 }, { s: nf === 1 ? ' frame  · ' : ' frames · ', color: C.textDim },
+      { s: 'one inversion ', color: C.textDim }, { s: 'per frame', color: INK },
+    ];
+    const b = L.text(ctx, segs, LA.counters.x, LA.counters.y, { kind: 'mono', size: 20, weight: 400, align: 'right', p: pc, scanColor: C.purple, id: 'a4-count' });
+    // tick: a hairline under the counter flashes on every 16th step, then breathes on the beat
+    const st = lt - CNT.t, f16 = st - CNT.step * Math.floor(st / CNT.step);
+    const a = st < 12 * CNT.step ? Math.exp(-f16 / 0.04) : 0.25 + 0.5 * env.pulse;
+    ctx.fillStyle = L.rgba(C.purple, 0.75 * a * pc);
+    ctx.fillRect(b.x + b.w * (1 - pc), LA.counters.y + 10, b.w * pc, 2);
   }
 
   function drawNetwork(ctx, lt, env, hi) {
     const N = net(), R = LA.net, ay = R.axisY;
-    const pc = io(lt, 0.05, TA.net, 0.6, 0.55);
-    L.card(ctx, R.x, R.y, R.w, R.h, { p: pc, accent: C.purple });
-    if (pc <= 0) return;
-    ctx.save(); cardClip(ctx, R.x, R.y, R.w, R.h, pc);
-    L.text(ctx, [{ s: 'P448 F0290', color: INK_CARD }, { s: ' · 21 dates · 129 interferograms', color: C.textDim }], R.x + 22, R.y + 34, { kind: 'mono', size: 18, p: io(lt, 0.5, TA.net - 0.1, 0.4, 0.4), bg: C.card, scanColor: C.purple, id: 'a4-nethead' });
-    // time axis grows out of the TL node, retracts into it
-    const ga = sp(lt, 0.12, 0.7) * (1 - sp(lt, TA.out + 0.1, 0.5));
+    if (lt >= TA.net) return;
+    // entrance: the card opens as an iris around the TL (the first act-4 element is built out of the through-line)
+    const [ox, oy] = env.tl ? env.cam.toWorld(env.tl.x, env.tl.y) : [N.xT, ay];
+    const kIn = sp(lt, 0.0, 0.8), pOut = clamp(1 - L.sp(lt, TA.net - 0.55, 0.44));
+    const ir = { x0: lerp(ox, R.x - 4, kIn), x1: lerp(ox, R.x + R.w + 4, kIn), y0: lerp(oy, R.y - 4, kIn), y1: lerp(oy, R.y + R.h + 4, kIn) };
+    ctx.save();
+    ctx.beginPath(); ctx.rect(ir.x0, ir.y0, ir.x1 - ir.x0, ir.y1 - ir.y0); ctx.clip();
+    L.card(ctx, R.x, R.y, R.w, R.h, { p: pOut, accent: C.purple });
+    ctx.restore();
+    if (kIn < 0.995) { // iris edges (construct accent)
+      ctx.strokeStyle = L.rgba(C.purple, 0.9 * (1 - kIn)); ctx.lineWidth = 1.5;
+      ctx.strokeRect(ir.x0, ir.y0, ir.x1 - ir.x0, ir.y1 - ir.y0);
+    }
+    ctx.save();
+    ctx.beginPath(); ctx.rect(ir.x0, ir.y0, ir.x1 - ir.x0, ir.y1 - ir.y0); ctx.clip();
+    cardClip(ctx, R.x, R.y, R.w, R.h, pOut);
+    // header: frame id (card header) + its staged → used numbers (act 2 showed the 24 / 149 it was formed from)
+    const ph = io(lt, 0.5, TA.net - 0.1, 0.4, 0.4);
+    const hb = hdr(ctx, 'P448 F0290', R.x + 22, R.y + 36, ph, 'a4-nethead');
+    L.text(ctx, [{ s: '·  ', color: C.textDim }, { s: '21', color: C.text }, { s: ' of 24 dates  ·  ', color: C.textDim }, { s: '129', color: C.text }, { s: ' of 149 interferograms inverted', color: C.textDim }],
+      R.x + 22 + hb.w + 12, R.y + 36, { kind: 'sans', size: 22, weight: 500, p: io(lt, 0.62, TA.net - 0.1, 0.4, 0.4), bg: C.card, scanColor: C.purple, id: 'a4-netval' });
+    // time axis grows out of the TL, retracts into the node
+    const ga = sp(lt, 0.1, 0.7) * (1 - sp(lt, TA.out + 0.1, 0.5));
     if (ga > 0) {
+      const o = lt < 3 ? clamp(ox, AX.x0, AX.x1) : N.xT;
       ctx.strokeStyle = L.rgba(C.textDim, 0.55); ctx.lineWidth = 1.5;
-      ctx.beginPath(); ctx.moveTo(lerp(N.xT, AX.x0 - 12, ga), ay); ctx.lineTo(lerp(N.xT, AX.x1 + 12, ga), ay); ctx.stroke();
-      for (let yr = 2007; yr <= 2011; yr++) {
+      ctx.beginPath(); ctx.moveTo(lerp(o, AX.x0 - 12, ga), ay); ctx.lineTo(lerp(o, AX.x1 + 12, ga), ay); ctx.stroke();
+      for (let yr = 2007; yr <= 2011; yr++) { // year labels sit at their Jan-1 ticks
         const x = xYr(yr), d = Math.abs(x - N.xT) / 500;
         const pt = io(lt, 0.45 + 0.25 * d, TA.net - 0.1, 0.35, 0.4);
         ctx.strokeStyle = L.rgba(C.textDim, 0.5 * pt); ctx.beginPath(); ctx.moveTo(x, ay); ctx.lineTo(x, ay + 8 * pt); ctx.stroke();
-        L.text(ctx, String(yr), xYrLabel(yr), ay + 30, { kind: 'mono', size: 16, color: C.textDim, align: 'center', p: pt, role: 'deco' });
+        L.text(ctx, String(yr), x, ay + 30, { kind: 'mono', size: 16, color: C.textDim, align: 'center', p: pt, role: 'deco' });
       }
     }
     // arcs (one per interferometric pair)
@@ -508,12 +563,12 @@
       ctx.moveTo(a.cx - a.rx, ay); ctx.ellipse(a.cx, ay, a.rx, a.rx * 0.8, 0, Math.PI, Math.PI + Math.PI * p);
     }
     ctx.stroke();
-    // the TL node's own pairs: brighter purple, breathing on the beat
-    ctx.lineWidth = 1.7; ctx.strokeStyle = L.rgba(INK, 0.55 + 0.3 * pul);
+    // the TL node's own pairs: brighter purple, ticking on the beat
+    ctx.lineWidth = 1.7; ctx.strokeStyle = L.rgba(INK, 0.5 + 0.4 * pul);
     ctx.beginPath();
     for (const a of tlArcs) { ctx.moveTo(a.cx - a.rx, ay); ctx.ellipse(a.cx, ay, a.rx, a.rx * 0.8, 0, Math.PI, Math.PI + Math.PI * a.p); }
     ctx.stroke();
-    // rows being filled in the design matrix light their arcs
+    // rows being filled in the design matrix light their arcs (two beat-locked bursts)
     if (hi.length) {
       ctx.save(); ctx.globalCompositeOperation = 'lighter';
       for (const [i, wgt] of hi) {
@@ -523,14 +578,16 @@
       }
       ctx.restore();
     }
-    // date nodes, constructed outward from the TL
+    // date nodes, constructed outward from the TL; each ticks as its φ is solved
     for (let j = 0; j < N.n; j++) {
       if (j === N.jTL) continue; // the TL is this node
       const d = Math.abs(N.x[j] - N.xT) / 860;
       const s = sp(lt, 0.18 + 0.55 * d, 0.35) * (1 - sp(lt, TA.out + 0.05 + 0.35 * (1 - d), 0.35));
       if (s <= 0) continue;
+      const tk = lt >= N.tPhi[j] ? Math.exp(-(lt - N.tPhi[j]) / 0.15) : 0;
       ctx.fillStyle = L.rgba('#C9D6EA', 0.95);
-      ctx.beginPath(); ctx.arc(N.x[j], ay, 4.6 * s, 0, TAU); ctx.fill();
+      ctx.beginPath(); ctx.arc(N.x[j], ay, 4.6 * s * (1 + 0.5 * tk), 0, TAU); ctx.fill();
+      if (tk > 0.02) { ctx.strokeStyle = L.rgba(INK, 0.8 * tk); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(N.x[j], ay, 7 + 8 * (1 - tk), 0, TAU); ctx.stroke(); }
     }
     ctx.restore();
   }
@@ -543,7 +600,6 @@
     ctx.save(); cardClip(ctx, R.x, R.y, R.w, R.h, pc);
     const pt = io(lt, 1.62, TA.mat - 0.05, 0.45, 0.4);
     L.text(ctx, [{ s: 'A', color: C.text }, { s: ' · ', color: C.textDim }, { s: 'φ', color: INK_CARD }, { s: ' = ', color: C.textDim }, { s: 'Δφ', color: C.text }], R.x + 26, R.y + 46, { kind: 'sans', size: 34, weight: 600, p: pt, bg: C.card, scanColor: C.purple, id: 'a4-eq' });
-    const out = 1; // contents leave with the card (clip)
     const cont = sp(lt, 1.8, 0.5);
     const H = 129 * MX.rh, cols = N.n;
     // frames of A, φ and Δφ
@@ -558,7 +614,7 @@
     // rows of A (−1 at the earlier date, +1 at the later date) and the observed Δφ
     const G1 = L.hex(C.gold), C1 = L.hex(C.cyan);
     for (let i = 0; i < 129; i++) {
-      const a = clamp((lt - tRow(i)) / 0.07) * out;
+      const a = clamp((lt - N.tRow[i]) / 0.07);
       if (a <= 0) continue;
       const [ja, jb] = N.pairs[i], y = MX.ay + i * MX.rh;
       ctx.fillStyle = L.css(G1, a); ctx.fillRect(MX.ax + ja * MX.cw + 1, y, MX.cw - 2, MX.rh - 0.3);
@@ -566,30 +622,28 @@
       ctx.fillStyle = L.css(L.velRGB(N.dphi[i], 0.5), a); ctx.fillRect(MX.dx + 1, y, MX.colW - 2, MX.rh - 0.3);
     }
     // solved φ (displacement per date) — live with the corrections
-    const k1 = sp(lt, 4.0, 0.7), k2 = sp(lt, 4.5, 0.7), ch = H / cols;
+    const k1 = sp(lt, K1.t, K1.d), k2 = sp(lt, K2.t, K2.d), ch = H / cols;
     for (let j = 0; j < cols; j++) {
-      const a = clamp((lt - tPhi(j)) / 0.1) * out;
+      const a = clamp((lt - N.tPhi[j]) / 0.1);
       if (a <= 0) continue;
       ctx.fillStyle = L.css(L.velRGB(disp(N, j, k1, k2), 0.9), a);
       ctx.fillRect(MX.px + 1, MX.ay + j * ch + 0.5, MX.colW - 2, ch - 1);
     }
-    // fill cursor
-    if (lt > 2.0 && lt < 3.0) {
-      const r = clamp((lt - 2.0) / 0.9) * 128, y = MX.ay + r * MX.rh;
-      const a = Math.sin(Math.PI * clamp((lt - 2.0) / 0.95));
+    // fill cursor (rides the beat-locked fill front)
+    if (lt > FILL.t && lt < FILL.t + 1.0) {
+      const y = MX.ay + fillFront(lt) * MX.rh;
+      const a = Math.sin(Math.PI * clamp((lt - FILL.t) / 1.0));
       ctx.save(); ctx.globalCompositeOperation = 'lighter';
-      ctx.fillStyle = L.rgba(C.cyan, 0.8 * a); ctx.fillRect(MX.ax - 6, y - 1, MX.dx + MX.colW + 6 - MX.ax + 6, 2);
+      ctx.fillStyle = L.rgba(C.cyan, 0.8 * a); ctx.fillRect(MX.ax - 6, y - 1, MX.dx + MX.colW + 12 - MX.ax, 2);
       ctx.fillStyle = L.rgba(C.cyan, 0.18 * a); ctx.fillRect(MX.ax - 6, y - 6, MX.dx + MX.colW + 12 - MX.ax, 12);
       ctx.restore();
     }
-    // legend
-    const lx = 1540, pl = (k) => io(lt, 1.85 + 0.12 * k, TA.mat - 0.05, 0.4, 0.4);
-    ctx.fillStyle = L.rgba(C.cyan, pl(0)); ctx.fillRect(lx, 333, 14, 14);
-    L.text(ctx, '+1 later date', lx + 24, 346, { kind: 'mono', size: 18, color: C.text, p: pl(0), bg: C.card, id: 'a4-lg1' });
-    ctx.fillStyle = L.rgba(C.gold, pl(1)); ctx.fillRect(lx, 365, 14, 14);
-    L.text(ctx, '−1 earlier date', lx + 24, 378, { kind: 'mono', size: 18, color: C.text, p: pl(1), bg: C.card, id: 'a4-lg2' });
-    L.textLines(ctx, ['rows: pairs', 'cols: dates'], lx, 440, { kind: 'mono', size: 18, color: C.textDim, lh: 28, p: pl(2), bg: C.card, id: 'a4-lg3' });
-    L.textLines(ctx, ['least squares,', 'per pixel'], lx, 556, { kind: 'mono', size: 18, color: INK_CARD, lh: 28, p: io(lt, 2.4, TA.mat - 0.05, 0.4, 0.4), bg: C.card, id: 'a4-lg4' });
+    // key (demoted to tick-label role)
+    const lx = 1626, pl = io(lt, 1.85, TA.mat - 0.05, 0.4, 0.4);
+    ctx.fillStyle = L.rgba(C.cyan, pl); ctx.fillRect(lx, MX.ay + 2, 12, 12);
+    L.text(ctx, '+1 later', lx + 20, MX.ay + 13, { kind: 'mono', size: 16, color: C.textDim, p: pl, role: 'deco' });
+    ctx.fillStyle = L.rgba(C.gold, pl); ctx.fillRect(lx, MX.ay + 26, 12, 12);
+    L.text(ctx, '−1 earlier', lx + 20, MX.ay + 37, { kind: 'mono', size: 16, color: C.textDim, p: pl, role: 'deco' });
     ctx.restore();
   }
 
@@ -600,11 +654,10 @@
     if (pc <= 0) return;
     ctx.save(); cardClip(ctx, R.x, R.y, R.w, R.h, pc);
     const pe = TA.ts - 0.1; // texts scan out as the card retracts
-    L.text(ctx, [{ s: 'example pixel', color: C.text }, { s: ' · schematic', color: C.textDim }], R.x + 22, R.y + 34, { kind: 'mono', size: 18, p: io(lt, 1.9, pe, 0.4, 0.4), bg: C.card, scanColor: C.purple, id: 'a4-tshead' });
-    L.text(ctx, 'cumulative LOS displacement', R.x + R.w - 22, R.y + 34, { kind: 'mono', size: 18, color: C.textDim, align: 'right', p: io(lt, 2.05, pe, 0.4, 0.4), bg: C.card, id: 'a4-tsy' });
-    const out = 1; // contents leave with the card (clip)
+    hdr(ctx, 'example pixel · schematic', R.x + 22, R.y + 36, io(lt, 1.9, pe, 0.4, 0.4), 'a4-tshead');
+    L.text(ctx, 'cumulative LOS displacement', R.x + R.w - 22, R.y + 36, { kind: 'mono', size: 18, color: C.textDim, align: 'right', p: io(lt, 2.05, pe, 0.4, 0.4), bg: C.card, id: 'a4-tsy' });
     const ax = sp(lt, 2.0, 0.6);
-    // zero line + year grid
+    // zero line + year grid (labels at the Jan-1 ticks)
     const y0 = N.ts.y0;
     ctx.save(); ctx.setLineDash([6, 6]); ctx.strokeStyle = L.rgba(C.textDim, 0.45); ctx.lineWidth = 1.2;
     ctx.beginPath(); ctx.moveTo(AX.x0 - 10, y0); ctx.lineTo(lerp(AX.x0 - 10, AX.x1 + 10, ax), y0); ctx.stroke(); ctx.restore();
@@ -612,27 +665,37 @@
       const x = xYr(yr), pt = io(lt, 2.05 + 0.06 * (yr - 2007), pe, 0.4, 0.4);
       ctx.strokeStyle = L.rgba(C.cyan, 0.07 * pt); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x, R.y + 52); ctx.lineTo(x, R.y + R.h - 44); ctx.stroke();
       ctx.strokeStyle = L.rgba(C.textDim, 0.5 * pt); ctx.beginPath(); ctx.moveTo(x, R.y + R.h - 44); ctx.lineTo(x, R.y + R.h - 36); ctx.stroke();
-      L.text(ctx, String(yr), xYrLabel(yr), R.y + R.h - 18, { kind: 'mono', size: 16, color: C.textDim, align: 'center', p: pt, role: 'deco' });
+      L.text(ctx, String(yr), x, R.y + R.h - 16, { kind: 'mono', size: 16, color: C.textDim, align: 'center', p: pt, role: 'deco' });
     }
     // sign convention (the series has no value axis: schematic)
     L.text(ctx, [{ s: '↓', color: INK_CARD }, { s: ' away from satellite', color: C.textDim }], AX.x0 + 8, R.y + R.h - 56, { kind: 'mono', size: 18, p: io(lt, 2.3, pe, 0.4, 0.4), bg: C.card, id: 'a4-sign' });
-    const k1 = sp(lt, 4.0, 0.7), k2 = sp(lt, 4.5, 0.7);
+    // time-series cursor: steps across the axis on the beat (3.0, 3.5); dates are solved as it passes
+    const ca = io(lt, CUR.t - 0.15, CUR.t + 1.35, 0.25, 0.45);
+    if (ca > 0) {
+      const x = lerp(AX.x0, AX.x1, tsCursor(lt));
+      ctx.strokeStyle = L.rgba(INK, 0.75 * ca); ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(x, R.y + 56); ctx.lineTo(x, R.y + R.h - 44); ctx.stroke();
+      ctx.fillStyle = L.rgba(INK, ca); ctx.beginPath(); ctx.moveTo(x - 6, R.y + 50); ctx.lineTo(x + 6, R.y + 50); ctx.lineTo(x, R.y + 58); ctx.closePath(); ctx.fill();
+      L.glow(ctx, x, R.y + 56, 18, C.purple, 0.6 * ca * env.pulse);
+    }
+    const k1 = sp(lt, K1.t, K1.d), k2 = sp(lt, K2.t, K2.d);
     // dots drop from their network node; each segment draws on as its later dot lands
     const pts = [];
     for (let j = 0; j < N.n; j++) {
-      const t0 = tPhi(j);
-      if (lt < t0) break;
-      const f = spo(lt, t0, 0.5), y = lerp(LA.net.axisY, tsY(N, disp(N, j, k1, k2)), f);
+      const t0 = N.tPhi[j];
+      if (lt < t0) continue;
+      const f = spo(lt, t0, 0.45), y = lerp(LA.net.axisY, tsY(N, disp(N, j, k1, k2)), f);
       pts.push([N.x[j], y, f, j]);
     }
-    ctx.strokeStyle = L.rgba(INK, 0.6 * out); ctx.lineWidth = 1.6;
+    ctx.strokeStyle = L.rgba(INK, 0.6); ctx.lineWidth = 1.6;
     for (let k = 1; k < pts.length; k++) {
+      if (pts[k][3] !== pts[k - 1][3] + 1) continue;
       const pp = clamp((pts[k][2] - 0.6) / 0.4);
       if (pp <= 0) continue;
       L.polyPartial(ctx, [pts[k - 1], pts[k]], pp); ctx.stroke();
     }
     // velocity fit through the corrected series
-    const pf = sp(lt, 4.9, 0.45) * out;
+    const pf = sp(lt, 5.0, 0.45);
     if (pf > 0) {
       const a = [N.x[0], tsY(N, 0)], b = [N.x[N.n - 1], tsY(N, N.trend[N.n - 1])];
       ctx.save(); ctx.strokeStyle = L.rgba(C.cyan, 0.85); ctx.lineWidth = 2; ctx.setLineDash([10, 7]);
@@ -643,26 +706,26 @@
         ctx.strokeStyle = L.rgba(C.purple, 0.35 * (1 - clamp(f))); ctx.lineWidth = 2;
         ctx.beginPath(); ctx.moveTo(x, LA.net.axisY); ctx.lineTo(x, y); ctx.stroke();
       }
-      const r = 5.5 * clamp(f * 3) * out;
+      const r = 5.5 * clamp(f * 3);
       if (r <= 0) continue;
       ctx.fillStyle = j === N.jTL ? C.purple : '#D9E4F5';
       ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
-      if (j === N.jTL) { ctx.strokeStyle = L.rgba(INK, 0.9 * out); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, y, r + 5 + 3 * env.pulse, 0, TAU); ctx.stroke(); }
+      if (j === N.jTL) { ctx.strokeStyle = L.rgba(INK, 0.9); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, y, r + 5 + 3 * env.pulse, 0, TAU); ctx.stroke(); }
     }
     ctx.restore();
   }
 
   function drawDem(ctx, lt) {
     const N = net(), R = LA.dem;
-    const pc = io(lt, 2.95, TA.dem, 0.5, 0.45);
+    const pc = io(lt, 2.0, TA.dem, 0.5, 0.45);
     L.card(ctx, R.x, R.y, R.w, R.h, { p: pc, accent: C.purple });
     if (pc <= 0) return;
     ctx.save(); cardClip(ctx, R.x, R.y, R.w, R.h, pc);
-    const pt = (k) => io(lt, 3.05 + 0.1 * k, TA.dem - 0.05, 0.4, 0.4);
-    L.text(ctx, 'demErr', R.x + 22, R.y + 40, { kind: 'mono', size: 22, weight: 600, color: INK_CARD, p: pt(0), bg: C.card, scanColor: C.purple, id: 'a4-dem1' });
-    L.text(ctx, 'DEM-error correction', R.x + 22, R.y + 74, { kind: 'sans', size: 22, weight: 500, color: C.text, p: pt(1), bg: C.card, id: 'a4-dem2' });
-    L.text(ctx, 'phase vs B⊥ trend → 0', R.x + 22, R.y + 110, { kind: 'mono', size: 18, color: C.textDim, p: pt(2), bg: C.card, id: 'a4-dem3' });
-    const k1 = sp(lt, 4.0, 0.7), out = 1, pa = sp(lt, 3.2, 0.5); // contents leave with the card (clip)
+    const pt = (k) => io(lt, 2.1 + 0.1 * k, TA.dem - 0.05, 0.4, 0.4);
+    hdr(ctx, 'DEM-error correction', R.x + 22, R.y + 36, pt(0), 'a4-dem1');
+    L.text(ctx, 'demErr', R.x + 22, R.y + 74, { kind: 'mono', size: 24, weight: 600, color: C.text, p: pt(1), bg: C.card, scanColor: C.purple, id: 'a4-dem2' });
+    L.text(ctx, 'phase vs B⊥ trend → 0', R.x + 22, R.y + 112, { kind: 'mono', size: 18, color: C.textDim, p: pt(2), bg: C.card, id: 'a4-dem3' });
+    const k1 = sp(lt, K1.t, K1.d), pa = sp(lt, 2.3, 0.5); // contents leave with the card (clip)
     const ym = (DP.y0 + DP.y1) / 2, xm = (DP.x0 + DP.x1) / 2, sx = (DP.x1 - DP.x0) / 2 - 8, sy = (DP.y1 - DP.y0) / 2 - 6;
     ctx.strokeStyle = L.rgba(C.textDim, 0.45 * pa); ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(DP.x0, ym); ctx.lineTo(lerp(DP.x0, DP.x1, pa), ym); ctx.moveTo(xm, DP.y1); ctx.lineTo(xm, lerp(DP.y1, DP.y0, pa)); ctx.stroke();
@@ -672,14 +735,14 @@
     const bmin = Math.min(...N.bp), bmax = Math.max(...N.bp), bmid = (bmin + bmax) / 2, bh = (bmax - bmin) / 2;
     const px = (b) => xm + ((b - bmid) / bh) * sx;
     const py = (b, extra) => ym - (((b - bmid) / bh) * 0.5 * (1 - k1) + extra) * sy * 1.6; // offset is arbitrary: centred
-    const pl = sp(lt, 3.35, 0.4) * out; // regression line rotates flat as the DEM error is removed
+    const pl = sp(lt, 2.45, 0.4); // regression line rotates flat as the DEM error is removed
     if (pl > 0) {
       ctx.strokeStyle = L.rgba(C.cyan, 0.9); ctx.lineWidth = 2;
       L.polyPartial(ctx, [[px(bmin) - 4, py(bmin - 4 * bh / sx, 0)], [px(bmax) + 4, py(bmax + 4 * bh / sx, 0)]], pl); ctx.stroke();
     }
     for (let j = 0; j < N.n; j++) {
       const x = px(N.bp[j]), y = py(N.bp[j], (N.noise[j] / 0.16) * 0.6);
-      const r = 3.6 * sp(lt, 3.25 + 0.015 * j, 0.3) * out;
+      const r = 3.6 * sp(lt, 2.35 + 0.015 * j, 0.3);
       if (r <= 0) continue;
       ctx.fillStyle = j === N.jTL ? C.purple : L.rgba('#D9E4F5', 0.95);
       ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
@@ -689,16 +752,16 @@
 
   function drawRamp(ctx, lt) {
     const R = LA.ramp;
-    const pc = io(lt, 3.1, TA.ramp, 0.5, 0.45);
+    const pc = io(lt, 2.15, TA.ramp, 0.5, 0.45);
     L.card(ctx, R.x, R.y, R.w, R.h, { p: pc, accent: C.purple });
     if (pc <= 0) return;
     ctx.save(); cardClip(ctx, R.x, R.y, R.w, R.h, pc);
-    const pt = (k) => io(lt, 3.2 + 0.1 * k, TA.ramp - 0.05, 0.4, 0.4);
-    L.text(ctx, 'demErr_ramp', R.x + 22, R.y + 40, { kind: 'mono', size: 22, weight: 600, color: INK_CARD, p: pt(0), bg: C.card, scanColor: C.purple, id: 'a4-rmp1' });
-    L.text(ctx, '+ orbital ramp removal', R.x + 22, R.y + 74, { kind: 'sans', size: 22, weight: 500, color: C.text, p: pt(1), bg: C.card, id: 'a4-rmp2' });
-    L.text(ctx, 'planar ramp → flat', R.x + 22, R.y + 108, { kind: 'mono', size: 18, color: C.textDim, p: pt(2), bg: C.card, id: 'a4-rmp3' });
+    const pt = (k) => io(lt, 2.25 + 0.1 * k, TA.ramp - 0.05, 0.4, 0.4);
+    hdr(ctx, '+ orbital ramp removal', R.x + 22, R.y + 36, pt(0), 'a4-rmp1');
+    L.text(ctx, 'demErr_ramp', R.x + 22, R.y + 74, { kind: 'mono', size: 24, weight: 600, color: C.text, p: pt(1), bg: C.card, scanColor: C.purple, id: 'a4-rmp2' });
+    L.text(ctx, 'planar ramp → flat', R.x + 22, R.y + 110, { kind: 'mono', size: 18, color: C.textDim, p: pt(2), bg: C.card, id: 'a4-rmp3' });
     // tile: unwrapped residual LOS (velocity colours) = planar orbital ramp + noise; the plane is subtracted
-    const k2 = sp(lt, 4.5, 0.7), rv = sp(lt, 3.3, 0.45); // leaves with the card (clip)
+    const k2 = sp(lt, K2.t, K2.d), rv = sp(lt, 2.4, 0.45); // leaves with the card (clip)
     if (rv > 0) {
       const tw = Math.round(RT.w * RS), th = Math.round(RT.h * RS);
       const r = L.rasterCanvas('a4-ramp', tw, th), d = r.img.data, lut = L.LUT.vel;
@@ -716,12 +779,12 @@
       // profile along the tile: tilted with the ramp, rotates flat as it is removed
       const ym = RT.y + RT.h / 2, tilt = 0.42 * RT.h * (1 - k2);
       ctx.strokeStyle = L.rgba(C.text, 0.85); ctx.lineWidth = 2;
-      L.polyPartial(ctx, [[RT.x + 8, ym + tilt / 2], [RT.x + RT.w - 8, ym - tilt / 2]], sp(lt, 3.45, 0.45)); ctx.stroke();
+      L.polyPartial(ctx, [[RT.x + 8, ym + tilt / 2], [RT.x + RT.w - 8, ym - tilt / 2]], sp(lt, 2.55, 0.45)); ctx.stroke();
       ctx.restore();
       ctx.strokeStyle = L.rgba(C.cyan, 0.35 * rv); ctx.lineWidth = 1; ctx.strokeRect(RT.x - 0.5, RT.y - 0.5, RT.w + 1, RT.h + 1);
       // subtraction sweep
-      if (lt > 4.5 && lt < 5.3) {
-        const s = sp(lt, 4.5, 0.6), x = RT.x + RT.w * s, a = Math.sin(Math.PI * clamp((lt - 4.5) / 0.8));
+      if (lt > K2.t && lt < K2.t + 0.6) {
+        const s = sp(lt, K2.t, 0.45), x = RT.x + RT.w * s, a = Math.sin(Math.PI * clamp((lt - K2.t) / 0.6));
         ctx.save(); ctx.globalCompositeOperation = 'lighter';
         ctx.fillStyle = L.rgba(C.cyan, 0.8 * a); ctx.fillRect(x - 1, RT.y, 2, RT.h);
         ctx.fillStyle = L.rgba(C.cyan, 0.15 * a); ctx.fillRect(x - 8, RT.y, 16, RT.h);
@@ -734,7 +797,7 @@
   /* ---------------------------------------------------------------- section B */
   function paintHero(lt) {
     const M = map();
-    if (lt >= T.thr + 0.6) return M.fin; // every mask has run: the final valid raster (precomputed)
+    if (lt >= T.thr[T.thr.length - 1] + 0.3) return M.fin; // every mask has run: the final valid raster (precomputed)
     const d32 = M.d32, col = M.col, tIn = M.tIn, tOut = M.tOut;
     for (let i = 0, n = M.N; i < n; i++) {
       const a = Math.min(lt - tIn[i], tOut[i] - lt) * 10;
@@ -763,9 +826,9 @@
     M.icx.putImageData(M.iimg, 0, 0);
     return M.icv;
   }
-  /** Zoomed view: same projection, ppd × S, pinned on the bowl's cell. */
-  const zoomView = (S) => (S === 1 ? VIEW : G.view({ lon: CAB.lon, lat: CAB.lat, ppd: VIEW.ppd * S, cx: AW[0], cy: AW[1] }));
-  /** Clip that excludes small discs (keeps lines off the bowl and the TL). */
+  /** Zoomed view: same projection, ppd × S, pinned on the hand-off pixel. */
+  const zoomView = (S) => (S === 1 ? VIEW : G.view({ lon: ANC.lon, lat: ANC.lat, ppd: VIEW.ppd * S, cx: AW[0], cy: AW[1] }));
+  /** Clip that excludes small discs (keeps lines off the place markers and the TL). */
   function clipHoles(ctx, vp, holes) {
     ctx.beginPath(); ctx.rect(vp.x0 - 4, vp.y0 - 4, vp.x1 - vp.x0 + 8, vp.y1 - vp.y0 + 8);
     for (const [x, y, r] of holes) { ctx.moveTo(x + r, y); ctx.arc(x, y, r, 0, TAU, true); }
@@ -774,7 +837,7 @@
   function insetFootprint(fp, V) { return G.footprint(fp.p, fp.la0 + EW, fp.la1 - EW, 0.4 - EW / G.K).map(([lo, la]) => V.pt(lo, la)); }
 
   function drawMap(ctx, lt, env) {
-    if (lt < OPEN.t || lt > T.fin + 0.2) return;
+    if (lt < OPEN.t || lt >= 12) return;
     const M = map(), W = RB.x1 - RB.x0, H = RB.y1 - RB.y0;
     const S = zoomS(lt), V = zoomView(S), vp = viewport(lt, S);
     const xf = smooth01((S - ZOOM.x0) / (ZOOM.x1 - ZOOM.x0)); // display raster → 90 m lattice
@@ -783,7 +846,7 @@
     ctx.save();
     ctx.beginPath(); ctx.rect(vp.x0, vp.y0, vp.x1 - vp.x0, vp.y1 - vp.y0); ctx.clip();
     if (lt < T.drop) {
-      if (xf < 1) { // hillshade base + LOS velocity raster (all masks applied per pixel), zoomed about the bowl
+      if (xf < 1) { // hillshade base + LOS velocity raster (all masks applied per pixel), zoomed about the pixel
         ctx.save();
         ctx.translate(AW[0], AW[1]); ctx.scale(S, S); ctx.translate(-AW[0], -AW[1]);
         ctx.beginPath(); ctx.rect(RB.x0, RB.y0, W, H); ctx.clip();
@@ -811,23 +874,25 @@
         for (let j = Math.ceil((vp.y0 - AW[1]) / cellH - 0.5); j <= (vp.y1 - AW[1]) / cellH - 0.5; j++) { const y = AW[1] + (j + 0.5) * cellH; ctx.moveTo(vp.x0, y); ctx.lineTo(vp.x1, y); }
         ctx.stroke();
       }
-    } else { // bar 21: every cell but the bowl's deepest one drops, ring by ring from the outside in
+    } else { // bar 21: every cell but the TL's drops, ring by ring from the outside in (one ring per 16th)
       const gap = 0.6 / env.cam.z;
       for (let j = -R_MAX; j <= R_MAX; j++) for (let i = -R_MAX; i <= R_MAX; i++) {
         const r = Math.max(Math.abs(i), Math.abs(j));
-        const k = r === 0 ? (lt < T.fin ? 1 : 0) : 1 - sp(lt, tRing(r), 0.28);
-        if (k <= 0) continue;
+        const k = r === 0 ? 1 : 1 - sp(lt, tRing(r), 0.28);
+        const a = r === 0 ? 1 - sp(lt, 11.4, 0.55) : 1; // the surviving cell's fill hands over to the TL pixel
+        if (k <= 0 || a <= 0.003) continue;
         const css = M.lat.win.get(i + ',' + j);
         if (!css) continue;
         const cxw = AW[0] + i * cellW, cyw = AW[1] + j * cellH;
         if (cxw + cellW / 2 < vp.x0 || cxw - cellW / 2 > vp.x1 || cyw + cellH / 2 < vp.y0 || cyw - cellH / 2 > vp.y1) continue;
-        ctx.fillStyle = css;
+        ctx.globalAlpha = a; ctx.fillStyle = css;
         ctx.fillRect(cxw - (cellW / 2 - gap) * k, cyw - (cellH / 2 - gap) * k, (cellW - 2 * gap) * k, (cellH - 2 * gap) * k);
+        ctx.globalAlpha = 1;
       }
     }
     // coastline (fades out with the zoom)
     if (zf > 0) G.drawLand(ctx, V, { which: 'ph', stroke: L.rgba(C.cyan, 0.42 * zf), lw: 1.2 });
-    // mask sweeps (water, swath edge) and the tally scan
+    // mask sweeps (water) and the beat-stepped tally scan
     const sweep = (t0, dur, color, w = 2) => {
       if (lt < t0 || lt > t0 + dur + 0.15) return;
       const s = clamp((lt - t0) / dur), y = RB.y0 + H * s, a = Math.sin(Math.PI * clamp((lt - t0) / (dur + 0.15)));
@@ -837,13 +902,13 @@
       ctx.restore();
     };
     sweep(T.water + 0.05, 0.45, C.cyan);
-    if (lt >= T.tally && lt < T.tally + 0.9) {
-      const s = sp(lt, T.tally, 0.5), y = RB.y0 + H * s, a = 1 - sp(lt, T.tally + 0.4, 0.3);
+    if (lt >= T.tally && lt < T.tally + TALLY_STEPS * 0.5 + 0.4) {
+      const s = tallyS(lt), y = RB.y0 + H * s, a = (1 - sp(lt, T.tally + TALLY_STEPS * 0.5 - 0.15, 0.4)) * (0.65 + 0.35 * env.pulse);
       ctx.save(); ctx.globalCompositeOperation = 'lighter';
-      ctx.fillStyle = L.rgba(C.cyan, 0.9 * a); ctx.fillRect(RB.x0, y - 1, W, 2);
-      const gr = ctx.createLinearGradient(0, y - 60, 0, y);
-      gr.addColorStop(0, L.rgba(C.cyan, 0)); gr.addColorStop(1, L.rgba(C.cyan, 0.12 * a));
-      ctx.fillStyle = gr; ctx.fillRect(RB.x0, y - 60, W, 60);
+      ctx.fillStyle = L.rgba(C.purple, 0.95 * a); ctx.fillRect(RB.x0, y - 1, W, 2);
+      const gr = ctx.createLinearGradient(0, y - 46, 0, y);
+      gr.addColorStop(0, L.rgba(C.purple, 0)); gr.addColorStop(1, L.rgba(C.purple, 0.16 * a));
+      ctx.fillStyle = gr; ctx.fillRect(RB.x0, y - 46, W, 46);
       ctx.restore();
     }
     // swath-edge mask: the inner offset of the footprint union flashes on the beat, then its strip drops
@@ -862,19 +927,19 @@
       });
       ctx.restore();
     }
-    // footprints (P447/448/449) and frame ticks — kept off the bowl and the TL
+    // footprints (P447/448/449) and frame ticks — kept off the place markers and the TL
     const tlw = tlWorld(lt);
-    const fa = sp(lt, OPEN.t + 0.6, 0.6) * zf;
+    const fa = sp(lt, OPEN.t + 0.5, 0.6) * zf;
     const fpts = FP.map((fp) => G.footprint(fp.p, fp.la0, fp.la1).map(([lo, la]) => V.pt(lo, la)));
     if (fa > 0.002) {
-      ctx.save(); clipHoles(ctx, vp, [[AW[0], AW[1], 22], [tlw.x, tlw.y, tlw.size * 0.62]]);
+      ctx.save(); clipHoles(ctx, vp, [[CABW[0], CABW[1], 20], [DAGW[0], DAGW[1], 18], [tlw.x, tlw.y, tlw.size * 0.62]]);
       FP.forEach((fp, k) => {
-        const p = sp(lt, OPEN.t + 0.6 + 0.12 * k, 0.7);
+        const p = sp(lt, OPEN.t + 0.5 + 0.12 * k, 0.7);
         if (p <= 0) return;
         const pts = fpts[k];
         ctx.strokeStyle = L.rgba('#C9D6EA', 0.75 * fa); ctx.lineWidth = 1.6; ctx.setLineDash([]);
         L.polyPartial(ctx, [...pts, pts[0]], p); ctx.stroke();
-        const pf = sp(lt, OPEN.t + 1.0 + 0.1 * k, 0.5);
+        const pf = sp(lt, OPEN.t + 0.9 + 0.1 * k, 0.5);
         ctx.strokeStyle = L.rgba('#C9D6EA', 0.35 * pf * fa); ctx.lineWidth = 1; ctx.setLineDash([4, 5]);
         ctx.beginPath();
         for (const fr of fp.frames) {
@@ -885,24 +950,25 @@
         }
         ctx.stroke(); ctx.setLineDash([]);
       });
-      // Philippine Fault Zone (schematic), drawn on south → north
-      const pp = sp(lt, OPEN.t + 1.05, 0.9);
+      // Philippine Fault Zone (schematic): gold dashed, drawn on south → north
+      const pp = sp(lt, OPEN.t + 0.95, 0.9);
       if (pp > 0) {
         ctx.strokeStyle = L.rgba(C.gold, 0.92 * zf); ctx.lineWidth = 2.4; ctx.setLineDash([12, 6]);
         L.polyPartial(ctx, G.faults.pfz.map(([lo, la]) => V.pt(lo, la)), pp); ctx.stroke(); ctx.setLineDash([]);
       }
       ctx.restore();
     }
-    // bowl markers (same treatment for both sites)
-    const pr = io(lt, OPEN.t + 1.3, T.zoom + 0.35, 0.4, 0.35);
+    // neutral place markers (context only; the TL is the marker of its own pixel)
+    const pr = io(lt, OPEN.t + 1.2, T.zoom + 0.35, 0.4, 0.35);
     if (pr > 0) {
-      const [dx, dy] = V.pt(DAGB.lon, DAGB.lat);
       ctx.strokeStyle = L.rgba(C.text, 0.85 * pr); ctx.lineWidth = 1.5;
-      ctx.beginPath(); ctx.arc(dx, dy, 13 * pr, 0, TAU); ctx.stroke();
-      ctx.beginPath(); ctx.arc(AW[0], AW[1], 15 * pr, 0, TAU); ctx.stroke();
+      for (const [x, y, r] of [[DAGW[0], DAGW[1], 11], [CABW[0], CABW[1], 12]]) {
+        ctx.beginPath(); ctx.arc(x, y, r * pr, 0, TAU); ctx.stroke();
+        ctx.fillStyle = L.rgba(C.text, 0.9 * pr); ctx.beginPath(); ctx.arc(x, y, 2.2 * pr, 0, TAU); ctx.fill();
+      }
     }
-    // the bowl's deepest cell: outlined once the lattice is legible
-    const ph = io(lt, T.tag, T.on + 0.55, 0.35, 0.3);
+    // the TL's cell: outlined once the lattice is legible
+    const ph = io(lt, T.tag, T.morph + 0.55, 0.35, 0.3);
     if (ph > 0) {
       const hx = cellW / 2, hy = cellH / 2;
       ctx.strokeStyle = L.rgba(C.cyan, 0.95); ctx.lineWidth = 2 / env.cam.z;
@@ -912,7 +978,7 @@
     // map frame = the viewport (iris → zoom frame → contracting viewfinder)
     if (vp.x1 - vp.x0 > 1) {
       const moving = lt < OPEN.t + 0.95 || lt >= T.zoom;
-      const fr = lt >= T.drop ? 1 - sp(lt, T.on + 0.3, 0.3) : 1;
+      const fr = lt >= T.drop ? 1 - sp(lt, T.morph + 0.3, 0.3) : 1;
       if (fr > 0) {
         ctx.strokeStyle = L.rgba(C.cyan, (moving ? 0.6 : 0.22) * fr); ctx.lineWidth = 1.2;
         ctx.strokeRect(vp.x0 - 0.5, vp.y0 - 0.5, vp.x1 - vp.x0 + 1, vp.y1 - vp.y0 + 1);
@@ -925,22 +991,23 @@
         }
       }
     }
-    // labels (on backplates, anchored at map scale): they clear just before the zoom; Cabanatuan's rides into it
+    // labels (on backplates, anchored at map scale): they clear just before the zoom; Tarlac's rides into it
     const pl = (a, b = T.zoom + 0.2) => io(lt, a, b, 0.4, 0.3);
     const f0 = FP.map((fp) => G.footprint(fp.p, fp.la0, fp.la1).map(([lo, la]) => VIEW.pt(lo, la)));
-    tag(ctx, 'P449', (f0[0][2][0] + f0[0][3][0]) / 2, f0[0][3][1] + 22, { p: pl(6.75), align: 'center', id: 'a4-p449' });
-    tag(ctx, 'P448', (f0[1][2][0] + f0[1][3][0]) / 2, f0[1][3][1] + 22, { p: pl(6.82), align: 'center', id: 'a4-p448' });
-    tag(ctx, 'P447', (f0[2][2][0] + f0[2][3][0]) / 2, f0[2][3][1] - 18, { p: pl(6.9), align: 'center', id: 'a4-p447' });
-    const [dgx, dgy] = VIEW.pt(DAGB.lon, DAGB.lat);
-    tag(ctx, 'Dagupan City', dgx, dgy - 30, { p: pl(6.95), align: 'center', id: 'a4-dag' });
-    tag(ctx, 'Cabanatuan City', AW[0] - 26, AW[1] + 1, { p: pl(6.7, T.zoom + 0.55), align: 'right', id: 'a4-cab' });
+    tag(ctx, 'P449', (f0[0][2][0] + f0[0][3][0]) / 2, f0[0][3][1] + 22, { p: pl(6.6), align: 'center', id: 'a4-p449' });
+    tag(ctx, 'P448', (f0[1][2][0] + f0[1][3][0]) / 2, f0[1][3][1] + 22, { p: pl(6.68), align: 'center', id: 'a4-p448' });
+    tag(ctx, 'P447', (f0[2][2][0] + f0[2][3][0]) / 2, f0[2][3][1] - 18, { p: pl(6.76), align: 'center', id: 'a4-p447' });
+    tag(ctx, 'Dagupan City', DAGW[0], DAGW[1] - 30, { p: pl(6.85), align: 'center', id: 'a4-dag' });
+    tag(ctx, 'Cabanatuan City', CABW[0] + 22, CABW[1] + 1, { p: pl(6.55), id: 'a4-cab' });
+    tag(ctx, 'Tarlac City', tlw.x - 30, tlw.y + 1, { p: pl(6.5, T.zoom + 0.5), align: 'right', id: 'a4-tar' });
+    tag(ctx, 'shown geocoded for orientation', RB.x0 + 14, RB.y1 - 22, { p: pl(6.9), color: C.textDim, size: 18, id: 'a4-geo' });
     const [fx, fy] = VIEW.pt(120.93, 16.33);
     const pfl = pl(6.95);
     if (pfl > 0) {
       ctx.strokeStyle = L.rgba(C.gold, 0.7 * pfl); ctx.lineWidth = 1.2;
       ctx.beginPath(); ctx.moveTo(fx + 3, fy); ctx.lineTo(fx + 30 * pfl, fy - 26 * pfl); ctx.stroke();
     }
-    tag(ctx, 'Philippine Fault Zone', fx + 40, fy - 44, { p: pfl, color: C.gold, id: 'a4-pfz1' });
+    tag(ctx, 'Philippine Fault Zone', fx + 40, fy - 44, { p: pfl, color: INK_GOLD, id: 'a4-pfz1' });
     tag(ctx, '(schematic)', fx + 40, fy - 14, { p: pfl, color: C.textDim, id: 'a4-pfz2' });
   }
 
@@ -951,7 +1018,7 @@
     if (pc <= 0) return;
     ctx.save(); cardClip(ctx, R.x, R.y, R.w, R.h, pc);
     const pe = 11.1;
-    L.text(ctx, 'temporal coherence', R.rx, R.y + 34, { kind: 'sans', size: 22, weight: 600, color: C.text, p: io(lt, 6.1, pe, 0.4, 0.35), bg: C.card, id: 'a4-cohT' });
+    hdr(ctx, 'coherence map', R.rx, R.y + 36, io(lt, 6.1, pe, 0.4, 0.35), 'a4-cohT');
     const rev = sp(lt, 6.2, 0.7);
     if (rev > 0) {
       ctx.drawImage(paintInset(thr, clamp(rev * 1.05)), R.rx, R.ry, R.rw, R.rh);
@@ -975,42 +1042,43 @@
         ctx.fillRect(tx - 1, by - 2, 2, 14);
       }
     }
-    L.textLines(ctx, ['dark = decorrelated:', 'forest · mountains', 'water'], R.rx, by + 64, { kind: 'mono', size: 18, color: C.textDim, lh: 26, p: io(lt, 6.65, pe, 0.45, 0.35), bg: C.card, id: 'a4-cohN' });
+    const pn = (k) => io(lt, 6.65 + 0.08 * k, pe - 0.05 * k, 0.45, 0.35);
+    ['dark = decorrelated:', 'forest · mountains', 'water'].forEach((s, k) => L.text(ctx, s, R.rx, by + 64 + 26 * k, { kind: 'mono', size: 18, color: C.textDim, p: pn(k), bg: C.card, id: 'a4-cohN' + k }));
     ctx.restore();
   }
 
   function drawPanel(ctx, lt, env, thr) {
     const M = map();
-    // title
-    L.text(ctx, 'Coherence masking', PANEL.title.x, PANEL.title.y, { kind: 'display', size: 40, weight: 700, p: io(lt, 5.75, 11.2, 0.5, 0.4), scanColor: C.purple, id: 'a4-titleB' });
+    // section title: same slot as "Network inversion"
+    L.text(ctx, 'Coherence masking', LA.title.x, LA.title.y, { kind: 'display', size: 40, weight: 700, p: io(lt, 5.85, 11.2, 0.5, 0.4), scanColor: C.purple, id: 'a4-titleB' });
     // masks card
     let R = PANEL.masks, pc = io(lt, 5.9, 11.3, 0.5, 0.5);
     L.card(ctx, R.x, R.y, R.w, R.h, { p: pc, accent: C.purple });
     if (pc > 0) {
       ctx.save(); cardClip(ctx, R.x, R.y, R.w, R.h, pc);
       const pe = 11.2;
-      const pt = io(lt, 6.05, pe, 0.4, 0.35);
-      const val = (Math.round(thr * 10) / 10).toFixed(1);
-      L.text(ctx, [{ s: 'temporal coherence ≥ ', color: C.text }, { s: val, color: INK_CARD, weight: 600 }], SL.x0, R.y + 50, { kind: 'mono', size: 24, p: pt, bg: C.card, scanColor: C.purple, id: 'a4-slT' });
+      hdr(ctx, 'masks', SL.x0, R.y + 36, io(lt, 6.0, pe, 0.4, 0.35), 'a4-mskH');
+      const ti = thrIdx(lt), val = ti < 0 ? '0.0' : THR[ti].toFixed(1); // the value steps with the sweep
+      L.text(ctx, [{ s: 'temporal coherence ≥ ', color: C.text }, { s: val, color: INK_CARD, weight: 700 }], SL.x0, R.y + 78, { kind: 'sans', size: 24, weight: 500, p: io(lt, 6.08, pe, 0.4, 0.35), bg: C.card, scanColor: C.purple, id: 'a4-slT' });
       // slider
       const ps = sp(lt, 6.15, 0.6) * (1 - sp(lt, pe - 0.3, 0.4));
       const tw = (SL.x1 - SL.x0) * ps;
       ctx.fillStyle = L.rgba(C.textDim, 0.25); ctx.fillRect(SL.x0, SL.y - 2, tw, 4);
       for (let s = 0; s <= 10; s++) { const x = SL.x0 + (SL.x1 - SL.x0) * s / 10; if (x > SL.x0 + tw) break; ctx.fillStyle = L.rgba(C.textDim, s === 7 ? 0.9 : 0.45); ctx.fillRect(x - 0.75, SL.y + 8, 1.5, s === 7 ? 12 : 7); }
-      L.text(ctx, '0', SL.x0, SL.y + 40, { kind: 'mono', size: 16, color: C.textDim, p: ps, role: 'deco' });
-      L.text(ctx, '0.7', SL.x0 + (SL.x1 - SL.x0) * 0.7, SL.y + 40, { kind: 'mono', size: 16, color: C.textDim, align: 'center', p: ps, role: 'deco' });
-      L.text(ctx, '1', SL.x1, SL.y + 40, { kind: 'mono', size: 16, color: C.textDim, align: 'right', p: ps, role: 'deco' });
+      L.text(ctx, '0', SL.x0, SL.y + 38, { kind: 'mono', size: 16, color: C.textDim, p: ps, role: 'deco' });
+      L.text(ctx, '0.7', SL.x0 + (SL.x1 - SL.x0) * 0.7, SL.y + 38, { kind: 'mono', size: 16, color: C.textDim, align: 'center', p: ps, role: 'deco' });
+      L.text(ctx, '1', SL.x1, SL.y + 38, { kind: 'mono', size: 16, color: C.textDim, align: 'right', p: ps, role: 'deco' });
       const kx = SL.x0 + (SL.x1 - SL.x0) * thr;
       if (ps > 0.05) {
         ctx.fillStyle = C.purple; ctx.fillRect(SL.x0, SL.y - 2, kx - SL.x0, 4);
         L.glow(ctx, kx, SL.y, 26, C.purple, (0.4 + 0.6 * env.pulse) * ps);
         ctx.fillStyle = C.text; ctx.beginPath(); ctx.arc(kx, SL.y, 8 * ps, 0, TAU); ctx.fill();
         ctx.strokeStyle = L.rgba(C.purple, 1); ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(kx, SL.y, 8 * ps, 0, TAU); ctx.stroke();
-        if (thr >= 0.7 - 1e-6) { const ph = (env.t * 2) % 1; ctx.strokeStyle = L.rgba(INK, 0.6 * (1 - ph) * ps); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(kx, SL.y, 12 + 10 * ph, 0, TAU); ctx.stroke(); }
+        if (lt >= T.thr[0]) { const ph = (env.t * 2) % 1; ctx.strokeStyle = L.rgba(INK, 0.6 * (1 - ph) * ps); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(kx, SL.y, 12 + 10 * ph, 0, TAU); ctx.stroke(); }
       }
       // mask checklist
       const row = (k, label, tCheck, y) => {
-        const p = io(lt, 6.25 + 0.12 * k, pe, 0.4, 0.35);
+        const p = io(lt, 6.2 + 0.12 * k, pe, 0.4, 0.35);
         if (p <= 0) return;
         const bx = SL.x0, by = y - 13;
         ctx.strokeStyle = L.rgba(C.cyan, 0.6 * p); ctx.lineWidth = 1.5; ctx.strokeRect(bx, by, 24, 24);
@@ -1022,52 +1090,49 @@
         }
         L.text(ctx, label, bx + 44, y, { kind: 'sans', size: 24, weight: 500, color: ck > 0.5 ? C.text : C.textDim, baseline: 'middle', p, bg: C.card, id: 'a4-mask' + k });
       };
-      row(0, 'water mask', T.water + 0.05, R.y + 170);
-      row(1, 'swath-edge mask', T.swath + 0.3, R.y + 216);
+      row(0, 'water mask', T.water + 0.05, R.y + 182);
+      row(1, 'swath-edge mask', T.swath + 0.3, R.y + 222);
       ctx.restore();
     }
     // valid-area card (stays longest: the final number reads for > 1.5 s)
-    R = PANEL.valid; pc = io(lt, 6.15, 11.6, 0.5, 0.55);
+    R = PANEL.valid; pc = io(lt, 6.1, 11.6, 0.5, 0.55);
     L.card(ctx, R.x, R.y, R.w, R.h, { p: pc, accent: C.purple });
     if (pc > 0) {
       ctx.save(); cardClip(ctx, R.x, R.y, R.w, R.h, pc);
       const pe = 11.55; // texts scan out while the card retracts (no empty shell)
-      L.text(ctx, 'valid area', VB.x0, R.y + 42, { kind: 'sans', size: 22, weight: 500, color: C.textDim, p: io(lt, 6.55, pe, 0.4, 0.35), bg: C.card, id: 'a4-vaL' });
-      const s = sp(lt, T.tally, 0.5);
+      hdr(ctx, 'valid area', VB.x0, R.y + 36, io(lt, 6.25, pe, 0.4, 0.35), 'a4-vaL');
+      // live tally: counts up as the scan line confirms the masked rows, one step per beat (true partial sums of the map)
+      const s = lt >= T.tally ? tallyS(lt) : 0;
       const rowI = Math.min(M.RH - 1, Math.floor(s * M.RH));
-      const area = s >= 0.999 ? 27893 : Math.round(27893 * (lt >= T.tally ? M.cum[rowI] : 0));
-      // placeholder until the tally scan runs, then the live count (same id: they swap in place)
-      const ph = io(lt, 6.7, T.tally + 0.05, 0.4, 0.25);
-      if (ph > 0) L.text(ctx, [{ s: '—', color: C.textDim }, { s: ' km²', color: C.textDim }], VB.x0, R.y + 118, { kind: 'display', size: 64, weight: 700, p: ph, bg: C.card, scanColor: C.purple, id: 'a4-area' });
-      const pn = io(lt, T.tally - 0.05, pe, 0.35, 0.35);
-      L.text(ctx, [{ s: fmt(area), color: C.text }, { s: ' km²', color: C.textDim }], VB.x0, R.y + 118, { kind: 'display', size: 64, weight: 700, p: pn, bg: C.card, scanColor: C.purple, id: 'a4-area' });
+      const area = s >= 0.9995 ? 27893 : s <= 0 ? 0 : Math.round(27893 * M.cum[rowI]);
+      L.text(ctx, [{ s: fmt(area), color: INK_CARD }, { s: ' km²', color: C.textDim }], VB.x0, R.y + 116, { kind: 'display', size: 64, weight: 700, p: io(lt, 6.35, pe, 0.4, 0.35), bg: C.card, scanColor: C.purple, id: 'a4-area' });
       // bar with the target tick
-      const pb = sp(lt, 6.6, 0.6) * (1 - sp(lt, pe - 0.2, 0.4)), bw = (VB.x1 - VB.x0) * pb;
+      const pb = sp(lt, 6.4, 0.6) * (1 - sp(lt, pe - 0.2, 0.4)), bw = (VB.x1 - VB.x0) * pb;
       ctx.fillStyle = L.rgba(C.textDim, 0.2); ctx.fillRect(VB.x0, VB.y, bw, 10);
       ctx.fillStyle = C.purple; ctx.fillRect(VB.x0, VB.y, Math.min(bw, (VB.x1 - VB.x0) * (area / VB.max)), 10);
       const tx = VB.x0 + (VB.x1 - VB.x0) * (25000 / VB.max);
       const hit = area >= 25000;
-      const ptg = io(lt, 6.75, pe, 0.4, 0.35);
+      const ptg = io(lt, 6.55, pe, 0.4, 0.35);
       ctx.fillStyle = L.rgba(hit ? C.cyan : C.text, 0.9 * ptg); ctx.fillRect(tx - 1, VB.y - 12, 2, 34);
-      if (hit) L.glow(ctx, tx, VB.y + 5, 30, C.cyan, 0.6 * sp(lt, T.tally + 0.3, 0.3) * (0.6 + 0.4 * env.pulse) * ptg);
+      if (hit) L.glow(ctx, tx, VB.y + 5, 30, C.cyan, 0.6 * (0.6 + 0.4 * env.pulse) * ptg);
       L.text(ctx, [{ s: 'target 25,000 km²', color: hit ? C.text : C.textDim }, { s: hit ? ' ✓' : '', color: C.cyan }], tx, VB.y + 52, { kind: 'mono', size: 18, align: 'center', p: ptg, bg: C.card, id: 'a4-target' });
-      L.text(ctx, '12 frames · paths 447–449', VB.x0, VB.y + 52, { kind: 'mono', size: 18, color: C.textDim, p: io(lt, 6.85, pe, 0.4, 0.35), bg: C.card, id: 'a4-frames' });
+      L.text(ctx, '12 frames · paths 447–449', VB.x0, VB.y + 52, { kind: 'mono', size: 18, color: C.textDim, p: io(lt, 6.65, pe, 0.4, 0.35), bg: C.card, id: 'a4-frames' });
       ctx.restore();
     }
     // LOS velocity legend
-    R = PANEL.legend; pc = io(lt, 6.35, 11.4, 0.5, 0.5);
+    R = PANEL.legend; pc = io(lt, 6.3, 11.4, 0.5, 0.5);
     L.card(ctx, R.x, R.y, R.w, R.h, { p: pc, accent: C.purple });
     if (pc > 0) {
       ctx.save(); cardClip(ctx, R.x, R.y, R.w, R.h, pc);
-      const pt = io(lt, 6.5, 11.25, 0.4, 0.35);
-      L.text(ctx, [{ s: 'LOS velocity', color: C.text }, { s: ' · schematic', color: C.textDim }], VB.x0, R.y + 40, { kind: 'mono', size: 18, p: pt, bg: C.card, id: 'a4-lgT' });
+      const pt = io(lt, 6.45, 11.25, 0.4, 0.35);
+      hdr(ctx, 'LOS velocity · schematic · map view', VB.x0, R.y + 36, pt, 'a4-lgT');
       const g = ctx.createLinearGradient(VB.x0, 0, VB.x1, 0);
       for (let s = 0; s <= 12; s++) g.addColorStop(s / 12, L.css(L.velRGB(-1 + s / 6, 1)));
       const pb = sp(lt, 6.6, 0.6) * (1 - sp(lt, 10.95, 0.35));
-      ctx.save(); ctx.beginPath(); ctx.rect(VB.x0, R.y + 58, (VB.x1 - VB.x0) * pb, 16); ctx.clip(); ctx.fillStyle = g; ctx.fillRect(VB.x0, R.y + 58, VB.x1 - VB.x0, 16); ctx.restore();
-      L.text(ctx, '← away (subsidence)', VB.x0, R.y + 106, { kind: 'mono', size: 18, color: C.text, p: pt, bg: C.card, id: 'a4-lgA' });
-      L.text(ctx, 'toward →', VB.x1, R.y + 106, { kind: 'mono', size: 18, color: C.text, align: 'right', p: pt, bg: C.card, id: 'a4-lgB' });
-      L.text(ctx, '0', (VB.x0 + VB.x1) / 2, R.y + 100, { kind: 'mono', size: 16, color: C.textDim, align: 'center', p: pt, role: 'deco' });
+      ctx.save(); ctx.beginPath(); ctx.rect(VB.x0, R.y + 54, (VB.x1 - VB.x0) * pb, 16); ctx.clip(); ctx.fillStyle = g; ctx.fillRect(VB.x0, R.y + 54, VB.x1 - VB.x0, 16); ctx.restore();
+      L.text(ctx, '← away (e.g. subsidence)', VB.x0, R.y + 104, { kind: 'mono', size: 18, color: C.text, p: pt, bg: C.card, id: 'a4-lgA' });
+      L.text(ctx, 'toward →', VB.x1, R.y + 104, { kind: 'mono', size: 18, color: C.text, align: 'right', p: pt, bg: C.card, id: 'a4-lgB' });
+      L.text(ctx, '0', (VB.x0 + VB.x1) / 2, R.y + 98, { kind: 'mono', size: 16, color: C.textDim, align: 'center', p: pt, role: 'deco' });
       ctx.restore();
     }
   }
@@ -1078,11 +1143,15 @@
     init() { net(); map(); },
     tl(env) {
       const target = tlTarget(env), lt = env.lt, h = env.handoff;
-      if (!h || lt >= 1.25) return target;
-      const k = spo(lt, 0, 1.0), kk = clamp(k);
+      if (!h || lt >= 2.6) return target;
+      // land on the network node in one arcing gesture (longer moves take longer: peak speed stays ≲ 1,100 px/s);
+      // the hand-off size holds for one beat before the TL resizes
+      const dist = Math.hypot(h.x - target.x, h.y - target.y), dur = clamp(0.6 + dist / 900, 1.0, 1.5);
+      const k = spo(lt, 0, dur);
       const s = L.TL.blend(h, target, k);
-      s.phase = (h.phase || 0) + TAU * 2 * lt + kk * wrapPI(-(h.phase || 0));
-      s.tint = L.mix(C.cyan, C.purple, kk);
+      s.y -= 0.12 * dist * Math.sin(Math.PI * clamp(k));
+      s.size = lerp(h.size, target.size, spo(lt, 0.5, 0.9));
+      s.tint = L.mix(C.cyan, C.purple, clamp(k));
       return s;
     },
     draw(ctx, env) {
@@ -1090,38 +1159,29 @@
       if (lt < TA.ts + 0.05) {
         // design-matrix rows currently being filled light their arcs
         const hi = [];
-        if (lt > 2.0 && lt < 3.1) for (let i = 0; i < 129; i++) { const d = lt - tRow(i); if (d >= 0 && d < 0.16) hi.push([i, 1 - d / 0.16]); }
+        if (lt > FILL.t && lt < FILL.t + 1.2) { const N = net(); for (let i = 0; i < 129; i++) { const d = lt - N.tRow[i]; if (d >= 0 && d < 0.2) hi.push([i, 1 - d / 0.2]); } }
         drawNetwork(ctx, lt, env, hi);
         drawSeries(ctx, lt, env);
         drawMatrix(ctx, lt);
         drawDem(ctx, lt);
         drawRamp(ctx, lt);
-        drawTitleA(ctx, lt);
+        drawTitleA(ctx, lt, env);
       }
       if (lt >= OPEN.t) {
         const thr = threshold(lt);
         drawMap(ctx, lt, env);
-        const fa = 1 - sp(lt, T.fin + 0.05, 0.5);
-        if (lt >= T.fin && fa > 0.003 && env.tl) { // the surviving cell keeps its (subsiding) velocity colour as it becomes the TL
-          const h = env.tl.size * 0.62;
-          ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
-          ctx.fillStyle = L.css(map().lat.c0, fa); ctx.fillRect(env.tl.x - h, env.tl.y - h, 2 * h, 2 * h);
-          ctx.restore();
-        }
         drawInset(ctx, lt, thr);
         drawPanel(ctx, lt, env, thr);
       }
     },
     overlay(ctx, env) {
-      // "1 pixel ≈ 90 m × 90 m" under the outlined lattice cell, then under the TL that became it
-      const lt = env.lt, p = io(lt, T.tag, 11.95, 0.35, 0.3);
-      if (p <= 0 || !env.tl) return;
-      let cx, by;
-      if (lt < T.fin) {
-        const vp = viewport(lt, zoomS(lt)), [sx, sy] = env.cam.toScreen(AW[0], vp.y1);
-        cx = sx; by = sy;
-      } else { cx = env.tl.x; by = env.tl.y + env.tl.size * 0.62; }
-      tag(ctx, '1 pixel ≈ 90 m × 90 m', cx, by + 30, { p, align: 'center', id: 'a4-pix' });
+      // tags for the TL's lattice cell: "1 pixel ≈ 90 m × 90 m" below the viewfinder, "valid pixel · …" above it
+      const lt = env.lt;
+      if (lt < T.tag || !env.tl) return;
+      const vp = viewport(lt, zoomS(lt));
+      const [cx, yb] = env.cam.toScreen(AW[0], vp.y1), [, yt] = env.cam.toScreen(AW[0], vp.y0);
+      tag(ctx, '1 pixel ≈ 90 m × 90 m', cx, Math.min(yb + 30, 930), { p: io(lt, T.tag, 11.95, 0.35, 0.3), align: 'center', id: 'a4-pix' });
+      tag(ctx, 'valid pixel · coherence ≥ 0.7', cx, Math.max(yt - 26, 160), { p: io(lt, T.valid, 11.95, 0.35, 0.3), align: 'center', id: 'a4-valid' });
     },
   });
 })();
