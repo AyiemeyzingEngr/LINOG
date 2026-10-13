@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project LInOG — 60 s Explainer</title>
+<!--FONTS-->
+<style>
+/* Space Grotesk (display, Latin) · Inter + JetBrains Mono NL subsets incl. Greek, arrows and math operators. All SIL OFL 1.1. */
+@font-face { font-family: "LInOG Display"; font-weight: 500; src: url("assets/fonts/space-grotesk-latin-500-normal.woff2") format("woff2"); }
+@font-face { font-family: "LInOG Display"; font-weight: 700; src: url("assets/fonts/space-grotesk-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "LInOG Sans"; font-weight: 400; src: url("assets/fonts/inter-sub-400.woff2") format("woff2"); }
+@font-face { font-family: "LInOG Sans"; font-weight: 500; src: url("assets/fonts/inter-sub-500.woff2") format("woff2"); }
+@font-face { font-family: "LInOG Sans"; font-weight: 600; src: url("assets/fonts/inter-sub-600.woff2") format("woff2"); }
+@font-face { font-family: "LInOG Sans"; font-weight: 700; src: url("assets/fonts/inter-sub-700.woff2") format("woff2"); }
+@font-face { font-family: "LInOG Mono"; font-weight: 400; src: url("assets/fonts/jetbrains-mono-nl-sub-400.woff2") format("woff2"); }
+@font-face { font-family: "LInOG Mono"; font-weight: 600; src: url("assets/fonts/jetbrains-mono-nl-sub-600.woff2") format("woff2"); }
+</style>
+<!--/FONTS-->
+<style>
+  html, body { margin: 0; height: 100%; background: #05080F; color: #E6F1FF; font: 14px/1.4 "LInOG Sans", Inter, system-ui, sans-serif; overflow: hidden; }
+  body { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  #stage { display: block; width: 1920px; height: 1080px; background: #0B111E; }
+  #ui { display: none; gap: 12px; align-items: center; padding: 10px 16px; width: min(100%, 1200px); box-sizing: border-box; }
+  #ui button { background: #161F30; color: #E6F1FF; border: 1px solid rgba(0,229,255,.3); border-radius: 6px; padding: 6px 16px; font: inherit; cursor: pointer; min-width: 72px; }
+  #ui input { flex: 1; accent-color: #00E5FF; }
+  #time { font-family: "LInOG Mono", monospace; color: #9FB0C8; min-width: 170px; text-align: right; }
+</style>
+</head>
+<body>
+<canvas id="stage" width="1920" height="1080"></canvas>
+<div id="ui"><button id="play" type="button">Play</button><input id="scrub" type="range" min="0" max="59.99" step="0.01" value="0" aria-label="Timeline"><span id="time">0.00 s</span></div>
+<script src="src/geo_data.js"></script>
+<script src="src/core.js"></script>
+<script src="src/geo.js"></script>
+<script src="src/assets.js"></script>
+<script src="src/audio.js"></script>
+<script src="src/scenes/act1.js"></script>
+<script src="src/scenes/act2.js"></script>
+<script src="src/scenes/act3.js"></script>
+<script src="src/scenes/act4.js"></script>
+<script src="src/scenes/act5.js"></script>
+<script src="src/scenes/act6.js"></script>
+<script src="src/main.js"></script>
+</body>
+</html>
