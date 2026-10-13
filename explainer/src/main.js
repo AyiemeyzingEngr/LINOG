@@ -39,9 +39,37 @@
     // measure just inside the outgoing act, so env.cam is that act's final camera (L.cam(t1) already belongs to the next act)
     const env = makeEnv(prev, prev.t1 - 1e-6, handoffFor(i - 1), measureCtx);
     let st = null;
-    try { st = prev.tl ? L.TL.state(prev.tl(env)) : null; } catch (e) { console.error('handoff', prev.id, e); }
+    try {
+      st = prev.tl ? L.TL.state(prev.tl(env)) : null;
+      if (st) { // phase velocity at the cut, so the incoming act can carry the wave's motion through it
+        const e2 = makeEnv(prev, prev.t1 - 1 / 60 - 1e-6, handoffFor(i - 1), measureCtx);
+        st.phaseRate = (st.phase - L.TL.state(prev.tl(e2)).phase) * 60;
+      }
+    } catch (e) { console.error('handoff', prev.id, e); }
     handoffs.set(key, st);
     return st;
+  }
+  /* Phase carry: an incoming act's own phase usually differs in value and speed from the hand-off.
+   * For CARRY_T s after a cut we add c(lt) = (c0 + dv·lt)·(1 − smoother(lt/T)): continuous value and
+   * velocity at the cut, exactly the act's own phase from T on. c0 is wrapped by the form's visual period. */
+  const CARRY_T = 1.0, PERIOD = { pulse: L.TAU, node: L.TAU, fringe: L.TAU, pixel: 2 * L.TAU, ring: 2 * L.TAU };
+  const carries = new Map();
+  function carryFor(i) {
+    const sc = scenes[i], key = sc.id;
+    if (carries.has(key)) return carries.get(key);
+    const h = handoffFor(i);
+    let c = null;
+    if (h && sc.tl) {
+      const P = PERIOD[L.TL.dominant(h)];
+      if (P) {
+        const s0 = L.TL.state(sc.tl(makeEnv(sc, sc.t0, h, measureCtx)));
+        const s1 = L.TL.state(sc.tl(makeEnv(sc, sc.t0 + 1 / 60, h, measureCtx)));
+        let c0 = h.phase - s0.phase; c0 -= P * Math.round(c0 / P);
+        c = { c0, dv: (h.phaseRate || 0) - (s1.phase - s0.phase) * 60 };
+      }
+    }
+    carries.set(key, c);
+    return c;
   }
   L.handoffFor = (id) => handoffFor(scenes.findIndex((s) => s.id === id));
 
@@ -59,10 +87,27 @@
       env = makeEnv(sc, t, handoffFor(i), c);
       try {
         env.tl = sc.tl ? L.TL.state(sc.tl(env)) : null;
+        if (env.tl && i > 0 && env.lt < CARRY_T) {
+          const cr = carryFor(i);
+          if (cr) env.tl.phase += (cr.c0 + cr.dv * env.lt) * (1 - L.smoother(env.lt / CARRY_T));
+        }
+        // cut accent, locked to the soundtrack's act impacts: the TL flares and sheds one hairline shock ring
+        let cut = 0;
+        if (env.tl && i > 0 && env.lt < 0.75) {
+          cut = (1 - Math.exp(-env.lt / 0.02)) * Math.exp(-env.lt / 0.16);
+          env.tl.energy += 1.3 * cut;
+        }
         c.save(); env.cam.apply(c);
         sc.draw(c, env);
         c.restore();
         if (!env.tlDrawn && env.tl) L.TL.draw(c, env.tl);
+        if (env.tl && i > 0 && env.lt < 0.75) {
+          const k = L.ease.outCubic(env.lt / 0.75), col = L.mix(C.cyan, C.crimson, L.TL.weight(env.tl, 'contour'));
+          c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.globalCompositeOperation = 'lighter';
+          c.strokeStyle = L.css(col, 0.55 * (1 - k) * Math.min(1, env.lt / 0.03)); c.lineWidth = 1.5;
+          c.beginPath(); c.arc(env.tl.x, env.tl.y, env.tl.size * (0.9 + 2.4 * k), 0, L.TAU); c.stroke();
+          c.restore();
+        }
         if (sc.overlay) { c.save(); sc.overlay(c, env); c.restore(); }
       } catch (e) {
         const msg = `${sc.id} @ ${t.toFixed(3)}s: ${e && e.message}`;
@@ -98,8 +143,10 @@
       }
       ctx.globalAlpha = 1; // the last sample drawn is t itself, so the layout registry matches the nominal time
     }
+    const msJs = performance.now() - t0;
+    if (opts.measure) ctx.getImageData(0, 0, 1, 1); // forces Chromium to rasterise the recorded commands
     const info = {
-      t, scene: env && env.scene.id, ms: performance.now() - t0,
+      t, scene: env && env.scene.id, ms: msJs, msRaster: performance.now() - t0,
       tl: env && env.tl ? { x: env.tl.x, y: env.tl.y, size: env.tl.size, form: env.tl.form, to: env.tl.to, k: env.tl.k, alpha: env.tl.alpha } : null,
       layout: { text: L.LAYOUT.text.slice(), panels: L.LAYOUT.panels.slice() },
     };

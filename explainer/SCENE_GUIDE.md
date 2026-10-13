@@ -106,12 +106,20 @@ Morph: `{form: 'pulse', to: 'pixel', k: 0..1}`. `L.TL.blend(handoff, target, k)`
 
 | cut | outgoing act must END (at lt = dur) with | incoming act must START (lt = 0) with |
 |---|---|---|
-| 10.0 s | act1: **pure `pulse`**, size 90–150, rot 0 | act2: `L.TL.blend(env.handoff, target, k)` with k = 0 at lt = 0 |
-| 18.0 s | act2: **pure `node`**, size 50–110 | act3: same pattern |
-| 30.0 s | act3: **pure `fringe`**, size 80–150 | act4 |
-| 42.0 s | act4: **pure `pixel`**, size 60–120 | act5 |
-| 52.0 s | act5: **pure `contour`**, size 80–160 | act6 |
+| 10.0 s | act1: **pure `pulse`**, size 50–150, rot 0 | act2: `L.TL.blend(env.handoff, target, k)` with k = 0 at lt = 0 |
+| 18.0 s | act2: **pure `node`**, size 40–110 | act3: same pattern |
+| 30.0 s | act3: **pure `fringe`**, size 60–150 | act4 |
+| 42.0 s | act4: **pure `pixel`**, size 36–120 | act5 |
+| 52.0 s | act5: **pure `contour`**, size 60–160 | act6 |
 | 60.0 s | act6 ends on the logo `ring` | — |
+
+Hand off near the size the TL has inside your act (no inflate-then-deflate pump across the cut); an incoming act holds
+the hand-off size for at least one beat before resizing. The runtime (main.js) automatically (a) carries the TL's phase
+and phase velocity through each cut over the first 1.0 s, and (b) flares the TL and sheds one hairline shock ring in the
+first 0.75 s after each cut, in sync with the soundtrack's act impacts — don't add your own cut flash.
+
+**TL motion limits**: peak speed ≲ 1,500 px/s; moves longer than ~400 px take ≥ 0.8 s and preferably follow an arc or ride a
+visible data link (leader line, beam, edge); no ping-pong between distant targets; big moves start on a bar or beat.
 
 At every cut the TL centre must be inside x ∈ [560, 1360], y ∈ [380, 720], `alpha` ≥ 0.9, `rot` = 0 (act 6 may tilt).
 Positions are **measured at runtime** from your `tl()`, never hard-coded by the next act — so make `tl()` the single
@@ -135,13 +143,27 @@ visualisation, but it never disappears.
    top-left, wordmark top-right, 6-phase tracker at the bottom): keep all scene content inside x 96–1824, y 132–958.
    No overlapping text boxes. Contrast ≥ 4.5:1 below 24 px, ≥ 3:1 at 24 px+ (pass `bg` when text sits on a card;
    put labels over rasters/maps on a card or backplate and pass its colour).
-5. **Typography**: display 56–110 px (Space Grotesk 700), section titles 36–48 px, body ≥ 22 px (Inter),
-   mono parameter annotations ≥ 18 px (JetBrains Mono). Tick labels may be 15–16 px with `role:'deco'`.
+5. **Typography** — one system across all acts:
+
+   | role | style |
+   |---|---|
+   | hero number | display 700, 64–96 px, phase ink (`L.ink(phase colour)`) or crimson for subsidence; counters never zero-pad and their FINAL value holds ≥ 1.5 s |
+   | section title | display 700, 40 px, sentence case, top-left of the content column (x ≈ 150, y ≈ 190) |
+   | card header | mono 600, 18 px, tracking 0.12, UPPERCASE, `L.ink(phase colour)` |
+   | caption / body | sans 500, 22–26 px, `C.text` or `C.textDim` |
+   | parameter annotation | mono 400, 18–20 px |
+   | map label | mono 19 px on a backplate (pass `bg`) |
+   | footnote / caveat | mono 18 px `C.textDim` — real content, never `role:'deco'` |
+   | tick labels only | 15–16 px, `role:'deco'` |
+
+   Conventions: "≈ 90 m" (≈ + space), units cm/yr · km² · m · MHz, separator " · ", institution "UPD NIGS".
    Keep copy short: a viewer gets ~2–4 s per idea. Every readable string stays fully revealed ≥ 1.5 s.
+   **Colour semantics (all acts)**: FBS = amber, FBD = blue; Philippine Fault Zone = gold dashed line + `L.ink(C.gold)` label
+   with "(schematic)" in `textDim`; away-from-satellite / subsidence = crimson; every velocity map carries "schematic".
 6. **Rasters**: generate at ≥ their on-screen size (account for camera zoom up to ~1.13) — no blurry upscaling.
    Intentionally pixelated rasters (e.g. showing 90 m pixels) use `imageSmoothingEnabled = false` so pixels stay crisp.
    Cache static rasters; repaint animated ones at native size with LUTs.
-7. **Performance**: average ≤ 60 ms/frame, max ≤ 150 ms (after `init`). No `shadowBlur`, no `ctx.filter`
+7. **Performance** (QA measures draw + rasterisation): average ≤ 60 ms/frame, max ≤ 150 ms (after `init`). No `shadowBlur`, no `ctx.filter`
    in per-frame paths, avoid per-frame per-pixel `fbm` over large areas (precompute fields in `init`/caches).
 8. **Honesty**: numbers come from the fact sheet below. Illustrative graphics (DEM, fringes, networks, maps of
    velocity) are schematic — fine, but never present invented numbers as results.
@@ -163,7 +185,11 @@ visualisation, but it never disappears.
   (6 range looks would give 45 m × 90 m; 12 looks double the independent looks, √2 less phase noise.)
 - QC: interferogram **report grids** (visual inspection) + **23 automated quality gates (G1–G23)** that stop processing on failure.
   **1,779 interferograms formed → 1,634 inverted** across 12 frames (some removed for uncorrected ionospheric signals).
-- Time series: **12 frames**, **304 dates staged / 265 used**, **1,634 interferograms** inverted (122–166 per frame; per-frame inversions — do not say "simultaneously").
+- Time series: **12 frames**, **304 frame-dates staged / 265 used** (frame-dates: an acquisition counts once per frame it covers —
+  never write "265 dates"), **1,634 interferograms** inverted (122–166 per frame; per-frame inversions — do not say "simultaneously").
+  Per-frame (Table 3 order P447 F0300, F0310, P448 F0280–F0320, P449 F0280–F0320): inverted interferograms 152, 148, 132, 129, 144, 122, 123, 123, 166, 148, 124, 123;
+  frame-dates used 24, 24, 22, 21, 23, 21, 22, 19, 24, 23, 21, 21.
+  P448 F0290 on screen: act 2 = "24 dates · 149 pairs formed"; act 4 = "21 of 24 dates · 129 of 149 interferograms inverted".
   Corrections: **demErr** (DEM-error / residual topography correction) and **demErr_ramp** (additionally removes residual orbital ramps — "deramping").
   No atmospheric correction applied yet.
 - Masks: **temporal coherence ≥ 0.7**, **water mask**, **swath-edge mask**. Low coherence in vegetated mountains
@@ -177,8 +203,11 @@ visualisation, but it never disappears.
   P448: LOS 3.7 ± 0.4 cm/yr, θ 37.0°, **vertical 4.7 ± 0.5 cm/yr, ≈ 19 cm** cumulative 2007–2011.
   P449: LOS 3.3 ± 0.4 cm/yr, θ 40.4°, **vertical 4.4 ± 0.5 cm/yr, ≈ 18 cm**.
   → "**−4.4 to −4.7 cm/yr** vertical (assumes purely vertical motion), **~18–19 cm** in 2007–2011".
-  Independent check: **CABN GNSS station 4.7 ± 0.4 cm/yr** vertical.
+  Independent check: **CABN GNSS station 4.7 ± 0.4 cm/yr** vertical (consistent).
+  InSAR rates are relative to nearby stable ground, single sensor, no tropospheric/ionospheric correction yet;
+  the two tracks are independent measurements (say "measured on two adjacent ascending tracks", not "cross-validated").
   Cause: consistent with land subsidence commonly associated with groundwater extraction (under investigation).
+  Dagupan City / lower Pampanga: possible subsidence seen on one track only — don't feature it as a result.
 - Philippine Fault: no obvious velocity gradient across the fault traces yet (signal near ALOS noise, no atmospheric correction,
   single geometry). **Never imply the fault causes the Cabanatuan subsidence** or that fault creep was measured.
 - Institutions: implementing agency **UP Diliman – National Institute of Geological Sciences (UPD NIGS)**;
@@ -228,14 +257,18 @@ visualisation, but it never disappears.
   dense forest drop out; plains and fault-trace areas keep valid pixels. "Valid area **27,893 km²** (target 25,000 km²)".
   End: one surviving ~90 m pixel becomes the TL → pure `pixel`.
 
+**Act 4 → Act 5 hand-off pixel**: act 4's coherence-masking zoom ends on a coherent, near-zero-velocity plains pixel near
+Tarlac City at **lon 120.620°E, lat 15.470°N** (not Cabanatuan — the Cabanatuan dive is saved for 48 s). Act 5 geocodes
+that pixel (cells coloured from `L.velRGB` near zero: slate/blue) and then swoops to Cabanatuan for the finding.
+
 **Act 5 · 42–52 s · Geocoded deliverables & discovery** (HUD on; 48–52 header = FINDINGS)
 - Bars 22–24 (42–48) · Phase 6 geocoding: a radar-geometry (slant-range/azimuth, skewed/flipped) grid reprojects
   onto a true geographic **1/1200° (~90 m)** lattice. UI shows the **16 GIS-ready deliverables per frame**
   (LOS velocity GeoTIFF, vertical & horizontal projections, hillshades, KMZ; demErr / demErr_ramp; 27-check verified).
 - Bars 25–26 (48–52) · Findings: camera swoops into Cabanatuan City with the Philippine Fault Zone trace nearby
   (labelled schematic). The TL becomes the crimson subsidence contour around a ~5 km bowl: **−4.4 to −4.7 cm/yr**
-  vertical, **~18–19 cm** cumulative (2007–2011), cross-validated on ascending **paths 448 and 449**
-  (+ CABN GNSS 4.7 ± 0.4 cm/yr). End: pure `contour`.
+  vertical, **~18–19 cm** cumulative (2007–2011), measured independently on ascending **paths 448 and 449**
+  (+ CABN GNSS 4.7 ± 0.4 cm/yr, consistent). End: pure `contour`.
 
 **Act 6 · 52–60 s · Institutional payoff & outro** (HUD fades out by 52 s)
 - Bars 27–28 (52–56): the contour contracts and spins rapidly into the central orbital rings of the EGG Laboratory

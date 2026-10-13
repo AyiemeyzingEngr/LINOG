@@ -36,7 +36,7 @@
     { n: 3, key: 'coreg', label: 'COREGISTRATION', short: 'COREGISTRATION', color: C.blue, t0: 18, t1: 22 },
     { n: 4, key: 'ifg', label: 'INTERFEROGRAMS', short: 'INTERFEROGRAMS', color: C.blue, t0: 22, t1: 30 },
     { n: 5, key: 'sbas', label: 'MINTPY SBAS TIME SERIES', short: 'MINTPY SBAS', color: C.purple, t0: 30, t1: 42 },
-    { n: 6, key: 'geo', label: 'GEOCODING & DELIVERABLES', short: 'GEOCODING · DELIVERABLES', color: C.emerald, t0: 42, t1: 52 },
+    { n: 6, key: 'geo', label: 'GEOCODING & DELIVERABLES', short: 'GEOCODING · PRODUCTS', color: C.emerald, t0: 42, t1: 48 },
   ];
   // Safe areas. During the HUD window (10..52 s) scenes must keep content inside SAFE_HUD.
   L.SAFE = { x0: 96, y0: 54, x1: 1824, y1: 1026 };
@@ -506,18 +506,25 @@
       const sc = clamp(s.size / 110, 0.55, 1.35) * s.lw;
       const e = clamp(s.energy, 0, 1.5);
       const layers = [[15 * sc, 0.07 + 0.06 * e, 'lighter'], [6.5 * sc, 0.16 + 0.12 * e, 'lighter'], [2.6 * sc, 1, 'source-over']];
-      const CH = 48, per = N / CH;
+      // One continuous path per layer (no chunk joints → no notches or double-additive overlaps).
+      // Uniform colour → solid stroke; colour varying along u → conic gradient around the centre
+      // (every closed form is parameterised by angle π + 2πu + rot, so the gradient follows u exactly).
+      const path = new Path2D();
+      path.moveTo(P[0], P[1]);
+      for (let i = 1; i < N; i++) path.lineTo(P[i * 2], P[i * 2 + 1]);
+      path.closePath();
+      let uniform = true;
+      for (let i = 3; i < N * 3 && uniform; i++) if (Math.abs(Cc[i] - Cc[i % 3]) > 1.5) uniform = false;
+      const GS = 48;
       for (const [lw, a, op] of layers) {
-        ctx.globalCompositeOperation = op; ctx.lineWidth = lw;
-        ctx.lineCap = op === 'lighter' ? 'butt' : 'round'; // butt caps: additive chunks must not overlap (no beading)
-        for (let c = 0; c < CH; c++) {
-          const i0 = Math.floor(c * per), i1 = Math.floor((c + 1) * per);
-          const im = Math.min(N - 1, (i0 + i1) >> 1);
-          ctx.strokeStyle = `rgba(${Cc[im * 3] | 0},${Cc[im * 3 + 1] | 0},${Cc[im * 3 + 2] | 0},${a})`;
-          ctx.beginPath(); ctx.moveTo(P[i0 * 2], P[i0 * 2 + 1]);
-          for (let i = i0 + 1; i <= i1; i++) { const j = i % N; ctx.lineTo(P[j * 2], P[j * 2 + 1]); }
-          ctx.stroke();
+        ctx.globalCompositeOperation = op; ctx.lineWidth = lw; ctx.lineCap = 'round';
+        if (uniform) ctx.strokeStyle = `rgba(${Cc[0] | 0},${Cc[1] | 0},${Cc[2] | 0},${a})`;
+        else {
+          const g = ctx.createConicGradient(Math.PI + s.rot, s.x, s.y);
+          for (let k = 0; k <= GS; k++) { const im = Math.floor(((k % GS) / GS) * N); g.addColorStop(k / GS, `rgba(${Cc[im * 3] | 0},${Cc[im * 3 + 1] | 0},${Cc[im * 3 + 2] | 0},${a})`); }
+          ctx.strokeStyle = g;
         }
+        ctx.stroke(path);
       }
       ctx.globalCompositeOperation = 'source-over';
       // form-specific accents, weighted by morph
@@ -556,7 +563,8 @@
         }
       }
       ctx.globalAlpha = 1;
-      L.glow(ctx, s.x, s.y, s.size * (0.9 + 0.5 * e), this.dominant(s) === 'contour' ? C.crimson : C.cyan, 0.25 * e * clamp(s.alpha)); // still in screen space
+      const gcol = s.tint ? hex(s.tint) : L.mix(C.cyan, C.crimson, this.weight(s, 'contour')); // no one-frame colour flip mid-morph
+      L.glow(ctx, s.x, s.y, s.size * (0.9 + 0.5 * e), gcol, 0.25 * e * clamp(s.alpha)); // still in screen space
       ctx.restore();
     },
     /** The form a (possibly morphing) state mostly looks like. */
@@ -633,15 +641,23 @@
         const tag = findings ? 'FINDINGS' : `PHASE ${String(ph.n).padStart(2, '0')}/06`;
         ctx.fillStyle = L.rgba(col, 0.95 * pin);
         ctx.fillRect(96, 62, 10 * clamp(pin * 2), 26);
-        const b = L.text(ctx, tag, 118, 82, { kind: 'mono', size: 17, weight: 600, color: L.ink(col), p: pin, tracking: 0.08, role: 'hud', id: 'hud-tag', scanColor: col });
+        const b = L.text(ctx, tag, 118, 82, { kind: 'mono', size: 18, weight: 600, color: L.ink(col), p: pin, tracking: 0.08, role: 'hud', id: 'hud-tag', scanColor: col });
         L.text(ctx, label, 118 + b.w + 18, 83, { kind: 'display', size: 26, weight: 600, color: C.text, p: clamp(pin * 1.1 - 0.05), tracking: 0.02, role: 'hud', id: 'hud-phase', scanColor: col });
       }
       // --- top-right: wordmark + radar readout
-      L.text(ctx, [{ s: 'L', color: C.cyan }, { s: 'In', color: C.text }, { s: 'O', color: C.cyan }, { s: 'G', color: C.cyan }], 1824, 86, { kind: 'display', size: 28, weight: 700, align: 'right', p: v, role: 'hud', id: 'hud-logo' });
+      L.text(ctx, 'LInOG', 1824, 86, { kind: 'display', size: 28, weight: 700, color: C.cyan, align: 'right', p: v, role: 'hud', id: 'hud-logo' });
       L.text(ctx, `ALOS-1 PALSAR · L-BAND λ 23.6 cm · T+${fmtT(t)}`, 1824, 112, { kind: 'mono', size: 14, weight: 400, color: C.textDim, align: 'right', p: v, role: 'hud', id: 'hud-readout' });
       // --- bottom: 6-phase pipeline tracker
       const x0 = 96, x1 = 1824, gap = 14, y = 1004, n = L.PHASES.length;
-      const segW = (x1 - x0 - gap * (n - 1)) / n;
+      // during FINDINGS (48–52 s) all six segments read done and a crimson RESULT cap follows segment 6
+      const capW = 120, capP = findings ? L.sp(t, 48, 0.6) : 0;
+      const segW = (x1 - x0 - gap * (n - 1) - (capW + gap) * clamp(capP)) / n;
+      if (capP > 0.01) {
+        const cx = x1 - (capW) * clamp(capP);
+        ctx.fillStyle = L.rgba(C.crimson, 0.95 * v); ctx.fillRect(cx, y + 14, capW * clamp(capP), 3);
+        L.glow(ctx, cx + capW * clamp(capP), y + 15.5, 16, C.crimson, 0.8 * v * (0.6 + 0.4 * L.pulse(t)));
+        L.text(ctx, 'RESULT', cx, y, { kind: 'mono', size: 18, weight: 600, color: L.ink(C.crimson), p: Math.min(v, clamp(capP)), tracking: 0.06, role: 'hud', id: 'hud-result' });
+      }
       L.PHASES.forEach((p, i) => {
         const sx = x0 + i * (segW + gap);
         const reveal = clamp(v * 1.6 - i * 0.1);
@@ -653,7 +669,7 @@
         if (prog > 0) { ctx.fillStyle = L.rgba(p.color, (active ? 1 : 0.55) * reveal); ctx.fillRect(sx, y + 14, segW * prog * reveal, 3); }
         if (active) L.glow(ctx, sx + segW * prog, y + 15.5, 16, p.color, 0.8 * reveal * (0.6 + 0.4 * L.pulse(t)));
         const col = active ? L.ink(p.color) : done ? '#C3D0E2' : C.textDim;
-        L.text(ctx, `${String(p.n).padStart(2, '0')}  ${p.short}`, sx, y, { kind: 'mono', size: 14, weight: active ? 600 : 400, color: col, p: reveal, tracking: 0.06, alpha: active ? 1 : done ? 0.85 : 0.75, role: 'hud', id: `hud-ph${p.n}` });
+        L.text(ctx, `${String(p.n).padStart(2, '0')}  ${p.short}`, sx, y, { kind: 'mono', size: active ? 18 : 16, weight: active ? 600 : 400, color: col, p: reveal, tracking: active ? 0.04 : 0.05, alpha: active ? 1 : done ? 0.9 : 0.8, role: 'hud', id: `hud-ph${p.n}` });
       });
       ctx.restore();
     },

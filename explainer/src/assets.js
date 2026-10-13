@@ -196,6 +196,15 @@
   };
 
   /* --------------------------------------------------------------- EGG Lab emblem (procedural placeholder) */
+  /** Geometry of L.drawEGG (in units of r) for scenes that need to align with it (e.g. the TL becoming ring 0).
+   *  Ring k: ellipse rx × ry rotated by rot; its dot is at angle speed·t + phase. Keep in sync with drawEGG below. */
+  L.EGG_GEOM = {
+    egg: { k: 0.62, wobble: 0.1, sx: 0.86 },
+    rings: [
+      { rx: 1.02, ry: 0.3, rot: -0.42, speed: 1.2, phase: 0, color: '#00E5FF' },
+      { rx: 1.1, ry: 0.3, rot: 0.42, speed: -1.6, phase: 1, color: '#FFD166' },
+    ],
+  };
   /** Placeholder mark for the UP NIGS Earthquake Geodesy and Geology (EGG) Laboratory — NOT an official logo.
    *  An egg-shaped geoid with a fault offset, wrapped by two orbital rings. o: {x, y, r, p, t, ringsOnly} */
   L.drawEGG = (ctx, o) => {

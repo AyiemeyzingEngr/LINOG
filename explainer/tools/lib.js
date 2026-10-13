@@ -38,7 +38,7 @@ async function open(mode = 'dev', { workers = 1 } = {}) {
   const browser = await pw.chromium.launch({ args: LAUNCH_ARGS });
   let server = null, url;
   if (mode === 'dev') { server = await serve(); url = server.url; }
-  else url = 'file://' + path.resolve(mode);
+  else url = require('url').pathToFileURL(path.resolve(mode)).href;
   const pages = [];
   for (let i = 0; i < workers; i++) {
     const page = await browser.newPage({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 });
@@ -124,26 +124,27 @@ async function runQA(p, { from = 0, to = 60, step = 0.25, boundaries = [10, 18, 
   let prevThumb = null, stillRun = 0, stillStart = 0;
   const seen = new Map(); // text key → {first, last, scene} for the ≥ 1.5 s readability rule
   for (let t = from; t <= Math.min(to, 59.99) + 1e-9; t = Math.round((t + step) * 1000) / 1000) {
-    const info = await p.page.evaluate((tt) => window.seek(tt), t);
+    const info = await p.page.evaluate((tt) => window.seek(tt, { measure: true }), t);
     const th = await p.page.evaluate(() => window.__thumb());
     issues.push(...checkLayout(info));
     for (const b of info.layout.text) {
       if (b.role === 'hud') continue;
       const k = b.id ? 'id:' + b.id : b.str.replace(/[0-9]/g, '#'); // rolling counters keep one key
       const e = seen.get(k);
-      if (e && t - e.last <= step + 1e-6) e.last = t; else { if (e) finishRead(k, e); seen.set(k, { first: t, last: t, scene: b.scene, str: b.str }); }
+      if (e && t - e.last <= step + 1e-6) { e.last = t; if (b.str !== e.cur) { e.cur = b.str; e.curFirst = t; } }
+      else { if (e) finishRead(k, e); seen.set(k, { first: t, last: t, scene: b.scene, str: b.str, cur: b.str, curFirst: t }); }
     }
     if (!info.tl || info.tl.alpha < 0.5 || info.tl.size < 24) issues.push({ t, kind: 'tl-visibility', msg: info.tl ? `through-line too faint/small (alpha ${info.tl.alpha.toFixed(2)}, size ${info.tl.size.toFixed(0)})` : 'through-line missing' });
     const en = thumbEnergy(th);
     if (en < 1.2) issues.push({ t, kind: 'blank', msg: `frame looks empty (energy ${en.toFixed(2)})` });
-    if (info.ms > 250) issues.push({ t, kind: 'perf', msg: `frame took ${info.ms.toFixed(0)} ms` });
+    if (info.msRaster > 150) issues.push({ t, kind: 'perf', msg: `frame took ${info.msRaster.toFixed(0)} ms to draw + rasterise (budget 150)` });
     if (prevThumb) {
       const d = thumbDiff(prevThumb, th);
       if (d < 0.35) { if (!stillRun) stillStart = t - step; stillRun += step; }
       else { if (stillRun > 1.0 + 1e-6) issues.push({ t: stillStart, kind: 'static-hold', msg: `little motion for ${stillRun.toFixed(2)} s (${stillStart.toFixed(2)}–${(stillStart + stillRun).toFixed(2)})` }); stillRun = 0; }
     }
     prevThumb = th;
-    frames.push({ t, ms: info.ms, scene: info.scene });
+    frames.push({ t, ms: info.msRaster, scene: info.scene });
     if (frames.length % 40 === 0) log(`qa ${t.toFixed(2)} s`);
   }
   if (stillRun > 1.0 + 1e-6) issues.push({ t: stillStart, kind: 'static-hold', msg: `little motion for ${stillRun.toFixed(2)} s` });
@@ -151,8 +152,11 @@ async function runQA(p, { from = 0, to = 60, step = 0.25, boundaries = [10, 18, 
   function finishRead(k, e) {
     // visible span ≈ (last − first + step); strings whose digits change every frame (counters, timecodes) are skipped
     const span = e.last - e.first + step;
-    if (span < 1.5 - 1e-6 && e.first > from + 1e-6 && e.last < Math.min(to, 59.99) - step + 1e-6)
+    const inside = e.first > from + 1e-6 && e.last < Math.min(to, 59.99) - step + 1e-6;
+    if (span < 1.5 - 1e-6 && inside)
       issues.push({ t: e.first, kind: 'readability', msg: `"${e.str.slice(0, 50)}" (${e.scene}) readable for only ~${span.toFixed(2)} s (< 1.5 s)` });
+    else if (e.cur !== e.str && e.last - e.curFirst + step < 1.5 - 1e-6 && inside) // a counter's final value must also hold
+      issues.push({ t: e.curFirst, kind: 'readability', msg: `final value "${e.cur.slice(0, 50)}" (${e.scene}) holds only ~${(e.last - e.curFirst + step).toFixed(2)} s (< 1.5 s)` });
   }
   // through-line continuity across act boundaries (match cuts)
   for (const T of boundaries) {
