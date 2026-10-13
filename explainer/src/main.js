@@ -135,7 +135,7 @@
       const actx = accum.getContext('2d', { alpha: false });
       // running average: sample k is composited with weight 1/(k+1); samples span [t, t + shutter/FPS)
       for (let k = n - 1; k >= 0; k--) {
-        const ts = Math.min(L.DURATION - 1e-6, t + (k / n) * (shutter / L.FPS));
+        const ts = Math.min(L.DURATION - 1e-6, t + (k / n) * (shutter / (opts.fps || L.FPS)));
         env = drawFrame(actx, ts);
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.globalAlpha = 1 / (n - k);
@@ -197,6 +197,11 @@
     const fit = () => { const s = Math.min(window.innerWidth / W, (window.innerHeight - 56) / H); canvas.style.width = `${W * s}px`; canvas.style.height = `${H * s}px`; };
     window.addEventListener('resize', fit); fit();
     const t0 = parseFloat(params.get('t') || '0');
-    window.ready.then(() => { offset = t0; show(t0); });
+    window.ready.then(() => {
+      offset = t0; show(t0);
+      // warm the soundtrack in the background (the offline render takes a while) so Play starts instantly
+      if (btn) { btn.textContent = 'Preparing audio…'; btn.disabled = true; }
+      L.audio.render().then(() => { if (btn) { btn.disabled = false; btn.textContent = 'Play'; } });
+    });
   }
 })();

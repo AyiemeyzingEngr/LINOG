@@ -42,7 +42,11 @@ const flag = (k) => args.includes('--' + k);
     const list = path.join(out, 'sheet_inputs.txt');
     fs.writeFileSync(list, files.map((f) => `file '${f}'`).join('\n'));
     const sheet = path.join(out, 'sheet.png');
-    execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', list, '-vf', `scale=480:270,drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf:text='%{eif\\:n\\:d}':x=6:y=6:fontsize=14:fontcolor=white@0.6,tile=${cols}x${rows}:padding=4:color=0x05080F`, '-frames:v', '1', sheet]);
+    const tile = `tile=${cols}x${rows}:padding=4:color=0x05080F`;
+    const font = '/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf';
+    const label = fs.existsSync(font) ? `drawtext=fontfile=${font}:text='%{eif\\:n\\:d}':x=6:y=6:fontsize=14:fontcolor=white@0.6,` : '';
+    try { execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', list, '-vf', `scale=480:270,${label}${tile}`, '-frames:v', '1', sheet]); }
+    catch (_) { execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', list, '-vf', `scale=480:270,${tile}`, '-frames:v', '1', sheet]); }
     fs.unlinkSync(list);
     console.log('sheet:', sheet, `(frames in order: ${times.map((t) => t.toFixed(2)).join(', ')})`);
   }
