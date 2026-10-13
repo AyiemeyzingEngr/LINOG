@@ -547,7 +547,7 @@
         const x = xYr(yr), d = Math.abs(x - N.xT) / 500;
         const pt = io(lt, 0.45 + 0.25 * d, TA.net - 0.1, 0.35, 0.4);
         ctx.strokeStyle = L.rgba(C.textDim, 0.5 * pt); ctx.beginPath(); ctx.moveTo(x, ay); ctx.lineTo(x, ay + 8 * pt); ctx.stroke();
-        L.text(ctx, String(yr), x, ay + 30, { kind: 'mono', size: 16, color: C.textDim, align: 'center', p: pt, role: 'deco' });
+        L.text(ctx, String(yr), x, ay + 38, { kind: 'mono', size: 16, color: C.textDim, align: 'center', p: pt, role: 'deco' }); // clear of the TL node ring
       }
     }
     // arcs (one per interferometric pair)
@@ -1181,7 +1181,7 @@
       const vp = viewport(lt, zoomS(lt));
       const [cx, yb] = env.cam.toScreen(AW[0], vp.y1), [, yt] = env.cam.toScreen(AW[0], vp.y0);
       tag(ctx, '1 pixel ≈ 90 m × 90 m', cx, Math.min(yb + 30, 930), { p: io(lt, T.tag, 11.95, 0.35, 0.3), align: 'center', id: 'a4-pix' });
-      tag(ctx, 'valid pixel · coherence ≥ 0.7', cx, Math.max(yt - 26, 160), { p: io(lt, T.valid, 11.95, 0.35, 0.3), align: 'center', id: 'a4-valid' });
+      tag(ctx, 'valid pixel · coherence ≥ 0.7', cx, Math.max(yt - 26, 160), { p: io(lt, T.valid - 0.25, 11.95, 0.35, 0.3), align: 'center', id: 'a4-valid' }); // from the 9.75 beat: ≥ 1.5 s fully shown
     },
   });
 })();

@@ -276,7 +276,7 @@
           if (bg) { d[o] = bg[0]; d[o + 1] = bg[1]; d[o + 2] = bg[2]; d[o + 3] = 255; } else d[o + 3] = 0;
           continue;
         }
-        let val = (L.fbm(u * 3.5, v * 3.5, 3, 11) - 0.5) * 1.0 + 0.15 - 4.2 * Math.exp(-((u - 0.47) ** 2 + (v - 0.58) ** 2) / 0.006);
+        let val = (L.fbm(u * 3.5, v * 3.5, 3, 11) - 0.5) * 1.0 + 0.15 - 2.0 * Math.exp(-((u - 0.47) ** 2 + (v - 0.58) ** 2) / 0.006); // muted: saturated crimson is reserved for the finding
         if (corr === 0) val += 1.6 * (u - 0.5) + 0.75 * (v - 0.5); // demErr keeps a residual orbital ramp; demErr_ramp removes it
         let rgb = L.velRGB(val * scale[f], 5);
         if (fmt !== 'tif') { // hillshade drape
