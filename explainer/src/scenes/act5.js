@@ -224,9 +224,9 @@
           (Math.abs(i - TP_I) < 14 && Math.abs(j - TP_J) < 12);
         // coherence mask (schematic): decorrelated uplands with a patchy (low-frequency + light dither) height
         // threshold, sparse low-coherence dropouts; water is not land
-        const thr = 140 + 280 * L.fbm(lon * 30, lat * 30, 3, 7) + 60 * (L.hash2(i, j, 5) - 0.5);
         const ok = land > 0.5 && (inQuad(FP[0], lon, lat) || inQuad(FP[1], lon, lat)) &&
-          (core || (h <= thr && L.hash2(i, j, 9) >= 0.006));
+          (core || (L.hash2(i, j, 9) >= 0.006 &&
+            (h <= 110 || h <= 140 + 280 * L.fbm(lon * 30, lat * 30, 3, 7) + 60 * (L.hash2(i, j, 5) - 0.5))));
         if (ok) { // velocity draped on a faint hillshade (the "hillshade velocity map" look)
           const k = velIdx(cellVel(i, j, lon, lat)), f = clamp(1 + 0.5 * sh, 0.84, 1.1);
           d[o] = lut[k] * f; d[o + 1] = lut[k + 1] * f; d[o + 2] = lut[k + 2] * f; d[o + 3] = 255;
@@ -582,7 +582,7 @@
   }
   function drawLabelsA(ctx, lt) {
     const x = VP.x + 20 + offX(lt), y = VP.y + 44;
-    const o = { kind: 'sans', size: 24, weight: 600, color: C.text };
+    const o = { kind: 'sans', size: 24, weight: 500, color: C.text };
     const p1 = L.inout(lt, 0.125, 2.75, 0.45, 0.4);
     if (p1 > 0) tag(ctx, 'radar geometry · range × azimuth', x, y, { ...o, p: p1, scanColor: C.blue, id: 'a5-tag-radar' });
     const p2 = L.inout(lt, 3.0, 6.4, 0.45, 0.35);
@@ -842,7 +842,7 @@
     const p = L.inout(lt, 6.3, 9.75, 0.45, 0.35);
     if (p <= 0) return;
     const al = pfzFade(lt);
-    const o = { kind: 'mono', size: 18, weight: 500 };
+    const o = { kind: 'mono', size: 19, weight: 500 };
     const w = Math.max(L.measure(ctx, 'Philippine Fault Zone', o).w, L.measure(ctx, '(schematic)', o).w);
     const m = L.measure(ctx, 'Philippine Fault Zone', o), capH = m.capH || m.asc * 0.72;
     const top = PFZ_LAB.y - capH - 9, h = capH + 18 + 26 + 4;
@@ -881,7 +881,7 @@
     const dy = -0.5 * Math.max(w.size, 0.62 * S);
     const edge = Math.max(tlRightAt(lt, dy), w.x + 1.62 * S * 1.08); // clear of the outer dashed contour
     const x = edge + 34, y = w.y + dy + 9;
-    const b = tag(ctx, 'Cabanatuan City', x, y, { kind: 'sans', size: 24, weight: 600, color: C.text, p, scanColor: CR, id: 'a5-city' });
+    const b = tag(ctx, 'Cabanatuan City', x, y, { kind: 'mono', size: 19, weight: 600, color: C.text, p, scanColor: CR, id: 'a5-city' });
     // short leader from the tag to the TL outline
     const tip = tlRightAt(lt, dy) + 6;
     const ly = b.y + b.h / 2, lx0 = b.x - 3, lx1 = Math.min(lx0 - 4, tip);
