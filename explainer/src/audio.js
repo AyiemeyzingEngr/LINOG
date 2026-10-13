@@ -32,12 +32,16 @@
     const ir = ctx.createBuffer(2, SR * 2.4, SR);
     for (let c = 0; c < 2; c++) { const d = ir.getChannelData(c); for (let i = 0; i < d.length; i++) d[i] = (rnd() * 2 - 1) * Math.pow(1 - i / d.length, 3.2); }
 
-    const master = ctx.createGain(); master.gain.value = 0.9;
-    const comp = ctx.createDynamicsCompressor();
-    comp.threshold.value = -14; comp.knee.value = 8; comp.ratio.value = 4; comp.attack.value = 0.004; comp.release.value = 0.12;
-    master.connect(comp); comp.connect(ctx.destination);
-    // hard stop at 60.000 s: 8 ms fade to silence so the last sample is 0 (no click)
-    master.gain.setValueAtTime(0.9, DUR - 0.008); master.gain.linearRampToValueAtTime(0, DUR);
+    // Master: gain → tanh soft-clipper → end fade → out. No DynamicsCompressor: its ~6 ms look-ahead
+    // would delay the whole mix against the picture and push audio past the final fade.
+    const master = ctx.createGain(); master.gain.value = 0.62;
+    const clip = ctx.createWaveShaper(); clip.oversample = 'none';
+    const curve = new Float32Array(4097); for (let i = 0; i < curve.length; i++) { const x = (i / 2048) - 1; curve[i] = Math.tanh(1.6 * x) / Math.tanh(1.6); }
+    clip.curve = curve;
+    const fade = ctx.createGain(); fade.gain.value = 1;
+    // hard stop at 60.000 s: 10 ms fade to silence so the last sample is 0 (no click)
+    fade.gain.setValueAtTime(1, DUR - 0.01); fade.gain.linearRampToValueAtTime(0, DUR);
+    master.connect(clip); clip.connect(fade); fade.connect(ctx.destination);
 
     const verb = ctx.createConvolver(); verb.buffer = ir; const verbOut = ctx.createGain(); verbOut.gain.value = 0.32; verb.connect(verbOut); verbOut.connect(master);
     // ping-pong delay (dotted eighth = 0.375 s)
@@ -194,7 +198,7 @@
     let o = 44;
     for (let i = 0; i < n; i++) for (let c = 0; c < ch; c++) {
       const dither = (rnd() - rnd()) / 32768; // TPDF, seeded
-      let v = data[c][i] * gain + dither;
+      let v = data[c][i] * gain + (i < n - 1 ? dither : 0); // final sample exactly 0
       v = Math.max(-1, Math.min(1, v));
       dv.setInt16(o, v < 0 ? v * 32768 : v * 32767, true); o += 2;
     }
