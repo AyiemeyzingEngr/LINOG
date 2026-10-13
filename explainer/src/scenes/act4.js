@@ -12,23 +12,26 @@
  *  1.50 / 1.75  design-matrix card ("A · φ = Δφ") and time-series card construct
  *  2.00 bar 17  inversion: A fills row by row, each row lights its arc in the network; Δφ fills alongside
  *  2.95         solved φ column fills; each date's dot drops from its network node into the time series
- *  3.00 / 3.25  demErr and demErr_ramp widgets construct (overlapping the φ fill)
+ *  2.95 / 3.10  demErr and demErr_ramp widgets construct (overlapping the φ fill)
  *  4.00 bar 18  demErr: phase-vs-B⊥ trend flattens; the B⊥-correlated scatter leaves the time series
  *  4.50         demErr_ramp: the unwrapped planar ramp on the tile is subtracted to flat; the series tightens
  *  4.90         linear velocity fit draws through the corrected history
- *  5.50         section change (overlapping): every card unmasks together with its contents (5.5–6.3) while
- *               the map iris opens around Cabanatuan City and the TL glides there (5.5–6.4)
+ *  5.50         section change (overlapping): every card retracts together with its contents, right column
+ *               first (5.5–6.2), while the map iris opens around Cabanatuan City and the TL glides beside the
+ *               bowl (5.5–6.4); 5.75 "Coherence masking" and the panel construct as the old cards leave
  * Section B · 36–42 s · coherence masking (camera 1.04 → 1.0816)
- *  6.00 bar 19  footprints P447/448/449 + frame ticks, PFZ (schematic), panel and coherence inset construct
+ *  6.00 bar 19  footprints P447/448/449 + frame ticks, PFZ (schematic), bowl rings, coherence inset construct
  *  7.00         water mask: sea pixels drop on an interlaced sweep ✓
  *  7.50         swath-edge mask: dashed inner offset of the footprint union flashes, its strip drops ✓
  *  8.00 bar 20  slider "temporal coherence ≥ 0.1 → 0.7" steps on 16ths; decorrelated pixels drop per step
  *  8.50         tally scan: valid area counts up to 27,893 km², passing the 25,000 km² target ✓
- *  9.00         map zooms into the Cabanatuan bowl until the 1/1200° (~90 m) lattice shows as crisp cells
+ *  9.00         map labels clear; the map zooms ×197 into the Cabanatuan bowl while its frame closes to a
+ *               9 × 9 window: the 1/1200° (~90 m) lattice resolves into crisp cells; the TL steps aside
  *  9.60         the bowl's deepest cell is outlined: "1 pixel ≈ 90 m × 90 m"
  * 10.00 bar 21  every other cell drops (rings, outside → in); the viewfinder contracts onto the survivor
  * 10.25         the TL (node) claims the surviving cell and morphs node → pixel (purple → cyan)
- * 10.90         the TL grows to 96 px and glides to the hand-off spot; 11.6–11.95 the tag and last panel unmask
+ * 10.75–11.6   inset and panel cards retract with their contents
+ * 10.90         the TL grows to 96 px and glides to the hand-off spot; 11.65–11.95 the pixel tag unmasks
  * 12.00         pure 'pixel', size 96, (940, 556), rot 0, alpha 1
  */
 (function () {

@@ -21,13 +21,16 @@
  *         receding type) into the antenna's beam. Geometry is physical: sub-satellite point 4.36° WSW
  *         of the footprint (right-looking, ascending), altitude 0.1086 R (691.65 km), PALSAR face square
  *         to the beam; satellite and footprint advance north together.
- *   4.5–5.5 cloud clusters condense (staggered on beats) over the South China Sea, Lingayen and the
- *         Philippine Sea, drifting slowly west; Earth itself does not spin.
- *   5.50  beam opens; one bright wavefront leaves the antenna on every quarter note and lands on the
- *         next (ground ripple). The lower beam runs UNDER the cloud deck and its wavefronts glow
- *         through it; the imaged path-448 strip shows as a SAR-textured window cut through the clouds.
- *         Caption "ALOS-1 PALSAR · ASCENDING PASS / L-band radar penetrates cloud cover".
- *   6.00  bar 4: "Project LInOG" (top-left, in space) · 6.5 subtitle (2 lines) · 7.0 lab line.
+ *   4.5–5.5 cloud streets condense (staggered on beats) over the South China Sea, off the Ilocos coast
+ *         (right under the beam's last third), the Philippine Sea and — thin, capped over land — central
+ *         Luzon; they drift slowly west. Earth itself does not spin in this shot.
+ *   5.50  beam reaches down from the antenna; one bright wavefront leaves on every quarter note and lands
+ *         on the next (ground ripple). The lower beam runs UNDER the cloud deck and its wavefronts and
+ *         ripples glow through it. Caption "ALOS-1 PALSAR · ASCENDING PASS" (+ 6.0 "L-band radar
+ *         penetrates cloud cover", the report's cloud-penetration point).
+ *   6.00  bar 4: first wavefront lands — footprint + imaged path-448 strip start (SAR texture seen through
+ *         a window cut in the clouds, growing north). "Project LInOG" scans in (top-left, in space);
+ *         6.5 subtitle (2 lines); 7.0 lab eyebrow above the title.
  *   7.0–8.5 acronym decode on quarter notes: L · In · O · G turn cyan in the subtitle, with ticks.
  *   9.00  captions, title, orbit unmask; satellite un-builds; the TL travels down the beam (the beam
  *         drains completely behind it), rotating to horizontal and growing.
@@ -412,7 +415,7 @@
   })();
 
   /* path-448 imaged strip: SAR amplitude texture seen through a window in the cloud deck */
-  const STRIP = { hw: 0.4, t0: 5.6, tEnd: 9.75 };
+  const STRIP = { hw: 0.4, t0: 6.0, tEnd: 9.75 }; // imaging starts as the first wavefront lands on the bar-4 downbeat
   function stripPoly(g, latA, latB) {
     const n = 12, pts = [];
     for (let i = 0; i <= n; i++) { const lat = lerp(latA, latB, i / n); pts.push(P(g, pathLon(lat) - STRIP.hw, lat)); }
@@ -451,9 +454,9 @@
       const u = ((k + 0.5) / N) * 2 - 1, v = ((j + 0.5) / N) * 2 - 1, r2 = u * u + v * v, o = (j * N + k) * 4;
       d[o] = d[o + 1] = d[o + 2] = 255;
       if (r2 >= 1) { d[o + 3] = 0; continue; }
-      const n = L.fbm(u * 2.3 + i * 7.1, v * 2.3 - i * 3.3, 5, 900 + i), n2 = L.fbm(u * 6 + 3, v * 6 - i, 3, 950 + i);
-      const f = (1 - r2) * 1.2 + (n - 0.5) * 1.3;
-      d[o + 3] = 255 * L.smooth((f - 0.3) / 0.22) * (0.62 + 0.38 * n2);
+      const n = L.fbm(u * 2.3 + i * 7.1, v * 2.3 - i * 3.3, 5, 900 + i), n2 = L.fbm(u * 4 + 3, v * 4 - i, 3, 950 + i);
+      const f = (1 - r2) * 1.2 + (n - 0.5) * 1.2;
+      d[o + 3] = 255 * L.smooth((f - 0.26) / 0.3) * (0.78 + 0.22 * n2) * (0.75 + 0.25 * L.smooth(f));
     }
     x.putImageData(img, 0, 0);
     return (SPRITES[i] = c);
@@ -465,21 +468,27 @@
     return (SHADOWS[i] = c);
   }
   const CLOUD_ANCHORS = [
-    // [lon, lat, size°, density] — the beam corridor west of Luzon first (the beam's last segment crosses it)
-    [119.5, 15.0, 0.75, 1.0], [119.75, 16.3, 0.7, 1.0], [119.7, 17.5, 0.65, 0.9], [120.1, 13.7, 0.55, 0.8],
-    [116.4, 18.9, 1.2, 1.0], [114.6, 14.8, 1.4, 0.95], [117.2, 12.0, 1.0, 0.85], [111.6, 17.6, 1.3, 0.9], [112.4, 10.8, 1.2, 0.85], [109.6, 13.2, 1.0, 0.8],
-    [122.0, 18.1, 0.5, 0.6], [121.9, 14.4, 0.45, 0.55], [121.6, 20.9, 0.9, 0.9],
-    [126.8, 19.6, 1.1, 0.95], [129.6, 16.4, 1.3, 0.9], [125.6, 22.6, 1.0, 0.85], [127.4, 12.2, 1.1, 0.8], [131.5, 21.2, 1.2, 0.8],
+    // [lon, lat, size°, density] — first a cloud street off the Ilocos coast: the ground under the beam's
+    // last third (f 0.7–0.95) during 6–9 s, so the beam visibly dives through it
+    [120.25, 16.45, 0.62, 1.0], [119.95, 17.35, 0.72, 1.0], [119.7, 18.3, 0.7, 0.95], [119.45, 19.3, 0.66, 0.9], [120.4, 15.4, 0.5, 0.8],
+    [116.4, 18.6, 1.15, 0.95], [114.6, 14.8, 1.3, 0.9], [117.2, 12.2, 0.95, 0.85], [111.8, 17.4, 1.2, 0.85], [112.4, 10.8, 1.1, 0.8], [109.4, 13.6, 0.9, 0.75],
+    // a thin deck over central Luzon (capped over land): the imaged strip reads as a clear window through it
+    [120.95, 15.2, 0.55, 1.0], [120.75, 16.25, 0.6, 1.0], [121.25, 15.75, 0.45, 0.9], [120.9, 14.4, 0.4, 0.8], [121.9, 17.6, 0.5, 0.8], [121.7, 21.1, 0.8, 0.85],
+    [125.8, 21.4, 1.0, 0.9], [130.2, 20.6, 1.2, 0.85], [126.6, 11.0, 1.0, 0.8], [130.8, 11.4, 1.1, 0.8], [123.6, 24.0, 0.9, 0.75],
   ];
   const CLOUDS = CLOUD_ANCHORS.map(([lon, lat, sz, dens], i) => {
+    // a cluster = a short cloud street (own orientation, aspect 1.5–2.3): a dense core run plus smaller puffs
     const rnd = L.rng(5000 + i * 37), puffs = [];
-    const nCore = 2 + Math.floor(rnd() * 3), nSat = 4 + Math.floor(rnd() * 5);
+    const dir = rnd() * Math.PI, ca = Math.cos(dir), sa = Math.sin(dir), asp = 1.5 + 0.8 * rnd();
+    const nCore = 3 + Math.floor(rnd() * 2), nSat = 3 + Math.floor(rnd() * 4);
     for (let k = 0; k < nCore + nSat; k++) {
-      const core = k < nCore, ang = rnd() * TAU, rr = (core ? 0.22 * rnd() : 0.45 + 0.45 * rnd()) * sz;
-      const rx = (core ? 0.45 + 0.2 * rnd() : 0.18 + 0.2 * rnd()) * sz;
-      puffs.push({ dx: Math.cos(ang) * rr * 1.25, dy: Math.sin(ang) * rr, rx, ry: rx * (0.55 + 0.3 * rnd()), rot: rnd() * Math.PI, a: (core ? 0.72 + 0.2 * rnd() : 0.5 + 0.3 * rnd()) * dens, spr: Math.floor(rnd() * 3) });
+      const core = k < nCore;
+      const u = core ? (k / Math.max(1, nCore - 1) - 0.5) * 0.9 * asp * sz * 0.5 : (rnd() - 0.5) * asp * sz * 0.9;
+      const v = core ? (rnd() - 0.5) * 0.12 * sz : (rnd() - 0.5) * 0.55 * sz;
+      const rx = (core ? 0.42 + 0.18 * rnd() : 0.17 + 0.15 * rnd()) * sz;
+      puffs.push({ dx: u * ca - v * sa, dy: u * sa + v * ca, rx, ry: rx * (0.62 + 0.3 * rnd()), rot: dir + (rnd() - 0.5) * 1.2, a: (core ? 0.82 + 0.15 * rnd() : 0.5 + 0.25 * rnd()) * dens, spr: Math.floor(rnd() * 3) });
     }
-    return { lon, lat, puffs, drift: 0.05 + 0.04 * rnd(), at: [4.5, 5.0, 5.5][i % 3], ph: rnd() * TAU };
+    return { lon, lat, puffs, drift: 0.04 + 0.04 * rnd(), at: [4.5, 5.0, 5.5][i % 3], ph: rnd() * TAU };
   });
   /** Puff placements for this frame (screen coords + affine) — shared by the shadow and cloud passes. */
   function cloudPuffs(lt, g) {
@@ -494,7 +503,7 @@
         const v = o3(lon, lat);
         if (v[2] <= 0.04) continue;
         const land = lon > 119.4 && lon < 122.8 && lat > 12.4 && lat < 18.8 ? G.land(lon, lat) : 0;
-        const alpha = Math.min(k, 1) * p.a * (1 - 0.7 * land); // thin over the Philippines: the highlight stays readable
+        const alpha = Math.min(k, 1) * p.a * (1 - 0.8 * land); // ≤ ~0.18 over the Philippines: the highlight stays readable
         out.push({ x: g.cx + v[0] * g.r, y: g.cy - v[1] * g.r, z: v[2], phi: Math.atan2(-v[1], v[0]), rx: p.rx * grow * g.r * DEG, ry: p.ry * grow * g.r * DEG, rot: p.rot, alpha, spr: p.spr });
       }
     }
@@ -506,7 +515,7 @@
       ctx.save();
       ctx.translate(q.x + (shadow ? 4 : 0), q.y + (shadow ? 6 : 0));
       ctx.rotate(q.phi); ctx.scale(q.z, 1); ctx.rotate(q.rot - q.phi); ctx.scale(q.rx, q.ry);
-      ctx.globalAlpha = q.alpha * (shadow ? 0.45 : 0.92);
+      ctx.globalAlpha = Math.min(1, q.alpha * (shadow ? 0.5 : 0.95));
       ctx.drawImage(shadow ? shadowSprite(q.spr) : puffSprite(q.spr), -1, -1, 2, 2);
       ctx.restore();
     }
@@ -521,18 +530,27 @@
   }
 
   /* radar beam: cone + one bright wavefront per quarter note (launched on the beat, lands on the next) */
-  const BEAM = { hw0: 2.5, hwF: 24, fCloud: 0.62 };
+  const BEAM = { hw0: 2.5, hwF: 24, fCloud: 0.66, band: 0.07 };
   function beamFrame(ctx, pg) { ctx.translate(pg.ant[0], pg.ant[1]); ctx.rotate(pg.ang); }
   const beamW = (pg, r) => BEAM.hw0 + ((BEAM.hwF - BEAM.hw0) * r) / pg.len;
-  function drawBeamBody(ctx, pg, lt, f0, f1, a) {
+  /** Beam cone between f0..f1. part 'lower' (under the cloud deck) / 'upper' (above it) carry complementary
+   *  linear ramps across fCloud ± band; drawn additively, they sum exactly to the full cone (no seam). */
+  function drawBeamBody(ctx, pg, lt, f0, f1, a, part) {
+    const fa = BEAM.fCloud - BEAM.band, fb = BEAM.fCloud + BEAM.band;
+    if (part === 'lower') f0 = Math.max(f0, fa); else f1 = Math.min(f1, fb);
     if (f1 - f0 < 0.002 || a <= 0.002) return;
-    const r0 = pg.len * f0, r1 = pg.len * f1;
+    const r0 = pg.len * f0, r1 = pg.len * f1, pk = 0.8 + 0.2 * L.pulse(lt);
+    const mask = (f) => { const k = clamp((f - fa) / (fb - fa)); return part === 'lower' ? k : 1 - k; };
+    const grad = (amax, amin) => {
+      const gr = ctx.createLinearGradient(r0, 0, r1, 0);
+      for (const f of [f0, fa, fb, f1]) if (f >= f0 && f <= f1) gr.addColorStop((f - f0) / (f1 - f0), L.rgba(C.cyan, a * lerp(amax, amin, f) * mask(f)));
+      return gr;
+    };
     ctx.save(); beamFrame(ctx, pg);
-    const gr = ctx.createLinearGradient(0, 0, pg.len, 0), pk = 0.8 + 0.2 * L.pulse(lt);
-    gr.addColorStop(0, L.rgba(C.cyan, 0.34 * a * pk)); gr.addColorStop(1, L.rgba(C.cyan, 0.1 * a * pk));
-    ctx.fillStyle = gr;
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.fillStyle = grad(0.26 * pk, 0.08 * pk);
     ctx.beginPath(); ctx.moveTo(r0, -beamW(pg, r0)); ctx.lineTo(r1, -beamW(pg, r1)); ctx.lineTo(r1, beamW(pg, r1)); ctx.lineTo(r0, beamW(pg, r0)); ctx.closePath(); ctx.fill();
-    ctx.strokeStyle = L.rgba(C.cyan, 0.5 * a); ctx.lineWidth = 1;
+    ctx.strokeStyle = grad(0.5, 0.42); ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(r0, -beamW(pg, r0)); ctx.lineTo(r1, -beamW(pg, r1)); ctx.moveTo(r0, beamW(pg, r0)); ctx.lineTo(r1, beamW(pg, r1)); ctx.stroke();
     ctx.restore();
   }
@@ -693,20 +711,21 @@
       /* ---------------- B · low Earth orbit (drawn first: the type recedes over it) */
       if (lt >= 3.98) {
         const { g, pg } = Lo;
-        const unmask = 2600 * L.sp(lt, 4.0, 0.5);                          // Earth opens from the Luzon point
-        const iris = 2600 * Math.max(0, 1 - 1.03 * L.sp(lt, 9.5, 0.45));   // closes onto the footprint (no overshoot)
+        const RF = 1500;                                                     // ≥ farthest frame corner from Luzon
+        const unmask = RF * L.sp(lt, 4.0, 0.5);                            // Earth opens from the Luzon point
+        const iris = RF * Math.max(0, 1 - 1.03 * L.sp(lt, 9.5, 0.45));     // closes onto the footprint (no overshoot)
         const rClip = Math.min(unmask, iris), opening = unmask < iris;
-        const beamP = L.sp(lt, 5.5, 0.5);                                   // the beam reaches down from the antenna
+        const beamP = L.sp(lt, 5.5, 0.45);                                  // the beam reaches down from the antenna
         // final beats: the beam drains completely behind the TL (tail → 1), then is gone
-        const tailF = Lo.kGo > 0.001 ? clamp(Lo.f - 0.06 * (1 - L.sp(lt, 9.4, 0.4))) : 0;
-        const beamA = (1 - L.sp(lt, 9.55, 0.3)) * (1 - tailF > 0.01 ? 1 : 0);
-        const fpA = Math.min(L.sp(lt, 5.75, 0.4), 1 - L.sp(lt, 9.6, 0.3));
+        const tailF = Lo.kGo > 0.001 ? clamp(Lo.f - 0.06 * (1 - L.sp(lt, 9.5, 0.3))) : 0;
+        const beamA = (1 - L.sp(lt, 9.5, 0.3)) * (1 - tailF > 0.01 ? 1 : 0);
+        const fpA = Math.min(L.sp(lt, 6.0, 0.4), 1 - L.sp(lt, 9.5, 0.35));
         const latA = footLat(STRIP.t0), latB = footLat(Math.min(lt, STRIP.tEnd));
         const hole = lt > STRIP.t0 && latB - latA > 0.005 ? stripPoly(g, latA, latB) : null;
         if (rClip > 0.5) {
           const cxC = opening ? VIEW.ax : pg.F[0], cyC = opening ? VIEW.ay : pg.F[1];
           ctx.save();
-          if (rClip < 2599) { ctx.beginPath(); ctx.arc(cxC, cyC, rClip, 0, TAU); ctx.clip(); }
+          if (rClip < RF - 1) { ctx.beginPath(); ctx.arc(cxC, cyC, rClip, 0, TAU); ctx.clip(); }
           drawEarth(ctx, g);
           ctx.save(); ctx.beginPath(); ctx.arc(g.cx, g.cy, g.r, 0, TAU); ctx.clip();
           const puffs = cloudPuffs(lt, g);
@@ -715,26 +734,25 @@
           drawFootprint(ctx, lt, g, pg, fpA, 'ground');
           // lower beam: under the cloud deck
           const fLo = Math.max(tailF, BEAM.fCloud);
-          if (beamP > BEAM.fCloud && beamA > 0) {
-            drawBeamBody(ctx, pg, lt, fLo, beamP, beamA);
-            drawBeamWaves(ctx, pg, lt, fLo, beamP, beamA);
+          if (beamP > BEAM.fCloud - BEAM.band && beamA > 0) {
+            drawBeamBody(ctx, pg, lt, tailF, beamP, beamA, 'lower');
+            drawBeamWaves(ctx, pg, lt, fLo, beamP, 0.45 * beamA);
           }
           ctx.save(); clipOut(ctx, hole); drawPuffs(ctx, puffs, false); ctx.restore();
           // radar penetrates the cloud: wavefronts and ripples continue through the deck (additive, fainter)
-          if (beamP > BEAM.fCloud && beamA > 0) drawBeamWaves(ctx, pg, lt, fLo, beamP, 0.6 * beamA);
+          if (beamP > BEAM.fCloud && beamA > 0) drawBeamWaves(ctx, pg, lt, fLo, beamP, 0.55 * beamA);
           drawFootprint(ctx, lt, g, pg, fpA, 'cloud');
           ctx.restore();
           ctx.restore();
-          if (rClip < 2599) { // iris rim
-            ctx.save(); ctx.strokeStyle = L.rgba(C.cyan, 0.75 * clamp(rClip / 120) * clamp((2599 - rClip) / 300)); ctx.lineWidth = 1.6;
+          if (rClip < RF - 1) { // iris rim
+            ctx.save(); ctx.strokeStyle = L.rgba(C.cyan, 0.75 * clamp(rClip / 120) * clamp((RF - rClip) / 200)); ctx.lineWidth = 1.6;
             ctx.beginPath(); ctx.arc(cxC, cyC, rClip, 0, TAU); ctx.stroke(); ctx.restore();
           }
         }
         // upper beam: above the clouds (drains behind the TL; outside the iris, so nothing pops)
         if (beamA > 0 && beamP > 0.001) {
-          const f1 = Math.min(beamP, BEAM.fCloud);
-          drawBeamBody(ctx, pg, lt, tailF, f1, beamA);
-          drawBeamWaves(ctx, pg, lt, tailF, f1, beamA);
+          drawBeamBody(ctx, pg, lt, tailF, beamP, beamA, 'upper');
+          drawBeamWaves(ctx, pg, lt, tailF, Math.min(beamP, BEAM.fCloud), beamA);
         }
         // orbit + satellite
         drawOrbit(ctx, lt, g, L.sp(lt, 4.5, 1.0), 1 - L.sp(lt, 9.0, 0.5));
