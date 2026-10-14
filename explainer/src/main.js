@@ -76,26 +76,26 @@
   const errors = [];
   L.errors = errors;
 
-  /* Spotlight compositing (see LINOG.spot in core.js): defocus + dim the frame, then restore the target region
-   * sharp through a feathered mask. Scratch canvases are reused; the result is a pure function of the frame. */
+  /* Spotlight compositing (see LINOG.spot in core.js). One quarter-resolution overlay: the frame, defocused (downscale +
+   * small blur) and dimmed, with the target rectangles cut out through a feathered mask, drawn back over the sharp frame
+   * with opacity k. Two full-frame passes only (read down, write up); the target region keeps the untouched sharp pixels.
+   * Scratch canvas reused; the result is a pure function of the frame. */
   const SP = {};
   function applySpot(c, m, k) {
-    if (!SP.a) { SP.a = L.canvas(W, H); SP.s = L.canvas(W / 4, H / 4); SP.m = L.canvas(W / 4, H / 4); }
-    const ax = SP.a.getContext('2d'), sx = SP.s.getContext('2d'), mx = SP.m.getContext('2d');
-    ax.globalCompositeOperation = 'copy'; ax.drawImage(c.canvas, 0, 0); ax.globalCompositeOperation = 'source-over';
+    if (!SP.s) SP.s = L.canvas(W / 4, H / 4);
+    const sx = SP.s.getContext('2d');
+    sx.save();
     sx.globalCompositeOperation = 'copy'; sx.imageSmoothingEnabled = true; sx.imageSmoothingQuality = 'high';
-    sx.filter = 'blur(2.5px)'; sx.drawImage(SP.a, 0, 0, W / 4, H / 4); sx.filter = 'none'; sx.globalCompositeOperation = 'source-over';
-    mx.clearRect(0, 0, W / 4, H / 4); mx.filter = 'blur(6px)'; mx.fillStyle = '#fff';
-    mx.beginPath();
-    for (const q of m) mx.roundRect((q.x - q.pad) / 4, (q.y - q.pad) / 4, (q.w + 2 * q.pad) / 4, (q.h + 2 * q.pad) / 4, q.r / 4);
-    mx.fill(); mx.filter = 'none';
-    ax.globalCompositeOperation = 'destination-in'; ax.imageSmoothingEnabled = true; ax.imageSmoothingQuality = 'high';
-    ax.drawImage(SP.m, 0, 0, W, H); ax.globalCompositeOperation = 'source-over';
+    sx.filter = 'blur(2.5px)'; sx.drawImage(c.canvas, 0, 0, W / 4, H / 4); sx.filter = 'none';
+    sx.globalCompositeOperation = 'source-atop'; sx.fillStyle = 'rgba(3,6,12,0.6)'; sx.fillRect(0, 0, W / 4, H / 4);
+    sx.globalCompositeOperation = 'destination-out'; sx.filter = 'blur(5px)'; sx.fillStyle = '#000';
+    sx.beginPath();
+    for (const q of m) sx.roundRect((q.x - q.pad) / 4, (q.y - q.pad) / 4, (q.w + 2 * q.pad) / 4, (q.h + 2 * q.pad) / 4, q.r / 4);
+    sx.fill();
+    sx.restore();
     c.save(); c.setTransform(1, 0, 0, 1, 0, 0);
-    c.imageSmoothingEnabled = true; c.imageSmoothingQuality = 'high';
-    c.globalAlpha = Math.min(1, k * 1.15); c.drawImage(SP.s, 0, 0, W, H);
-    c.globalAlpha = 1; c.fillStyle = `rgba(3,6,12,${(0.6 * k).toFixed(4)})`; c.fillRect(0, 0, W, H);
-    c.drawImage(SP.a, 0, 0);
+    c.imageSmoothingEnabled = true; c.imageSmoothingQuality = 'low'; // bilinear is enough for an already-blurred layer (4× cheaper than 'high')
+    c.globalAlpha = k; c.drawImage(SP.s, 0, 0, W, H);
     c.restore();
   }
 

@@ -8,7 +8,7 @@
  *         camera push (×1.04 in 10–14, ×1.0816 in 14–18).
  * TEXT  (v2, narrated film: ≤ 6 readable strings per section; the narration carries the story)
  *   10–14  "779" · "PALSAR Level 1.1 archives · 1.04 TB" · "FBS" · "FBD" ·
- *          "FBS band-limited 28 → 14 MHz · FBD resampled to the FBS grid" · "Level 1.1 SLC"
+ *          "FBS band-limited 28 → 14 MHz · FBS + FBD merged into one stack" · "Level 1.1 SLC"
  *   14–18  "Elevation model" · "NAMRIA IfSAR DEM (+ SRTM) · schematic" · "Baseline network" · "P448 F0290 · 24 dates" ·
  *          "· 149 pairs formed" · "Schematic dates and baselines"
  *   Counters roll as unregistered digits ('deco'); only the settled value registers, and it holds ≥ 1.5 s.
@@ -67,7 +67,7 @@
 
   let INK = null;
   const ink = () => INK || (INK = {
-    amber: L.ink(C.amber, C.card), blue: L.ink(C.blue, C.card), cyan: L.ink(C.cyan, C.card),
+    amber: L.ink(C.amber, C.card), blue: L.ink(C.blue, C.card),
   });
 
   /* ---------------------------------------------------------------- layout (world coords) */
@@ -452,12 +452,13 @@
       for (const f of [-7, 7]) { const x = U.xc + f * U.ppm; ctx.moveTo(x, U.top); ctx.lineTo(x, U.ax); }
       ctx.stroke(); ctx.setLineDash([]);
     }
-    // 13.0 "unified": the common 14 MHz band lights up across both rows, breathing on the beat (under the bands)
-    const pu = rv(lt, 3.0, 0.5);
+    // 13.0 "unified" (VO-05's last word): the common 14 MHz band lights up across both rows — it rises from the axis
+    // with a flash on the downbeat, then breathes on the beat (drawn under the bands)
+    const pu = rv(lt, 3.0, 0.5), fl = lt >= 3.0 ? Math.exp(-(lt - 3.0) / 0.3) : 0;
     if (pu > 0) {
       const xl = U.xc - 7 * U.ppm, xr = U.xc + 7 * U.ppm, y0 = U.top + 2, y1 = U.ax - 2, bt = L.pulse(t);
       const g = ctx.createLinearGradient(0, y0, 0, y1);
-      g.addColorStop(0, L.rgba(C.cyan, (0.05 + 0.05 * bt) * pu)); g.addColorStop(1, L.rgba(C.cyan, (0.12 + 0.08 * bt) * pu));
+      g.addColorStop(0, L.rgba(C.cyan, (0.07 + 0.05 * bt + 0.14 * fl) * pu)); g.addColorStop(1, L.rgba(C.cyan, (0.16 + 0.08 * bt + 0.2 * fl) * pu));
       ctx.fillStyle = g; ctx.fillRect(xl, y1 - (y1 - y0) * pu, xr - xl, (y1 - y0) * pu);
     }
     // bands: FBS holds its 28 MHz until the 12.5 beat, then the bandpass edges slide in to ±7 MHz (band-limit)
@@ -474,7 +475,7 @@
     if (pe > 0) {
       for (const sgn of [-1, 1]) {
         const x = U.xc + sgn * fe * U.ppm;
-        L.glow(ctx, x, (U.top + U.ax) / 2, 30, C.cyan, (0.3 + 0.15 * L.pulse(t)) * pe);
+        L.glow(ctx, x, (U.top + U.ax) / 2, 30 + 16 * fl, C.cyan, (0.3 + 0.15 * L.pulse(t) + 0.45 * fl) * pe);
         ctx.strokeStyle = L.rgba(C.cyan, 0.95); ctx.lineWidth = 2;
         L.polyPartial(ctx, [[x, U.top], [x, U.ax]], pe); ctx.stroke();
         ctx.fillStyle = C.cyan; ctx.beginPath(); ctx.moveTo(x, U.top - 1); ctx.lineTo(x - sgn * 9 * pe, U.top - 6); ctx.lineTo(x, U.top - 11); ctx.closePath(); ctx.fill();
@@ -485,7 +486,9 @@
       ctx.beginPath(); ctx.moveTo(lerp(U.xc, xl + 8, pe), yb); ctx.lineTo(lerp(U.xc, xr - 8, pe), yb); ctx.stroke();
     }
     // the unification, in one line (revealed with the edges so it holds ≥ 1.5 s before the card leaves)
-    cardText(ctx, [{ s: 'FBS', color: I.amber, weight: 700 }, { s: ' band-limited 28 → 14 MHz  ·  ', color: C.text }, { s: 'FBD', color: I.blue, weight: 700 }, { s: ' resampled to the FBS grid', color: C.text }],
+    // Phase 1 per the Y2Q2 report: FBS band-limited to the common 14 MHz, then all dates merged into one stack
+    // (the FBD → FBS-grid resampling happens later, at coregistration — act 3)
+    cardText(ctx, [{ s: 'FBS', color: I.amber, weight: 700 }, { s: ' band-limited 28 → 14 MHz · ', color: C.text }, { s: 'FBS', color: I.amber, weight: 700 }, { s: ' + ', color: C.text }, { s: 'FBD', color: I.blue, weight: 700 }, { s: ' merged into one stack', color: C.text }],
       U.lx, U.cap, { kind: 'sans', size: 24, weight: 500, p: rv(lt, 2.0, 0.45), scanColor: C.amber, id: 'a2-unify' });
   }
   function drawArchive(ctx, lt, t) {

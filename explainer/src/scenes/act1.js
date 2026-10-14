@@ -1,11 +1,16 @@
 /* Act 1 · The hook & mission (0–10 s, bars 1–5). No HUD. Camera sections [0,4] and [4,10].
+ * Narrated (src/vo_cues.js): VO-01 0.5 "The Earth never stops moving." · VO-02 2.9 "Yet we seldom see it." ·
+ * VO-03 4.6 "From orbit, radar measures it, even through cloud." · VO-04 7.8 "This is Project LInOG."
+ * Text v2 (≤ 6 readable strings per section): the headline THE EARTH NEVER / STOPS MOVING. (role 'headline', one QA
+ * string per line) + "L-band · λ = 23.6 cm"; then "Luzon, Philippines", "ALOS-1 PALSAR · ascending pass" and the full
+ * name. The title card is the official LInOG logo + the NIGS seal and the white EGG lockup (real artwork, L.drawImg).
  *
  * Beat plan (local = global time; 1 beat = 0.5 s, 1 bar = 2 s):
  *  A · bars 1–2 · kinetic type "THE EARTH NEVER / STOPS MOVING." (Space Grotesk 700, 136 px)
  *   0.00  TL (cyan L-band pulse) enters from off-screen left (x ≈ −130, already moving: pre-rolled
  *         spring) on the line-2 cut height, trailing a faint flat trace; on screen within the first beat.
  *   0.50  "THE" scans in; the λ bracket draws on under the pulse, trough → trough (= one wavelength).
- *   1.00  "EARTH" + mono callout "L-BAND · λ = 23.6 cm" · 1.50 "NEVER".
+ *   1.00  "EARTH" + mono callout "L-band · λ = 23.6 cm" · 1.50 "NEVER".
  *   2.00  bar 2: "STOPS" lands and the pulse launches (velocity spring 2.0, brake on beat 3.5). From
  *         here its carrier is phase-locked to a world-fixed sine, so the cut it leaves behind IS its own
  *         wave: line 2 splits along that sine (upper half lifts 3 px / shears left, lower half drops /
@@ -24,21 +29,21 @@
  *         face square to the beam; satellite and footprint advance north together.
  *   4.5–5.5 one contiguous, flat, translucent cloud deck condenses over central/northern Luzon and the
  *         sea off Ilocos (C.text 0.15–0.33, three posterised tiers, cached fbm texture; drifts west).
- *   5.00  map label "LUZON · PHILIPPINES" (backplate + leader to the east coast).
+ *   5.00  map label "Luzon, Philippines" (sans 19 on a backplate + leader to the east coast).
  *   5.50  beam reaches down from the antenna; one bright wavefront leaves on every quarter note and lands
  *         on the next (ground ripple). The lower beam runs UNDER the cloud deck; its wavefronts glow
- *         through it. Satellite tag "ALOS-1 PALSAR · ASCENDING PASS" rides beside the satellite
- *         (+ 6.0 "L-band radar sees through cloud").
+ *         through it ("…even through cloud"). Satellite tag "ALOS-1 PALSAR · ascending pass" rides beside it.
  *   6.00  bar 4: first wavefront lands — footprint + imaged path-448 strip start: the SAR texture shows
  *         through a soft hole the beam punches in the deck (pulses on the beat) and a window that grows
- *         north with the strip. "Project LInOG" scans in (top-left, in space); 6.5 expansion (2 lines);
- *         7.0 lab eyebrow above the title.
- *   7.0–8.5 acronym decode on quarter notes: L · In · O · G turn cyan in the expansion, with ticks.
- *   7.00  plain-language mission (sans 26): "Mapping ground motion in Central Luzon" /
- *         "from satellite radar · 2007–2011".
- *   9.00  labels, captions, title, orbit unmask; satellite un-builds; the TL travels down the beam (the
- *         beam drains completely behind it), rotating to horizontal and growing slightly.
- *   9.50  an iris contracts onto the footprint (globe, clouds, strip) — closed by ~9.85.
+ *         north with the strip.
+ *   7.00  title card (top left, in space above the limb): the LInOG logo sweeps in left → right (feathered,
+ *         0.75 s — the satellite "L" first, then its beam and "InOG"); 7.125 / 7.25 the full name (Title Case);
+ *         7.25 / 7.375 the NIGS seal · white EGG lockup fade + rise in. Complete by ≈ 7.85 for VO-04.
+ *   7.5–9.0 acronym decode on quarter notes: L · In · O · G turn cyan in the full name, with ticks.
+ *   9.00  labels unmask; satellite un-builds; the TL travels down the beam (the beam drains completely
+ *         behind it), rotating to horizontal and growing slightly.
+ *   9.60  the title card leaves (fade / scan-out, 0.35 s) while an iris contracts onto the footprint
+ *         (globe, clouds, strip) — closed by ~9.93.
  *  10.00  only the TL remains: pure 'pulse', rot 0, size ≈ 62 (its in-act size), centre ≈ (1200, 608).
  */
 (function () {
@@ -692,13 +697,16 @@
     if (pp > 0.001) L.text(ctx, MAP_LBL.str, x, y, { ...MAP_LBL.o, color: C.text, p: pp, bg: C.card, id: 'a1-luzon' });
   }
 
-  /* ---- title card (in space above the limb, top left): real logos · PROJECT LInOG · the full name.
-   * 6.5 the NIGS seal and the white EGG lockup fade + rise in (a hairline draws between them), 7.0 the headline scans
-   * in, 7.125 / 7.25 the full name; 7.5–9.0 the acronym decodes on quarter notes (L · In · O · G). Everything is
-   * fully readable through VO-04 (7.8–9.6) and leaves together 9.6 → 9.95 (scan-out / fade), as the iris closes. */
-  const TITLE = { x: 172, y: 286, size: 96 };          // headline baseline (world)
-  const LOGO = { y: 98, h: 80, gap: 24 };             // logo row: top + height (≥ 48 px on screen, never stretched)
-  const SUB_O = { kind: 'sans', size: 31, weight: 500 }, SUB_Y = [TITLE.y + 56, TITLE.y + 98];
+  /* ---- title card (in space above the limb, top left): the official LInOG logo (hero) · the full name · the
+   * institutional logos. Laid out against the limb (world y of the limb ≈ 443 at x 600, 399 at x 700, 323 at x 900).
+   * 7.0 the LInOG logo is revealed left → right by a feathered sweep (the satellite "L" first, then its beam and "InOG",
+   * as if the radar painted them); 7.125 / 7.25 the full name scans in; 7.25 / 7.375 the NIGS seal and the white EGG
+   * lockup fade + rise in (a hairline draws between them); 7.5–9.0 the acronym decodes on quarter notes
+   * (L · In · O · G). Complete by ≈ 7.85, it holds through VO-04 "This is Project LInOG." (7.8–9.6) and leaves together
+   * 9.6 → 9.95 (fade / scan-out) as the iris closes. Without the LInOG artwork the headline PROJECT LInOG stands in. */
+  const HERO = { x: 172, y: 100, h: 176, at: 7.0, dur: 0.75, feather: 76 }; // logo:linog (≈ 190 px tall on screen)
+  const SUB_O = { kind: 'sans', size: 28, weight: 500 }, SUB_X = 174, SUB_Y = [322, 360];
+  const LOGO = { y: 392, h: 68, gap: 22 };             // credits row: top + height (≥ 48 px on screen, never stretched)
   const T_OUT = 9.95, T_OUT_D = 0.35;                  // exit springs start at 9.6
   const ACR = [0, 1, 2, 3].map((i) => 7.5 + 0.5 * i);  // acronym decode on quarter notes
   const acrK = (lt, i) => L.sp(lt, ACR[i], 0.35);
@@ -707,53 +715,86 @@
     [['L', 0], ['everaging '], ['In', 1], ['SAR for '], ['O', 2], ['bservation']],
     [['and Modeling of Earthquake '], ['G', 3], ['enerators']],
   ];
-  /** One logo: contain-fit, high-quality resampling (L.drawImg); fades + rises in, fades out with the title. */
+  /** A credits-row logo: contain-fit, high-quality resampling (L.drawImg); fades + rises in, fades out with the card. */
   function drawLogo(ctx, lt, name, x, w, at) {
     const im = L.img(name);
     if (!im) return 0;
-    const p = L.inout(lt, at, T_OUT, 0.6, T_OUT_D);
+    const p = L.inout(lt, at, T_OUT, 0.5, T_OUT_D);
     const dw = (LOGO.h * im.width) / im.height; // natural aspect at the row height
-    if (p > 0.002) L.drawImg(ctx, im, x, LOGO.y + 14 * (1 - L.sp(lt, at, 0.6)) - 6 * L.sp(lt, T_OUT - T_OUT_D, T_OUT_D), Math.min(w, dw), LOGO.h, { alpha: clamp(p), ax: 0, id: name });
+    if (p > 0.002) L.drawImg(ctx, im, x, LOGO.y + 12 * (1 - L.sp(lt, at, 0.5)) - 6 * L.sp(lt, T_OUT - T_OUT_D, T_OUT_D), Math.min(w, dw), LOGO.h, { alpha: clamp(p), ax: 0, id: name });
     return Math.min(w, dw);
   }
+  /** The hero logo, revealed by a feathered left → right sweep: the revealed part under a plain clip, the feather as
+   *  NS clipped slices of falling alpha (every slice is the same L.drawImg, so nothing is ever stretched or resampled
+   *  twice), and a soft gold front (the logo's own beam colour). Fades out with the card. */
+  function drawHero(ctx, lt) {
+    const im = L.img('logo:linog'), out = L.sp(lt, T_OUT - T_OUT_D, T_OUT_D * 0.8), a = clamp(1 - out);
+    const k = L.sp(lt, HERO.at, HERO.dur);
+    if (k <= 0.001 || a <= 0.002) return;
+    if (!im) { // fallback: the text headline
+      L.text(ctx, [{ s: 'PROJECT ', color: C.text }, { s: 'LInOG', color: C.cyan }], HERO.x, HERO.y + 120,
+        { kind: 'display', size: 96, weight: 700, p: L.inout(lt, HERO.at, T_OUT, 0.55, T_OUT_D), tracking: 0.01, role: 'headline', id: 'a1-title' });
+      return;
+    }
+    const h = HERO.h, w = (h * im.width) / im.height, x = HERO.x, y = HERO.y - 6 * out, F = HERO.feather;
+    const xf = x - F + (w + 2 * F) * clamp(k);           // sweep front: from x − F to x + w + F
+    ctx.save();
+    ctx.globalAlpha *= a;
+    if (xf - F >= x + w) L.drawImg(ctx, im, x, y, w, h, { ax: 0, id: 'logo:linog' });
+    else {
+      if (xf - F > x) { ctx.save(); ctx.beginPath(); ctx.rect(x - 2, y - 2, xf - F - x + 2, h + 4); ctx.clip(); L.drawImg(ctx, im, x, y, w, h, { ax: 0 }); ctx.restore(); }
+      const NS = 24;
+      for (let i = 0; i < NS; i++) {
+        const s0 = xf - F + (F * i) / NS;
+        if (s0 + F / NS < x || s0 > x + w) continue;
+        ctx.save(); ctx.beginPath(); ctx.rect(s0, y - 2, F / NS, h + 4); ctx.clip();
+        L.drawImg(ctx, im, x, y, w, h, { ax: 0, alpha: 1 - (i + 0.5) / NS });
+        ctx.restore();
+      }
+      // the sweep front: a thin scan line in the logo's own beam colour (like the film's text scan bars)
+      const fa = 0.8 * Math.sin(Math.PI * clamp(k)), gx = xf - F * 0.08;
+      if (fa > 0.01 && gx > x && gx < x + w) {
+        ctx.save(); ctx.globalCompositeOperation = 'lighter';
+        ctx.fillStyle = L.rgba(C.gold, fa * 0.22); ctx.fillRect(gx - 5, y + 2, 10, h - 4);
+        ctx.fillStyle = L.rgba(C.gold, fa); ctx.fillRect(gx - 0.75, y + 2, 1.5, h - 4);
+        ctx.restore();
+      }
+    }
+    ctx.restore();
+  }
   function drawTitle(ctx, lt) {
-    // logos: NIGS seal (colour, reads on dark) · hairline · white EGG lockup
-    const xN = TITLE.x + 2, wN = drawLogo(ctx, lt, 'logo:nigs', xN, LOGO.h, 6.5) || LOGO.h;
-    const xD = xN + wN + LOGO.gap;
-    const pD = Math.min(L.sp(lt, 6.56, 0.5), 1 - L.sp(lt, T_OUT - T_OUT_D, T_OUT_D * 0.8));
-    if (pD > 0.002) {
-      ctx.save(); ctx.strokeStyle = L.rgba(C.textDim, 0.55); ctx.lineWidth = 1.2;
-      L.polyPartial(ctx, [[xD, LOGO.y + LOGO.h / 2 - 26], [xD, LOGO.y + LOGO.h / 2 + 26]], clamp(pD)); ctx.stroke(); ctx.restore();
-    }
-    drawLogo(ctx, lt, 'logo:egg_lockup_white', xD + LOGO.gap, 400, 6.625);
-    // headline (display 700, ALL CAPS; LInOG keeps its casing)
-    const pT = L.inout(lt, 7.0, T_OUT, 0.55, T_OUT_D);
-    if (pT > 0.001) {
-      L.text(ctx, [{ s: 'PROJECT ', color: C.text }, { s: 'LInOG', color: C.cyan }], TITLE.x, TITLE.y,
-        { kind: 'display', size: TITLE.size, weight: 700, p: pT, tracking: 0.01, role: 'headline', id: 'a1-title' });
-    }
+    drawHero(ctx, lt);
     // the full name (Title Case), its initials decoding to cyan with a tick under each
-    const pS = L.inout(lt, 7.125, T_OUT, 0.6, T_OUT_D), stag = 0.2;
+    const pS = L.inout(lt, 7.125, T_OUT, 0.55, T_OUT_D), stag = 0.2;
     if (pS > 0.001) {
       SUB.forEach((ln, li) => { // one id per line (QA tracks each line's readable span)
         const segs = ln.map(([s, i]) => ({ s, color: i === undefined ? C.text : hi(lt, i) }));
-        L.text(ctx, segs, TITLE.x + 2, SUB_Y[li], { ...SUB_O, p: clamp(pS * (1 + stag) - stag * li), id: 'a1-sub' + li });
+        L.text(ctx, segs, SUB_X, SUB_Y[li], { ...SUB_O, p: clamp(pS * (1 + stag) - stag * li), id: 'a1-sub' + li });
       });
       const c = mctx();
       ctx.save();
       SUB.forEach((ln, li) => {
-        let x = TITLE.x + 2;
+        let x = SUB_X;
         for (const [s, i] of ln) {
           const w = L.measure(c, s, SUB_O).w;
           if (i !== undefined) {
             const k = clamp(acrK(lt, i)) * clamp(pS);
-            if (k > 0.002) { ctx.fillStyle = L.rgba(C.cyan, 0.95 * k); ctx.fillRect(x + (w * (1 - k)) / 2, SUB_Y[li] + 8, w * k, 2.5); }
+            if (k > 0.002) { ctx.fillStyle = L.rgba(C.cyan, 0.95 * k); ctx.fillRect(x + (w * (1 - k)) / 2, SUB_Y[li] + 7, w * k, 2.5); }
           }
           x += w;
         }
       });
       ctx.restore();
     }
+    // credits row: NIGS seal (colour, reads on dark) · hairline · white EGG lockup
+    const xN = SUB_X, wN = drawLogo(ctx, lt, 'logo:nigs', xN, LOGO.h, 7.25) || LOGO.h;
+    const xD = xN + wN + LOGO.gap;
+    const pD = Math.min(L.sp(lt, 7.31, 0.45), 1 - L.sp(lt, T_OUT - T_OUT_D, T_OUT_D * 0.8));
+    if (pD > 0.002) {
+      ctx.save(); ctx.strokeStyle = L.rgba(C.textDim, 0.55); ctx.lineWidth = 1.2;
+      L.polyPartial(ctx, [[xD, LOGO.y + LOGO.h / 2 - 22], [xD, LOGO.y + LOGO.h / 2 + 22]], clamp(pD)); ctx.stroke(); ctx.restore();
+    }
+    drawLogo(ctx, lt, 'logo:egg_lockup_white', xD + LOGO.gap, 400, 7.375);
   }
 
   /* ================================================================ layout (single source of truth) */
@@ -822,7 +863,7 @@
         const { g, pg } = Lo;
         const RF = 1500;                                                     // ≥ farthest frame corner from Luzon
         const unmask = RF * L.sp(lt, 4.0, 0.5);                            // Earth opens from the Luzon point
-        const iris = RF * Math.max(0, 1 - 1.03 * L.sp(lt, 9.5, 0.45));     // closes onto the footprint (no overshoot)
+        const iris = RF * Math.max(0, 1 - 1.03 * L.sp(lt, 9.6, 0.36));     // closes onto the footprint with the title card's exit (no overshoot)
         const rClip = Math.min(unmask, iris), opening = unmask < iris;
         const beamP = L.sp(lt, 5.5, 0.45);                                  // the beam reaches down from the antenna
         // final beats: the beam drains completely behind the TL (tail → 1), then is gone
