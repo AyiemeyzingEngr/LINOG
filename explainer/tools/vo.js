@@ -3,6 +3,9 @@
  *
  *   node tools/vo.js --cues            print the cue table (seconds, mm:ss.mmm, frames @ 60 fps, words, pace) and write
  *                                      out/vo_cues.csv + out/vo_cues_audacity.txt (Audacity label track)
+ *                                      + out/vo_captions.srt (subtitles) + out/vo_captions.ass (burn-in style)
+ *   node tools/vo.js --burn            burn the VO captions into a rendered film (no re-render):
+ *        [--in out/linog_explainer.mp4] [--out out/linog_explainer_captions.mp4]
  *   node tools/vo.js --silent          write vo/vo.wav: a silent 60.000 s WAV (recording template / "no VO yet")
  *        [--rate 48000] [--bits 16|24|32] [--channels 1|2] [--out FILE] [--force]
  *   node tools/vo.js --assemble        build one 60.000 s VO from per-line files vo/VO-01.wav … vo/VO-16.wav: each line
@@ -54,6 +57,58 @@ function writeCueFiles(dir = path.join(ROOT, 'out')) {
   fs.writeFileSync(files.csv, csv);
   fs.writeFileSync(files.labels, labels);
   return files;
+}
+
+/* ------------------------------------------------------------------ captions (subtitles of the VO) */
+/** Caption events: one per line; a two-sentence line longer than 60 characters is split at the sentence, with time
+ *  shared in proportion to length. Each event ends at its slot's `out` (+0.25 s of hang, never into the next line). */
+function captionEvents() {
+  const ev = [];
+  CUES.forEach((c, i) => {
+    const next = CUES[i + 1], end = Math.min(c.out + 0.25, next ? next.in - 0.05 : DUR - 0.05);
+    const parts = c.text.length > 60 ? c.text.match(/[^.!?]+[.!?]+/g) || [c.text] : [c.text];
+    const total = parts.reduce((n, p) => n + p.trim().length, 0);
+    let t = c.in;
+    parts.forEach((p, k) => {
+      const t1 = k === parts.length - 1 ? end : t + (end - c.in) * (p.trim().length / total);
+      ev.push({ id: c.id, t0: t, t1, text: p.trim() });
+      t = t1;
+    });
+  });
+  return ev;
+}
+const srtTC = (t) => { const ms = Math.round(t * 1000), h = Math.floor(ms / 3600000), m = Math.floor(ms / 60000) % 60, s = Math.floor(ms / 1000) % 60; return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')},${String(ms % 1000).padStart(3, '0')}`; };
+const assTC = (t) => { const cs = Math.round(t * 100), h = Math.floor(cs / 360000), m = Math.floor(cs / 6000) % 60, s = Math.floor(cs / 100) % 60; return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}.${String(cs % 100).padStart(2, '0')}`; };
+/** Writes <dir>/vo_captions.srt (any player) and <dir>/vo_captions.ass (burn-in: Inter Medium 38 px, white on a
+ *  translucent slate box, bottom centre above the HUD tracker, 150/200 ms fades). Returns their paths. */
+function writeCaptionFiles(dir = path.join(ROOT, 'out')) {
+  fs.mkdirSync(dir, { recursive: true });
+  const ev = captionEvents();
+  const srt = ev.map((e, i) => `${i + 1}\n${srtTC(e.t0)} --> ${srtTC(e.t1)}\n${e.text}\n`).join('\n');
+  const ass = ['[Script Info]', 'ScriptType: v4.00+', 'PlayResX: 1920', 'PlayResY: 1080', 'WrapStyle: 0', 'ScaledBorderAndShadow: yes', '',
+    '[V4+ Styles]',
+    'Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding',
+    'Style: VO,Inter Medium,38,&H00F5F1E6,&H000000FF,&H40120B06,&H00000000,0,0,0,0,100,100,0.3,0,3,13,0,2,360,360,132,1', '',
+    '[Events]', 'Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text']
+    .concat(ev.map((e) => {
+      // the end card's partner band fills the lower third from ≈ 54.5 s: captions there go to the top of the frame
+      const top = e.t0 >= 54.5;
+      return `Dialogue: 0,${assTC(e.t0)},${assTC(e.t1)},VO,,0,0,${top ? 40 : 0},,{\\fad(150,200)${top ? '\\an8' : ''}}${e.text}`;
+    })).join('\n') + '\n';
+  const files = { srt: path.join(dir, 'vo_captions.srt'), ass: path.join(dir, 'vo_captions.ass') };
+  fs.writeFileSync(files.srt, srt);
+  fs.writeFileSync(files.ass, ass);
+  return files;
+}
+/** Burns the VO captions into a rendered MP4 (video re-encoded at the render's settings, audio copied). */
+function burnCaptions(input = path.join(ROOT, 'out', 'linog_explainer.mp4'), output = path.join(ROOT, 'out', 'linog_explainer_captions.mp4')) {
+  const { ass } = writeCaptionFiles(path.dirname(output));
+  const esc = ass.replace(/\\/g, '/').replace(/:/g, '\\:');
+  execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', input, '-vf', `ass=${esc}`,
+    '-c:v', 'libx264', '-preset', 'medium', '-profile:v', 'high', '-pix_fmt', 'yuv420p', '-b:v', '12M', '-maxrate', '16M', '-bufsize', '24M',
+    '-colorspace', 'bt709', '-color_primaries', 'bt709', '-color_trc', 'bt709', '-color_range', 'tv',
+    '-c:a', 'copy', '-movflags', '+faststart', output], { stdio: 'inherit' });
+  return output;
 }
 
 /* ------------------------------------------------------------------ WAV writing / decoding */
@@ -180,7 +235,7 @@ function testVO({ rate = 48000, level = -26, shift = 0 } = {}) {
   return x;
 }
 
-module.exports = { CUES, cueRows, cueTable, writeCueFiles, writeSilentWav, wavBytes, decode, isSilent, assemble, testVO, fmtTC };
+module.exports = { CUES, cueRows, cueTable, writeCueFiles, writeCaptionFiles, burnCaptions, captionEvents, writeSilentWav, wavBytes, decode, isSilent, assemble, testVO, fmtTC };
 
 /* ------------------------------------------------------------------ CLI */
 if (require.main === module) {
@@ -193,7 +248,13 @@ if (require.main === module) {
     if (flag('cues')) {
       console.log(cueTable());
       const f = writeCueFiles(path.resolve(opt('out-dir', path.join(ROOT, 'out'))));
-      console.log(`\nwrote ${rel(f.csv)} and ${rel(f.labels)} (Audacity: File → Import → Labels…)`);
+      const c = writeCaptionFiles(path.resolve(opt('out-dir', path.join(ROOT, 'out'))));
+      console.log(`\nwrote ${rel(f.csv)} and ${rel(f.labels)} (Audacity: File → Import → Labels…), ${rel(c.srt)} and ${rel(c.ass)} (captions)`);
+      did = true;
+    }
+    if (flag('burn')) {
+      const out = burnCaptions(path.resolve(opt('in', path.join(ROOT, 'out', 'linog_explainer.mp4'))), path.resolve(opt('out', path.join(ROOT, 'out', 'linog_explainer_captions.mp4'))));
+      console.log(`wrote ${rel(out)} (VO captions burned in)`);
       did = true;
     }
     if (flag('silent')) {

@@ -100,6 +100,9 @@ Other tools:
 3. Deliver either one 60.000 s WAV aligned to the film as `vo/vo.wav`, or per-line files `vo/VO-01.wav` … `vo/VO-16.wav`
    assembled with `node tools/vo.js --assemble`.
 4. Run `node render.js`. The music ducks under the voice automatically.
+5. Optional captions: `node tools/vo.js --cues` also writes `out/vo_captions.srt` (for any player) and
+   `out/vo_captions.ass`; `node tools/vo.js --burn` burns them into `out/linog_explainer_captions.mp4` without re-rendering
+   (Inter Medium on a translucent slate box, bottom centre above the HUD tracker; the end-card line sits at the top).
 
 ## Determinism
 
