@@ -17,7 +17,7 @@ function resolvePlaywright() {
 
 /** Static file server for the dev page (fonts need http://, not file://). */
 function serve(root = ROOT) {
-  const types = { '.html': 'text/html', '.js': 'text/javascript', '.woff2': 'font/woff2', '.json': 'application/json', '.png': 'image/png' };
+  const types = { '.html': 'text/html', '.js': 'text/javascript', '.woff2': 'font/woff2', '.json': 'application/json', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.wav': 'audio/wav' };
   return new Promise((resolve) => {
     const srv = http.createServer((req, res) => {
       const u = decodeURIComponent(req.url.split('?')[0]);
@@ -37,7 +37,7 @@ async function open(mode = 'dev', { workers = 1 } = {}) {
   const pw = resolvePlaywright();
   const browser = await pw.chromium.launch({ args: LAUNCH_ARGS });
   let server = null, url;
-  if (mode === 'dev') { server = await serve(); url = server.url; }
+  if (mode === 'dev') { require('../build').writeAssetIndex(); server = await serve(); url = server.url; }
   else url = require('url').pathToFileURL(path.resolve(mode)).href;
   const pages = [];
   for (let i = 0; i < workers; i++) {
@@ -123,10 +123,14 @@ async function runQA(p, { from = 0, to = 60, step = 0.25, boundaries = [10, 18, 
   const issues = [], frames = [];
   let prevThumb = null, stillRun = 0, stillStart = 0;
   const seen = new Map(); // text key → {first, last, scene} for the ≥ 1.5 s readability rule
+  const typoSeen = new Set(), spotSeen = new Set();
   for (let t = from; t <= Math.min(to, 59.99) + 1e-9; t = Math.round((t + step) * 1000) / 1000) {
     const info = await p.page.evaluate((tt) => window.seek(tt, { measure: true }), t);
     const th = await p.page.evaluate(() => window.__thumb());
     issues.push(...checkLayout(info));
+    for (const m of info.typo || []) if (!typoSeen.has(m)) { typoSeen.add(m); issues.push({ t, kind: 'typography', msg: m }); }
+    if (info.spot && !info.spot.found && info.spot.k > 0.05 && !spotSeen.has(info.spot.cue)) { spotSeen.add(info.spot.cue); issues.push({ t, kind: 'spot', msg: `${info.spot.cue}: spotlight target "${info.spot.target}" is not marked by scene ${info.scene} (LINOG.spot.mark)` }); }
+    const fading = t >= 57.4; // the picture fades to black over 57–60 s: blank/static checks do not apply
     for (const b of info.layout.text) {
       if (b.role === 'hud') continue;
       const k = b.id ? 'id:' + b.id : b.str.replace(/[0-9]/g, '#'); // rolling counters keep one key
@@ -136,11 +140,11 @@ async function runQA(p, { from = 0, to = 60, step = 0.25, boundaries = [10, 18, 
     }
     if (!info.tl || info.tl.alpha < 0.5 || info.tl.size < 24) issues.push({ t, kind: 'tl-visibility', msg: info.tl ? `through-line too faint/small (alpha ${info.tl.alpha.toFixed(2)}, size ${info.tl.size.toFixed(0)})` : 'through-line missing' });
     const en = thumbEnergy(th);
-    if (en < 1.2) issues.push({ t, kind: 'blank', msg: `frame looks empty (energy ${en.toFixed(2)})` });
+    if (en < 1.2 && !fading) issues.push({ t, kind: 'blank', msg: `frame looks empty (energy ${en.toFixed(2)})` });
     if (info.msRaster > 150) issues.push({ t, kind: 'perf', msg: `frame took ${info.msRaster.toFixed(0)} ms to draw + rasterise (budget 150)` });
     if (prevThumb) {
       const d = thumbDiff(prevThumb, th);
-      if (d < 0.35) { if (!stillRun) stillStart = t - step; stillRun += step; }
+      if (d < 0.35 && !fading) { if (!stillRun) stillStart = t - step; stillRun += step; }
       else { if (stillRun > 1.0 + 1e-6) issues.push({ t: stillStart, kind: 'static-hold', msg: `little motion for ${stillRun.toFixed(2)} s (${stillStart.toFixed(2)}–${(stillStart + stillRun).toFixed(2)})` }); stillRun = 0; }
     }
     prevThumb = th;

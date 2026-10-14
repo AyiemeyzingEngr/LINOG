@@ -30,18 +30,32 @@
   ];
   // Sub-sections from the storyboard. Camera pushes 1.00 -> 1.04 across each one.
   L.SECTIONS = [[0, 4], [4, 10], [10, 14], [14, 18], [18, 22], [22, 26], [26, 30], [30, 36], [36, 42], [42, 48], [48, 52], [52, 56], [56, 60]];
+  /* Processing phases, numbered and named as in the LInOG ALOS-1 FBS+FBD pipeline v4.0 (processing manual D6, cited by
+   * the DOST Y2Q2 report: "Phases 0 to 7 of the pipeline, 23 quality gates (G1–G23)"). `label` = the manual's phase
+   * title, `short` = the tracker label (flowchart deck v4.0, slide 1). t0/t1 = where the film depicts the phase. */
   L.PHASES = [
-    { n: 1, key: 'ingest', label: 'INGESTION & FBS+FBD UNIFICATION', short: 'INGEST · FBS+FBD', color: C.amber, t0: 10, t1: 14 },
-    { n: 2, key: 'dem', label: 'DEM & NETWORK', short: 'DEM · NETWORK', color: C.blue, t0: 14, t1: 18 },
-    { n: 3, key: 'coreg', label: 'COREGISTRATION', short: 'COREGISTRATION', color: C.blue, t0: 18, t1: 22 },
-    { n: 4, key: 'ifg', label: 'INTERFEROGRAMS', short: 'INTERFEROGRAMS', color: C.blue, t0: 22, t1: 30 },
-    { n: 5, key: 'sbas', label: 'MINTPY SBAS TIME SERIES', short: 'MINTPY SBAS', color: C.purple, t0: 30, t1: 42 },
-    { n: 6, key: 'geo', label: 'GEOCODING & DELIVERABLES', short: 'GEOCODING · PRODUCTS', color: C.emerald, t0: 42, t1: 48 },
+    { id: '0', label: 'Install and Prove the Environment', short: 'Install · pre-flight', color: C.amber, t0: 10, t1: 11.5 },
+    { id: '1', label: 'Stage, Unpack and Unify the Two Modes', short: 'Unpack · unify modes', color: C.amber, t0: 11.5, t1: 14 },
+    { id: '2', label: 'DEM and Stack Configuration', short: 'DEM · stack config', color: C.blue, t0: 14, t1: 18 },
+    { id: '3', label: 'Coregistration', short: 'Coregistration', color: C.blue, t0: 18, t1: 22 },
+    { id: '4', label: 'Interferograms', short: 'Interferograms', color: C.blue, t0: 22, t1: 27.5 },
+    { id: '4.5', label: 'Interferogram Report Pages', short: 'Report pages', color: C.blue, t0: 27.5, t1: 30 },
+    { id: '5', label: 'MintPy Time-Series Inversion', short: 'MintPy time series', color: C.purple, t0: 30, t1: 44.5 },
+    { id: '6', label: 'Delivery, Verification, Transfer', short: 'Delivery · verification', color: C.emerald, t0: 44.5, t1: 48 },
+    { id: '7', label: 'Reading the Products', short: 'Reading the products', color: C.crimson, t0: 48, t1: 52 },
+  ];
+  /* HUD header (top left). Phases 0 and 1 share one header, as in the manual's chapter "Phase 0–1: Stage, Unpack and
+   * Unify the Two Modes", so the header never flashes for less than two seconds. */
+  L.PHASE_HEADERS = [
+    { tag: 'Phases 0–1', label: 'Stage, Unpack and Unify the Two Modes', color: C.amber, t0: 10, t1: 14 },
+    ...L.PHASES.slice(2).map((p) => ({ tag: `Phase ${p.id}`, label: p.label, color: p.color, t0: p.t0, t1: p.t1 })),
   ];
   // Safe areas. During the HUD window (10..52 s) scenes must keep content inside SAFE_HUD.
   L.SAFE = { x0: 96, y0: 54, x1: 1824, y1: 1026 };
   L.SAFE_HUD = { x0: 96, y0: 132, x1: 1824, y1: 958 };
   L.HUD_WINDOW = [10, 52];
+  /** The film fades to black over its last three seconds (picture here, music in audio.js). */
+  L.FADE = [57, 60];
 
   /* ------------------------------------------------------------------ math */
   const clamp = (v, a = 0, b = 1) => (v < a ? a : v > b ? b : v);
@@ -225,8 +239,8 @@
   };
 
   /* ------------------------------------------------------------------ layout registry (for QA) */
-  const LAYOUT = (L.LAYOUT = { text: [], panels: [] });
-  L.resetLayout = () => { LAYOUT.text.length = 0; LAYOUT.panels.length = 0; };
+  const LAYOUT = (L.LAYOUT = { text: [], panels: [], typo: [] });
+  L.resetLayout = () => { LAYOUT.text.length = 0; LAYOUT.panels.length = 0; LAYOUT.typo.length = 0; if (L.spot) L.spot.marks.clear(); };
   function screenBox(ctx, x, y, w, h) {
     const m = ctx.getTransform();
     const xs = [], ys = [];
@@ -257,6 +271,24 @@
     return m;
   }
   function segsOf(str, color) { return Array.isArray(str) ? str : [{ s: String(str), color }]; }
+
+  /* ---- typography rules (client brief): titles and headlines in ALL CAPS; body text, labels and UI in sentence case
+   * or Title Case. Brand names, software names, units and symbols keep their own casing even inside a headline. */
+  const KEEP = /(LInOG|InSAR|MintPy|ISCE2|SNAPHU|demErr_ramp|demErr|PhilSA|GeoTIFF|(?<![A-Za-z])(?:km²|km|cm\/yr|mm\/yr|m\/yr|MHz|cm|mm)(?![A-Za-z])|[λθφπΔμ])/;
+  const KEEP_G = new RegExp(KEEP.source, 'g');
+  /** ALL-CAPS version of a headline that keeps protected tokens (brand/software names, units, Greek symbols). */
+  L.caps = (s) => String(s).split(KEEP).map((part, i) => (i % 2 ? part : part.toUpperCase())).join('');
+  // Upper-case words allowed in labels/UI: acronyms, not shouting.
+  const ACRONYMS = new Set(['ALOS', 'PALSAR', 'ISCE', 'SNAPHU', 'SBAS', 'DEM', 'SLC', 'FBS', 'FBD', 'LOS', 'GNSS', 'NIGS', 'UPD', 'DOST', 'PCIEERD', 'PHIVOLCS',
+    'JAXA', 'METI', 'NAMRIA', 'IFSAR', 'SRTM', 'KMZ', 'PNG', 'GIS', 'CSRC', 'EGG', 'WGS', 'UTC', 'CABN', 'NASA', 'ESA', 'UTM', 'RGB', 'QC', 'PFZ', 'HH', 'HV', 'TB']);
+  /** Records typography-rule violations for QA: headlines must be ALL CAPS (L.caps); other text must not shout. */
+  function typoCheck(str, role) {
+    if (role === 'deco' || role === 'hud-num') return;
+    if (role === 'headline') { if (L.caps(str) !== str) LAYOUT.typo.push(`headline not in ALL CAPS: "${str.slice(0, 60)}"`); return; }
+    const shout = str.replace(KEEP_G, ' ').match(/\b[A-Z]{4,}\b/g);
+    const bad = shout && shout.filter((w) => !ACRONYMS.has(w));
+    if (bad && bad.length) LAYOUT.typo.push(`label/UI text in ALL CAPS (${bad.slice(0, 3).join(', ')}): "${str.slice(0, 60)}" — use sentence or Title Case, or role:'headline'`);
+  }
   /** Measure (without drawing). Returns {w, asc, desc, capH}. */
   L.measure = (ctx, str, o = {}) => {
     const size = o.size || 28, weight = o.weight || 500, kind = o.kind || 'sans';
@@ -355,7 +387,9 @@
     }
     if (p >= 0.6 && alpha >= 0.5 && o.role !== 'deco') {
       const sb = screenBox(ctx, box.x, box.y, box.w, box.h);
-      LAYOUT.text.push({ ...sb, str: segs.map((s) => s.s).join(''), color: Array.isArray(str) ? (o.color || C.text) : color, colors: segs.map((s) => s.color || color), bg: o.bg || C.bg, size: size * Math.abs(ctx.getTransform().a), role: o.role || 'text', id: o.id || null, scene: L._sceneId || null });
+      const full = segs.map((s) => s.s).join('');
+      typoCheck(full, o.role);
+      LAYOUT.text.push({ ...sb, str: full, color: Array.isArray(str) ? (o.color || C.text) : color, colors: segs.map((s) => s.color || color), bg: o.bg || C.bg, size: size * Math.abs(ctx.getTransform().a), role: o.role || 'text', id: o.id || null, scene: L._sceneId || null });
     }
     return box;
   };
@@ -619,57 +653,105 @@
     },
   };
 
+  /* ------------------------------------------------------------------ images (logos, real data) */
+  /** Decoded images by name (filled before window.ready from LINOG.ASSET_SRC, see build.js / src/assets_index.js).
+   *  Logos: 'logo:egg_mark_white', 'logo:egg_lockup_white', 'logo:up_seal', 'logo:nigs', 'logo:up_csrc', 'logo:up_isc',
+   *  'logo:dost_pcieerd', 'logo:dost_phivolcs', 'logo:philsa', 'logo:jaxa', and 'logo:linog' once the official file is
+   *  added to assets/logos/linog.png (null until then — scenes fall back to the wordmark). */
+  L.IMG = L.IMG || {};
+  L.img = (name) => L.IMG[name] || null;
+  /** Draw an image with high-quality resampling, fitted into the box (contain), centred. Returns the drawn rect. */
+  L.drawImg = (ctx, im, x, y, w, h, o = {}) => {
+    if (!im) return null;
+    const s = Math.min(w / im.width, h / im.height);
+    const dw = im.width * s, dh = im.height * s;
+    const dx = x + (w - dw) * (o.ax === undefined ? 0.5 : o.ax), dy = y + (h - dh) * (o.ay === undefined ? 0.5 : o.ay);
+    ctx.save();
+    if (o.alpha !== undefined) ctx.globalAlpha *= o.alpha;
+    ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(im, dx, dy, dw, dh);
+    ctx.restore();
+    if ((o.alpha === undefined || o.alpha >= 0.5) && o.id) LAYOUT.panels.push({ ...screenBox(ctx, dx, dy, dw, dh), fill: o.bg || null, img: o.id });
+    return { x: dx, y: dy, w: dw, h: dh };
+  };
+
+  /* ------------------------------------------------------------------ spotlight (VO-driven focus) */
+  /* While a voice-over line names a data point, everything except that data point is dimmed and defocused.
+   * Timing comes from LINOG.VO.cues[].spot ({target, t0, t1, strength}); the scene on screen registers each frame the
+   * rectangle of every target it shows with LINOG.spot.mark(ctx, id, x, y, w, h) in its current transform. main.js
+   * composites the effect after the scene and before the HUD. A cue whose target is not marked is a QA error. */
+  L.spot = {
+    marks: new Map(),
+    /** Register a spotlight target (local coordinates of the current transform). o: {pad (px), r (corner radius px)} */
+    mark(ctx, id, x, y, w, h, o = {}) {
+      const r = { ...screenBox(ctx, x, y, w, h), pad: o.pad === undefined ? 22 : o.pad, r: o.r === undefined ? 18 : o.r };
+      const list = this.marks.get(id);
+      if (list) list.push(r); else this.marks.set(id, [r]); // several rectangles per target are allowed (e.g. map + its value card)
+    },
+    /** The cue spotlighting at time t: {id, target, k (0..1 envelope × strength)} or null. */
+    at(t) {
+      const cues = (L.VO && L.VO.cues) || [];
+      for (const c of cues) {
+        const s = c.spot;
+        if (!s || t < s.t0 || t >= s.t1) continue;
+        const kin = L.ease.inOutSine((t - s.t0) / 0.4), kout = L.ease.inOutSine((s.t1 - t) / 0.5);
+        return { id: c.id, target: s.target, k: Math.min(kin, kout) * (s.strength === undefined ? 1 : s.strength) };
+      }
+      return null;
+    },
+  };
+
   /* ------------------------------------------------------------------ HUD (global, screen space) */
   const fmtT = (t) => { const s = Math.max(0, t); const m = Math.floor(s / 60); const r = s - m * 60; return `${String(m).padStart(2, '0')}:${r.toFixed(2).padStart(5, '0')}`; };
+  /** 0..1: how "current" phase p is at time t (eases in over 0.45 s from t0, out over 0.45 s from t1). */
+  const activeness = (p, t) => Math.min(L.ease.inOutSine((t - p.t0) / 0.45), 1 - L.ease.inOutSine((t - p.t1) / 0.45));
   L.hud = {
     /** HUD visibility 0..1 */
     vis(t) { return L.inout(t, L.HUD_WINDOW[0], L.HUD_WINDOW[1], 1.0, 0.75); },
     phaseAt(t) { return L.PHASES.find((p) => t >= p.t0 && t < p.t1) || null; },
+    headerAt(t) { return L.PHASE_HEADERS.find((h) => t >= h.t0 && t < h.t1) || null; },
     draw(ctx, t) {
       const v = this.vis(t);
       if (v <= 0) return;
       ctx.save();
       ctx.setTransform(1, 0, 0, 1, 0, 0);
-      const ph = this.phaseAt(t);
-      const findings = t >= 48 && t < 52;
-      // --- top-left: phase header (re-reveals on every phase change)
-      if (ph || findings) {
-        const t0 = findings ? 48 : ph.t0, t1 = findings ? 52 : ph.t1;
-        const pin = Math.min(v, L.inout(t, t0, t1 + (t1 >= 52 ? 0 : 0.0001), 0.6, t1 >= 52 ? 0.75 : 0.3));
-        const col = findings ? C.crimson : ph.color;
-        const label = findings ? 'RESULT · CABANATUAN CITY SUBSIDENCE' : ph.label;
-        const tag = findings ? 'FINDINGS' : `PHASE ${String(ph.n).padStart(2, '0')}/06`;
-        ctx.fillStyle = L.rgba(col, 0.95 * pin);
+      // --- top-left: phase header (re-reveals on every header change), e.g. "Phase 4.5  Interferogram Report Pages"
+      const hd = this.headerAt(t);
+      if (hd) {
+        const last = hd.t1 >= L.HUD_WINDOW[1];
+        const pin = Math.min(v, L.inout(t, hd.t0, hd.t1 + (last ? 0 : 0.0001), 0.6, last ? 0.75 : 0.3));
+        ctx.fillStyle = L.rgba(hd.color, 0.95 * pin);
         ctx.fillRect(96, 62, 10 * clamp(pin * 2), 26);
-        const b = L.text(ctx, tag, 118, 82, { kind: 'mono', size: 18, weight: 600, color: L.ink(col), p: pin, tracking: 0.08, role: 'hud', id: 'hud-tag', scanColor: col });
-        L.text(ctx, label, 118 + b.w + 18, 83, { kind: 'display', size: 26, weight: 600, color: C.text, p: clamp(pin * 1.1 - 0.05), tracking: 0.02, role: 'hud', id: 'hud-phase', scanColor: col });
+        const b = L.text(ctx, hd.tag, 118, 82, { kind: 'sans', size: 19, weight: 600, color: L.ink(hd.color), p: pin, tracking: 0.01, role: 'hud', id: 'hud-tag', scanColor: hd.color });
+        L.text(ctx, hd.label, 118 + b.w + 16, 83, { kind: 'display', size: 26, weight: 500, color: C.text, p: clamp(pin * 1.1 - 0.05), tracking: 0.005, role: 'hud', id: 'hud-phase', scanColor: hd.color });
       }
       // --- top-right: wordmark + radar readout
       L.text(ctx, 'LInOG', 1824, 86, { kind: 'display', size: 28, weight: 700, color: C.cyan, align: 'right', p: v, role: 'hud', id: 'hud-logo' });
-      L.text(ctx, `ALOS-1 PALSAR · L-BAND λ 23.6 cm · T+${fmtT(t)}`, 1824, 112, { kind: 'mono', size: 14, weight: 400, color: C.textDim, align: 'right', p: v, role: 'hud', id: 'hud-readout' });
-      // --- bottom: 6-phase pipeline tracker
-      const x0 = 96, x1 = 1824, gap = 14, y = 1004, n = L.PHASES.length;
-      // during FINDINGS (48–52 s) all six segments read done and a crimson RESULT cap follows segment 6
-      const capW = 120, capP = findings ? L.sp(t, 48, 0.6) : 0;
-      const segW = (x1 - x0 - gap * (n - 1) - (capW + gap) * clamp(capP)) / n;
-      if (capP > 0.01) {
-        const cx = x1 - (capW) * clamp(capP);
-        ctx.fillStyle = L.rgba(C.crimson, 0.95 * v); ctx.fillRect(cx, y + 14, capW * clamp(capP), 3);
-        L.glow(ctx, cx + capW * clamp(capP), y + 15.5, 16, C.crimson, 0.8 * v * (0.6 + 0.4 * L.pulse(t)));
-        L.text(ctx, 'RESULT', cx, y, { kind: 'mono', size: 18, weight: 600, color: L.ink(C.crimson), p: Math.min(v, clamp(capP)), tracking: 0.06, role: 'hud', id: 'hud-result' });
-      }
+      L.text(ctx, `ALOS-1 PALSAR · L-band λ 23.6 cm · T+${fmtT(t)}`, 1824, 112, { kind: 'mono', size: 14, weight: 400, color: C.textDim, align: 'right', p: v, role: 'hud', id: 'hud-readout' });
+      // --- bottom: pipeline tracker, phases 0–7 (incl. 4.5). The current phase widens and shows its name.
+      const x0 = 96, x1 = 1824, gap = 12, y = 1004, n = L.PHASES.length;
+      const wts = L.PHASES.map((p) => 1 + 2.4 * clamp(activeness(p, t)));
+      const unit = (x1 - x0 - gap * (n - 1)) / wts.reduce((a, b) => a + b, 0);
+      let sx = x0;
       L.PHASES.forEach((p, i) => {
-        const sx = x0 + i * (segW + gap);
-        const reveal = clamp(v * 1.6 - i * 0.1);
-        if (reveal <= 0) return;
-        const done = t >= p.t1, active = t >= p.t0 && t < p.t1;
-        const prog = done ? 1 : active ? (t - p.t0) / (p.t1 - p.t0) : 0;
-        ctx.fillStyle = L.rgba(p.color, 0.18 * reveal);
-        ctx.fillRect(sx, y + 14, segW * reveal, 3);
-        if (prog > 0) { ctx.fillStyle = L.rgba(p.color, (active ? 1 : 0.55) * reveal); ctx.fillRect(sx, y + 14, segW * prog * reveal, 3); }
-        if (active) L.glow(ctx, sx + segW * prog, y + 15.5, 16, p.color, 0.8 * reveal * (0.6 + 0.4 * L.pulse(t)));
-        const col = active ? L.ink(p.color) : done ? '#C3D0E2' : C.textDim;
-        L.text(ctx, `${String(p.n).padStart(2, '0')}  ${p.short}`, sx, y, { kind: 'mono', size: active ? 18 : 16, weight: active ? 600 : 400, color: col, p: reveal, tracking: active ? 0.04 : 0.05, alpha: active ? 1 : done ? 0.9 : 0.8, role: 'hud', id: `hud-ph${p.n}` });
+        const segW = wts[i] * unit, a = clamp(activeness(p, t));
+        const reveal = clamp(v * 1.6 - i * 0.08);
+        if (reveal > 0) {
+          const done = t >= p.t1, active = t >= p.t0 && t < p.t1;
+          const prog = done ? 1 : active ? (t - p.t0) / (p.t1 - p.t0) : 0;
+          ctx.fillStyle = L.rgba(p.color, 0.18 * reveal);
+          ctx.fillRect(sx, y + 14, segW * reveal, 3);
+          if (prog > 0) { ctx.fillStyle = L.rgba(p.color, (active ? 1 : 0.55) * reveal); ctx.fillRect(sx, y + 14, segW * prog * reveal, 3); }
+          if (active) L.glow(ctx, sx + segW * prog, y + 15.5, 16, p.color, 0.8 * reveal * (0.6 + 0.4 * L.pulse(t)));
+          const col = active ? L.ink(p.color) : done ? '#C3D0E2' : C.textDim;
+          const nb = L.text(ctx, p.id, sx, y, { kind: 'sans', size: 17, weight: active ? 700 : 500, color: col, p: reveal, alpha: active ? 1 : done ? 0.9 : 0.8, role: 'hud', id: `hud-ph${p.id}` });
+          if (a > 0.02) { // the phase name, clipped to its (growing / shrinking) segment
+            ctx.save(); ctx.beginPath(); ctx.rect(sx, y - 24, segW, 34); ctx.clip();
+            L.text(ctx, `·  ${p.short}`, sx + nb.w + 8, y, { kind: 'sans', size: 17, weight: 600, color: L.ink(p.color), p: Math.min(reveal, a), alpha: a, role: 'hud', id: `hud-phn${p.id}` });
+            ctx.restore();
+          }
+        }
+        sx += segW + gap;
       });
       ctx.restore();
     },

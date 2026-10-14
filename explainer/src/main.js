@@ -75,13 +75,37 @@
 
   const errors = [];
   L.errors = errors;
+
+  /* Spotlight compositing (see LINOG.spot in core.js): defocus + dim the frame, then restore the target region
+   * sharp through a feathered mask. Scratch canvases are reused; the result is a pure function of the frame. */
+  const SP = {};
+  function applySpot(c, m, k) {
+    if (!SP.a) { SP.a = L.canvas(W, H); SP.s = L.canvas(W / 4, H / 4); SP.m = L.canvas(W / 4, H / 4); }
+    const ax = SP.a.getContext('2d'), sx = SP.s.getContext('2d'), mx = SP.m.getContext('2d');
+    ax.globalCompositeOperation = 'copy'; ax.drawImage(c.canvas, 0, 0); ax.globalCompositeOperation = 'source-over';
+    sx.globalCompositeOperation = 'copy'; sx.imageSmoothingEnabled = true; sx.imageSmoothingQuality = 'high';
+    sx.filter = 'blur(2.5px)'; sx.drawImage(SP.a, 0, 0, W / 4, H / 4); sx.filter = 'none'; sx.globalCompositeOperation = 'source-over';
+    mx.clearRect(0, 0, W / 4, H / 4); mx.filter = 'blur(6px)'; mx.fillStyle = '#fff';
+    mx.beginPath();
+    for (const q of m) mx.roundRect((q.x - q.pad) / 4, (q.y - q.pad) / 4, (q.w + 2 * q.pad) / 4, (q.h + 2 * q.pad) / 4, q.r / 4);
+    mx.fill(); mx.filter = 'none';
+    ax.globalCompositeOperation = 'destination-in'; ax.imageSmoothingEnabled = true; ax.imageSmoothingQuality = 'high';
+    ax.drawImage(SP.m, 0, 0, W, H); ax.globalCompositeOperation = 'source-over';
+    c.save(); c.setTransform(1, 0, 0, 1, 0, 0);
+    c.imageSmoothingEnabled = true; c.imageSmoothingQuality = 'high';
+    c.globalAlpha = Math.min(1, k * 1.15); c.drawImage(SP.s, 0, 0, W, H);
+    c.globalAlpha = 1; c.fillStyle = `rgba(3,6,12,${(0.6 * k).toFixed(4)})`; c.fillRect(0, 0, W, H);
+    c.drawImage(SP.a, 0, 0);
+    c.restore();
+  }
+
   function drawFrame(c, t) {
     L.resetLayout();
     c.reset(); // clears pixels AND the save/restore stack, so a scene error can never leak state
     L.bg.draw(c, t);
     const i = scenes.indexOf(sceneAt(t));
     const sc = scenes[i];
-    let env = null;
+    let env = null, spot = null;
     if (sc) {
       L._sceneId = sc.id;
       env = makeEnv(sc, t, handoffFor(i), c);
@@ -109,6 +133,13 @@
           c.restore();
         }
         if (sc.overlay) { c.save(); sc.overlay(c, env); c.restore(); }
+        // VO spotlight: dim + defocus everything but the data point the narration names
+        const sp = L.spot.at(t);
+        if (sp) {
+          const m = L.spot.marks.get(sp.target);
+          spot = { cue: sp.id, target: sp.target, k: sp.k, found: !!m };
+          if (m && sp.k > 0.004) applySpot(c, m, sp.k);
+        }
       } catch (e) {
         const msg = `${sc.id} @ ${t.toFixed(3)}s: ${e && e.message}`;
         if (errors.length < 50 && !errors.includes(msg)) { errors.push(msg); console.error(msg, e); }
@@ -119,6 +150,13 @@
     }
     L.hud.draw(c, t);
     L.bg.post(c);
+    // the picture fades to black over the last three seconds (the music drops out under it in audio.js)
+    if (t > L.FADE[0]) {
+      c.save(); c.setTransform(1, 0, 0, 1, 0, 0);
+      c.fillStyle = `rgba(0,0,0,${L.ease.inOutSine((t - L.FADE[0]) / (L.FADE[1] - L.FADE[0])).toFixed(5)})`;
+      c.fillRect(0, 0, W, H); c.restore();
+    }
+    if (env) env.spot = spot;
     return env;
   }
 
@@ -149,6 +187,7 @@
       t, scene: env && env.scene.id, ms: msJs, msRaster: performance.now() - t0,
       tl: env && env.tl ? { x: env.tl.x, y: env.tl.y, size: env.tl.size, form: env.tl.form, to: env.tl.to, k: env.tl.k, alpha: env.tl.alpha } : null,
       layout: { text: L.LAYOUT.text.slice(), panels: L.LAYOUT.panels.slice() },
+      typo: L.LAYOUT.typo.slice(), spot: env ? env.spot : null,
     };
     window.__frame = info;
     return info;
@@ -165,11 +204,18 @@
     await document.fonts.ready;
     const missing = FACES.filter((f) => !document.fonts.check(f, 'Aa'));
     window.__fontsMissing = missing;
+    // logos + real-data images: decode every asset before the first frame, so drawing them is synchronous and pure
+    const assetsMissing = [];
+    await Promise.all(Object.entries(L.ASSET_SRC || {}).map(async ([name, src]) => {
+      const im = new Image(); im.src = src;
+      try { await im.decode(); L.IMG[name] = im; } catch (e) { assetsMissing.push(name); }
+    }));
+    if (L.real) L.real.init();
     // warm caches (pure) so the first frame is not slow
     for (let i = 0; i < scenes.length; i++) handoffFor(i);
     for (const s of scenes) if (s.init) { try { s.init(); } catch (e) { errors.push(`${s.id} init: ${e.message}`); } }
     window.seek(0);
-    return { scenes: scenes.map((s) => [s.id, s.t0, s.t1]), fontsMissing: missing };
+    return { scenes: scenes.map((s) => [s.id, s.t0, s.t1]), fontsMissing: missing, assetsMissing };
   })();
 
   /* ---------------------------------------------------------------- preview player (not used when ?render) */
@@ -194,6 +240,18 @@
     btn && btn.addEventListener('click', () => (playing ? stop() : play()));
     bar && bar.addEventListener('input', () => { if (playing) stop(); offset = +bar.value; show(offset); });
     window.addEventListener('keydown', (e) => { if (e.code === 'Space') { e.preventDefault(); playing ? stop() : play(); } if (e.code === 'ArrowRight') { stop(); offset = Math.min(59.99, offset + 0.5); show(offset); } if (e.code === 'ArrowLeft') { stop(); offset = Math.max(0, offset - 0.5); show(offset); } });
+    // drop a recorded vo.wav (or a music.wav named so) onto the page to hear it mixed with the score
+    window.addEventListener('dragover', (e) => e.preventDefault());
+    window.addEventListener('drop', async (e) => {
+      e.preventDefault();
+      const f = e.dataTransfer && e.dataTransfer.files[0];
+      if (!f || !L.audio || !L.audio.setVO) return;
+      stop(); if (btn) { btn.disabled = true; btn.textContent = /music/i.test(f.name) ? 'Mixing music…' : 'Mixing VO…'; }
+      const buf = await f.arrayBuffer();
+      if (/music/i.test(f.name) && L.audio.setMusic) await L.audio.setMusic(buf); else await L.audio.setVO(buf);
+      await L.audio.render();
+      if (btn) { btn.disabled = false; btn.textContent = 'Play'; }
+    });
     const fit = () => { const s = Math.min(window.innerWidth / W, (window.innerHeight - 56) / H); canvas.style.width = `${W * s}px`; canvas.style.height = `${H * s}px`; };
     window.addEventListener('resize', fit); fit();
     const t0 = parseFloat(params.get('t') || '0');

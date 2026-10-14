@@ -26,7 +26,7 @@ const args = process.argv.slice(2);
 const opt = (k, d) => { const i = args.indexOf('--' + k); return i >= 0 ? args[i + 1] : d; };
 const flag = (k) => args.includes('--' + k);
 const OUT_DIR = path.join(__dirname, 'out');
-const HARD = new Set(['error', 'blank', 'tl-continuity', 'tl-visibility', 'safe-area', 'overlap', 'contrast', 'static-hold', 'fonts']);
+const HARD = new Set(['error', 'blank', 'tl-continuity', 'tl-visibility', 'safe-area', 'overlap', 'contrast', 'static-hold', 'fonts', 'assets', 'typography', 'spot']);
 
 function log(...m) { console.log(`[${new Date().toISOString().slice(11, 19)}]`, ...m); }
 
@@ -78,6 +78,7 @@ async function selftest(app) {
   log(`self-test: ${files.length} beat frames + contact sheet in ${path.relative(process.cwd(), dir)}`);
   const qa = await lib.runQA(p, { from: 0, to: 60, step: 0.25, log: (m) => log(m) });
   if (app.info.fontsMissing.length) qa.issues.push({ t: null, kind: 'fonts', msg: 'missing: ' + app.info.fontsMissing.join(', ') });
+  if ((app.info.assetsMissing || []).length) qa.issues.push({ t: null, kind: 'assets', msg: 'images failed to load: ' + app.info.assetsMissing.join(', ') });
   const report = `LInOG explainer self-test\nframes checked: ${qa.stats.frames} (every 0.25 s) + 5 match-cut pairs\nframe draw + raster time: avg ${qa.stats.msAvg.toFixed(1)} ms, max ${qa.stats.msMax.toFixed(0)} ms\nissues: ${qa.issues.length}\n\n${lib.summarize(qa.issues)}\n`;
   fs.writeFileSync(path.join(dir, 'qa_report.txt'), report);
   fs.writeFileSync(path.join(dir, 'qa_issues.json'), JSON.stringify(qa.issues, null, 1));
