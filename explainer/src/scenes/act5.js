@@ -236,6 +236,18 @@
     }
     ctx.restore();
   }
+  /** Component cue on a GeoTIFF / PNG tile (no text): LOS = slanted toward the satellite (ascending, right-looking: up
+   *  and west, ≈ 38° off vertical), vertical = ↕, horizontal = ↔. */
+  function compArrow(ctx, x, y, s, comp, col) {
+    const a = comp === 0 ? -0.66 : comp === 1 ? 0 : Math.PI / 2, dx = Math.sin(a) * s / 2, dy = -Math.cos(a) * s / 2;
+    ctx.save(); ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = 1.3; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(x - dx, y - dy); ctx.lineTo(x + dx, y + dy); ctx.stroke();
+    const head = (hx, hy, ang) => { ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo(hx - 3.6 * Math.cos(ang - 0.5), hy - 3.6 * Math.sin(ang - 0.5)); ctx.lineTo(hx - 3.6 * Math.cos(ang + 0.5), hy - 3.6 * Math.sin(ang + 0.5)); ctx.closePath(); ctx.fill(); };
+    const ang = Math.atan2(dy, dx);
+    head(x + dx, y + dy, ang);
+    if (comp !== 0) head(x - dx, y - dy, ang + Math.PI);
+    ctx.restore();
+  }
   /** Small satellite (body + two solar panels) for the caveat chip. */
   function satellite(ctx, x, y, s, col) {
     ctx.save(); ctx.translate(x, y); ctx.rotate(-0.6); ctx.fillStyle = col; ctx.strokeStyle = col; ctx.lineWidth = 1.3;
@@ -463,6 +475,7 @@
     }
     const gy = q.kind === 'png' ? y + TH / 2 - 4 : y + TH / 2;
     glyph(ctx, q.kind, x + TW / 2, gy, 20, INK_EM);
+    if (q.kind === 'tif' || q.kind === 'png') compArrow(ctx, x + 10, y + 11, 11, q.k >> 1, 'rgba(230,241,255,0.7)');
     if (q.kind === 'png') { // the colour bar burnt into the hillshade PNGs
       for (let i = 0; i < 40; i++) { ctx.fillStyle = L.css(realRGB(((i / 39) * 2 - 1) * 5), 1); ctx.fillRect(x + 11 + i, y + TH - 9, 1.2, 4); }
     }

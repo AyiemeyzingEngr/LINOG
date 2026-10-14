@@ -7,10 +7,11 @@
  * All layout comes from the pure helpers below; tl() and draw() share them.
  *
  * Section A · 30–36 s · NETWORK INVERSION (camera 1.00 → 1.04)
- *  0.00 bar 16  the act-3 fringe (one interferogram) opens both cards as irises around itself, then arcs onto its
- *               pixel on the minimap and becomes a purple node (it keeps its hand-off size for one beat).
+ *  0.00 bar 16  one iris opens both cards out of the act-3 fringe (one interferogram); the TL arcs onto the
+ *               reference date (2009-02-08) of the network and becomes a purple node (hand-off size held one beat).
  *               Left card "Example pixel · schematic": act 2's 24 → 21-date, 149 → 129-pair network over the pixel's
- *               time series. Right card = ★ifg-count: the hero counter, the 12 frames, the two corrections.
+ *               time series. Right card = ★ifg-count: the hero counter, the 12 frames (the example pixel marked
+ *               with a small node that rhymes with the TL), the two corrections.
  *  0.10         the minimap (the section-B map at 53 %: hillshade, coastline, the 12 frames) wipes in
  *  0.25 / 0.30  headline; hero counter + caption scan in
  *  0.31–1.00    the counter climbs on 32nds through the real per-frame cumulative sums (Year-2 report, Table 3) and
@@ -22,12 +23,13 @@
  *  3.25         correction chips; 4.00 bar 18 demErr ✓ (the B⊥-correlated scatter leaves the series);
  *               4.50 demErr_ramp ✓ (the ramp leaves); 5.00 the velocity fit draws through the corrected history
  *  5.50         section change: texts scan out, both cards retract; the minimap leaves its card and grows into the
- *               section-B map (one spring) with the TL riding its pixel; the velocity raster opens from that pixel
+ *               section-B map while the TL drops from the reference date onto the same spot (one spring, 1.3 s):
+ *               it meets the pixel's marker as the map lands; the velocity raster opens from that pixel
  * Section B · 36–42 s · COHERENCE MASKING (camera 1.04 → 1.0816)
  *  5.85         headline; 6.00 bar 19 masks card, footprints draw on; 6.30 legend "LOS velocity · schematic"
  *  6.50         water mask ✓ (sweep) · 7.00 swath-edge mask ✓ · 7.50 / 8.00 temporal coherence ≥ 0.5 → 0.7 ✓
- *  7.60         valid-area card; 8.00 bar 20 the tally scan steps down the map on 8ths and counts the valid area up
- *               (true partial sums of the masked map) → 27,893 km² at ≈ 39.2 s, target 25,000 km² ✓; the valid
+ *  7.70         valid-area card; 8.00 bar 20 the tally scan steps down the map on 8ths and counts the valid area up
+ *               (true partial sums of the masked map) → 27,893 km² at ≈ 39.1 s, target 25,000 km² ✓; the valid
  *               pixels pulse on the beat. ★valid-area = the valid-area card + the map stage
  * 10.00 bar 21  map furniture clears; zoom ×227 about the TL's pixel (Tarlac plains, 120.620°E 15.470°N — coherent,
  *               near-zero velocity) while the frame closes on a 9 × 9 window of 1/1200° (~90 m) cells;
@@ -233,7 +235,7 @@
   const KX = Math.cos(15.5 * Math.PI / 180) * 111.32, KM = 111.32;
   // LOS velocity field (schematic): soft basin tints and one ~5 km bowl (the real finding belongs to act 5)
   const BOWLS = [
-    { lon: 120.967, lat: 15.486, sx: 3.0, sy: 3.0, a: -3.7 }, // ~5 km across at half depth
+    { lon: 120.967, lat: 15.486, sx: 3.0, sy: 3.0, a: -2.6 }, // ~5 km across at half depth; a quiet hint, act 5 owns it
     { lon: 120.9, lat: 15.84, sx: 15, sy: 24, a: -0.45 }, // soft negative tint across the valley to the north
     { lon: 120.72, lat: 14.93, sx: 15, sy: 11, a: -0.55 }, // lower Pampanga basin (broad, soft)
   ];
@@ -396,7 +398,6 @@
     const g = spo(lt, GROW.t, GROW.d), gs = sp(lt, GROW.t, GROW.d);
     return { s: Math.exp(lerp(Math.log(SIG), 0, gs)), cx: lerp(MC[0], RBC[0], g), cy: lerp(MC[1], RBC[1], g), g: gs };
   }
-  const xfPt = (xf, x, y) => [xf.cx + (x - RBC[0]) * xf.s, xf.cy + (y - RBC[1]) * xf.s];
   /** Map zoom about the hand-off pixel: S = 1 → S_END (log-space spring), from T.zoom. */
   function zoomS(lt) {
     if (lt <= T.zoom) return 1;
@@ -771,12 +772,12 @@
     if (zf > 0) G.drawLand(ctx, V, { which: 'ph', stroke: L.rgba(C.cyan, 0.42 * zf), lw: 1.2 * u });
     drawTiles(ctx, lt, env, u);
     // the example pixel on the minimap: a small node that rhymes with the TL; it meets the TL as the map lands
-    const mk = io(lt, 0.55, GROW.t + GROW.d * 0.75, 0.4, 0.45);
-    if (mk > 0) {
+    const mk = io(lt, 0.55, GROW.t + GROW.d * 0.75, 0.4, 0.45); // ring draws on, then closes as the TL arrives
+    if (mk > 0.002) {
       const ph = (env.t * 2) % 1;
-      ctx.fillStyle = L.rgba(INK, mk); ctx.beginPath(); ctx.arc(AW[0], AW[1], 3.6 * u, 0, TAU); ctx.fill();
-      ctx.strokeStyle = L.rgba(INK, 0.95 * mk); ctx.lineWidth = 1.8 * u; ctx.beginPath(); ctx.arc(AW[0], AW[1], 9 * u, 0, TAU); ctx.stroke();
-      ctx.strokeStyle = L.rgba(INK, 0.6 * (1 - ph) * mk); ctx.lineWidth = 1.2 * u; ctx.beginPath(); ctx.arc(AW[0], AW[1], (11 + 12 * ph) * u, 0, TAU); ctx.stroke();
+      ctx.fillStyle = INK; ctx.beginPath(); ctx.arc(AW[0], AW[1], 3.6 * u * mk, 0, TAU); ctx.fill();
+      ctx.strokeStyle = L.rgba(INK, 0.95); ctx.lineWidth = 1.8 * u; ctx.beginPath(); ctx.arc(AW[0], AW[1], 9 * u, -Math.PI / 2, -Math.PI / 2 + TAU * mk); ctx.stroke();
+      if (mk > 0.98) { ctx.strokeStyle = L.rgba(INK, 0.6 * (1 - ph)); ctx.lineWidth = 1.2 * u; ctx.beginPath(); ctx.arc(AW[0], AW[1], (11 + 12 * ph) * u, 0, TAU); ctx.stroke(); }
     }
     // mask sweeps (water) and the 8th-stepped tally scan
     if (lt >= T.water + 0.05 && lt <= T.water + 0.65) {
@@ -925,7 +926,7 @@
     ctx.fillStyle = L.rgba(C.textDim, 0.2); ctx.fillRect(VB.x0, VB.y, bw, 10);
     ctx.fillStyle = C.purple; ctx.fillRect(VB.x0, VB.y, Math.min(bw, (VB.x1 - VB.x0) * (area / VB.max)), 10);
     const tx = VB.x0 + (VB.x1 - VB.x0) * (25000 / VB.max);
-    ctx.fillStyle = L.rgba(hit ? C.cyan : C.text, 0.9 * pb); ctx.fillRect(tx - 1, VB.y - 12, 2, 34);
+    ctx.fillStyle = L.rgba(hit ? C.cyan : C.text, 0.9); ctx.fillRect(tx - 1, VB.y + 5 - 17 * pb, 2, 34 * pb); // grows with the bar
     if (hit) {
       L.glow(ctx, tx, VB.y + 5, 30, C.cyan, 0.6 * (0.6 + 0.4 * env.pulse) * pb);
       const tHit = T.tally + (TALLY.n - 1) * TALLY.step; // ≈ when the scan passes 25,000 (the last 8th)
