@@ -208,7 +208,14 @@
     const assetsMissing = [];
     await Promise.all(Object.entries(L.ASSET_SRC || {}).map(async ([name, src]) => {
       const im = new Image(); im.src = src;
-      try { await im.decode(); L.IMG[name] = im; } catch (e) { assetsMissing.push(name); }
+      try {
+        await im.decode();
+        // keep a canvas copy, not the <img>: Chromium caches scaled decodes of <img> sources, so a downscaled drawImage
+        // could differ depending on which sizes were drawn before (seek-order dependent); canvas sources are not cached
+        const cv = L.canvas(im.naturalWidth, im.naturalHeight);
+        cv.getContext('2d').drawImage(im, 0, 0);
+        L.IMG[name] = cv;
+      } catch (e) { assetsMissing.push(name); }
     }));
     if (L.real) L.real.init();
     // warm caches (pure) so the first frame is not slow
