@@ -62,6 +62,7 @@
     title: { x: 170, y: 205 }, // section headlines (both sections use this slot)
     left: { x: 170, y: 240, w: 960, h: 685 }, // "Example pixel · schematic": pair network over the time series
     right: { x: 1170, y: 240, w: 580, h: 685 }, // ★ifg-count: hero counter, the 12 frames, the corrections
+    both: { x: 170, y: 240, w: 1580, h: 685 }, // one iris opens both cards out of the hand-off point
   };
   const AX = { x0: 232, x1: 1088, y0: 2007.0, y1: 2011.4, net: 466 }; // shared time axis; the network's axis line
   const TSB = { top: 550, bot: 836, tick: 866, lab: 896 }; // series band (every correction state fits), year ticks
@@ -109,7 +110,7 @@
   const VB = { x0: 1136, x1: 1714, y: 700, max: 30000 }; // valid-area bar
   // timeline of section B (lt)
   const OPEN = { t: 5.6, d: 0.9 }; // the velocity raster opens from the TL's pixel while the map grows
-  const T = { water: 6.5, swath: 7.0, thr: [7.5, 8.0], valid: 7.6, tally: 8.0, zoom: 10.0, tag: 10.05, drop: 10.75, morph: 11.0 };
+  const T = { water: 6.5, swath: 7.0, thr: [7.5, 8.0], valid: 7.7, tally: 8.0, zoom: 10.0, tag: 10.05, drop: 10.75, morph: 11.0 };
   const THR = [0.5, 0.7]; // coherence threshold steps on the beat
   const TALLY = { n: 5, step: 0.25, d: 0.2 }; // the tally scan steps down the map on 8ths (8.0 … 9.0)
 
@@ -451,13 +452,13 @@
     ctx.beginPath(); ctx.rect(x - 3, y - 3, w + 6, (h + 6) * k); ctx.clip();
   }
   function clipRect(ctx, r) { ctx.beginPath(); ctx.rect(r.x0, r.y0, r.x1 - r.x0, r.y1 - r.y0); ctx.clip(); }
-  /** Iris origin for a card: the hand-off point (where act 3 left the TL), clamped into the card. */
-  function irisFrom(env, R) {
-    const h = env.handoff;
-    const [x, y] = h ? env.cam.toWorld(h.x, h.y) : [R.x + R.w / 2, R.y + R.h / 2];
-    return [clamp(x, R.x, R.x + R.w), clamp(y, R.y, R.y + R.h)];
+  /** Section A's entrance: one iris that opens from the hand-off point (where act 3 left the TL) to both cards. */
+  function iris(env, lt) {
+    const R = LA.both, h = env.handoff, k = sp(lt, 0.0, 0.9);
+    const [hx, hy] = h ? env.cam.toWorld(h.x, h.y) : [R.x + R.w / 2, R.y + R.h / 2];
+    const ox = clamp(hx, R.x, R.x + R.w), oy = clamp(hy, R.y, R.y + R.h);
+    return { x0: lerp(ox, R.x - 4, k), x1: lerp(ox, R.x + R.w + 4, k), y0: lerp(oy, R.y - 4, k), y1: lerp(oy, R.y + R.h + 4, k), k };
   }
-  const irisRect = (o, R, k) => ({ x0: lerp(o[0], R.x - 4, k), x1: lerp(o[0], R.x + R.w + 4, k), y0: lerp(o[1], R.y - 4, k), y1: lerp(o[1], R.y + R.h + 4, k) });
   function plate(ctx, x, y, w, h, a = 0.92) { // backplate for labels over maps
     if (a <= 0) return;
     ctx.save(); ctx.globalAlpha *= a; L.roundRect(ctx, x, y, w, h, 6); ctx.fillStyle = C.card; ctx.fill();
@@ -522,11 +523,10 @@
   function drawLeft(ctx, lt, env, hi) {
     const N = net(), R = LA.left, ay = AX.net;
     if (lt >= TA.out + 0.75) return;
-    // entrance: an iris around the hand-off point (the first act-4 elements are built out of the through-line)
-    const kIn = sp(lt, 0.0, 0.9), ir = irisRect(irisFrom(env, R), R, kIn);
+    // entrance: the iris around the hand-off point (the first act-4 elements are built out of the through-line)
+    const ir = iris(env, lt);
     const pOut = clamp(1 - L.sp(lt, TA.out + 0.05, 0.48)); // exit: the card retracts upward with its contents
     ctx.save(); clipRect(ctx, ir); L.card(ctx, R.x, R.y, R.w, R.h, { p: pOut, accent: C.purple }); ctx.restore();
-    if (kIn < 0.995) { ctx.strokeStyle = L.rgba(C.purple, 0.9 * (1 - kIn)); ctx.lineWidth = 1.5; ctx.strokeRect(ir.x0, ir.y0, ir.x1 - ir.x0, ir.y1 - ir.y0); }
     ctx.save(); clipRect(ctx, ir); cardClip(ctx, R.x, R.y, R.w, R.h, pOut);
     const pe = TA.out + 0.3; // texts scan out as the card leaves
     hdr(ctx, 'Example pixel · schematic', R.x + 28, R.y + 42, io(lt, 0.45, pe, 0.4, 0.3), 'a4-ex');
@@ -633,10 +633,9 @@
   function drawRight(ctx, lt, env) {
     const R = LA.right;
     if (lt >= TA.out + 0.75) return null;
-    const kIn = sp(lt, 0.0, 0.8), ir = irisRect(irisFrom(env, R), R, kIn);
+    const ir = iris(env, lt);
     const pOut = clamp(1 - L.sp(lt, TA.out, 0.42)); // its texts scan out, the minimap leaves, the shell retracts
     ctx.save(); clipRect(ctx, ir); L.card(ctx, R.x, R.y, R.w, R.h, { p: pOut, accent: C.purple }); ctx.restore();
-    if (kIn < 0.995) { ctx.strokeStyle = L.rgba(C.purple, 0.9 * (1 - kIn)); ctx.lineWidth = 1.5; ctx.strokeRect(ir.x0, ir.y0, ir.x1 - ir.x0, ir.y1 - ir.y0); }
     ctx.save(); clipRect(ctx, ir); cardClip(ctx, R.x, R.y, R.w, R.h, pOut);
     const pe = TA.out + 0.3;
     // hero counter: staircase through the real per-frame cumulative sums (every value is a true partial total)
@@ -991,6 +990,8 @@
         if (lt > FILL.t && lt < FILL.t + 1.2) { const N = net(); for (let i = 0; i < 129; i++) { const d = lt - N.tRow[i]; if (d >= 0 && d < 0.2) hi.push([i, 1 - d / 0.2]); } }
         drawLeft(ctx, lt, env, hi);
         clipA = drawRight(ctx, lt, env);
+        const ir = iris(env, lt);
+        if (ir.k < 0.995) { ctx.strokeStyle = L.rgba(C.purple, 0.9 * (1 - ir.k)); ctx.lineWidth = 1.5; ctx.strokeRect(ir.x0, ir.y0, ir.x1 - ir.x0, ir.y1 - ir.y0); } // the iris edge
         headline(ctx, 'Network inversion', io(lt, 0.25, TA.out + 0.3, 0.5, 0.3), 'a4-title');
       }
       drawMap(ctx, lt, env, clipA);

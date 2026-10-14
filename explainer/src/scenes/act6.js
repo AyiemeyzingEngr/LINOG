@@ -487,11 +487,11 @@
   const SLATE = '#334155', SLATE2 = '#475569';
   const CAP = { kind: 'sans', size: 17, weight: 600, color: SLATE, bg: '#FFFFFF', align: 'center', tracking: 0.01 };
   const NOTE = { kind: 'sans', size: 15, weight: 500, color: SLATE2, bg: '#FFFFFF', align: 'center' };
-  // optical heights (px): round seals 100, the square DOST marks 92, wide marks 58–80
+  // optical heights (px): round seals 100, the square DOST marks 92, wide marks 60–80
   const GROUPS = [
     { cap: 'Implementing agency', logos: [['logo:up_seal', 100], ['logo:nigs', 100]] },
     { cap: 'Funded by', logos: [['logo:dost_pcieerd', 92]] },
-    { cap: 'Supporting agencies', logos: [['logo:dost_phivolcs', 92], ['logo:philsa', 58]] },
+    { cap: 'Supporting agencies', logos: [['logo:dost_phivolcs', 92], ['logo:philsa', 60]] },
     { cap: 'Partners', logos: [['logo:up_csrc', 100], ['logo:up_isc', 80]] },
     { cap: 'Satellite data', logos: [['logo:jaxa', 62]], note: 'ALOS PALSAR data © JAXA/METI' },
   ];

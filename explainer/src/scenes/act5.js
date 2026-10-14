@@ -78,7 +78,7 @@
   /* ------------------------------------------------------------------ pure layout */
   const camAt = (lt) => L.cam(T0 + Math.min(lt, DUR - 1e-6), FOCUS); // never the next act's camera
   // swoop (47.0 → 48.0): zoom out of the grid → fly east (Tarlac → Cabanatuan) → zoom in on the bowl
-  const outK = (lt) => sp(lt, 5.0, 0.55), panK = (lt) => sp(lt, 5.15, 0.8), inK = (lt) => sp(lt, 5.4, 0.75);
+  const outK = (lt) => sp(lt, 5.0, 0.8), panK = (lt) => sp(lt, 5.15, 0.8), inK = (lt) => sp(lt, 5.4, 0.75);
   const LANDED = 7.5;                          // every swoop spring is settled to < 1e-5 here: the map IS VIEW_END
   const lnLAT = Math.log(P_LAT), lnMID = Math.log(1000), lnEND = Math.log(VIEW_END.ppd);
   const ppdAt = (lt) => (lt <= 5 ? P_LAT : lt >= LANDED ? VIEW_END.ppd : Math.exp(lnLAT + (lnMID - lnLAT) * outK(lt) + (lnEND - lnMID) * inK(lt)));
@@ -487,7 +487,7 @@
   }
 
   /* ------------------------------------------------------------------ swoop + C · the real map */
-  const mapOpen = (lt) => (lt < 5.15 ? 0 : clamp(sp(lt, 5.15, 0.85)));
+  const mapOpen = (lt) => (lt < 5.05 ? 0 : clamp(sp(lt, 5.05, 0.9)));
   const mosaicA = (lt) => lerp(0.95, CTX_A, clamp(sp(lt, 5.7, 0.8)));   // the regional mosaic dims to context on landing
   function drawMap(ctx, lt) {
     const open = mapOpen(lt);
@@ -643,12 +643,19 @@
   }
 
   /* ------------------------------------------------------------------ spotlight targets */
+  /** A card's spotlight box follows the part of it that is on screen (it constructs / retracts top → down), so no
+   *  undimmed "ghost" of it is left behind while the spotlight is still easing out. */
+  function markShown(ctx, id, B, k, pad, r) {
+    const h = (B.h + 4) * L.ease.outCubic(clamp(k)) - 4;
+    if (h < 1) return;
+    L.spot.mark(ctx, id, B.x, B.y, B.w, h, { pad: pad * clamp(h / 40), r });
+  }
   function marks(ctx, lt) {
     if (lt >= 3.2 && lt < 6.0) L.spot.mark(ctx, 'products', PC.x, PC.y, PC.w, PC.h, { pad: 18, r: 18 });
     if (lt >= 6.2) {
       L.spot.mark(ctx, 'cabanatuan', BW[0] - BOX.hw, BW[1] - BOX.hh, 2 * BOX.hw, 2 * BOX.hh, { pad: 20, r: 64 });
-      L.spot.mark(ctx, 'cabanatuan', VC.x, VC.y, VC.w, VC.h, { pad: 16, r: 18 });
-      L.spot.mark(ctx, 'cabanatuan', HL.x, HL.y, HL.w, HL.h, { pad: 12, r: 14 });
+      markShown(ctx, 'cabanatuan', VC, L.inout(lt, 6.25, outC, 0.5, 0.45) * 1.15, 16, 18);
+      markShown(ctx, 'cabanatuan', HL, L.inout(lt, 6.0, outC, 0.5, 0.45) * 1.25, 12, 14);
     }
   }
 
