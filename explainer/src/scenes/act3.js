@@ -17,7 +17,7 @@
  *   4.0  BAR · TL pixel → 'pulse' = wave s₁ (0.8 s); its guides construct; 4.1 s₂ (gold) draws on.
  *   4.4  multiply sweep s₁ · s₂* fills the colour strip; 4.5 the raster plate constructs below it.
  *   4.8  the wrapped interferogram extrudes from the strip (4.8–5.6): motion turns to colour. Multilook card.
- *   5.25 zoom call-out from one cell to its 12 × 28 samples + cyclic legend; 5.5 "schematic"; 5.75 the looks line.
+ *   5.1  zoom call-out from one cell to its 12 × 28 samples; 5.25 cyclic legend; 5.5 "schematic"; 5.75 the looks line.
  *   6.0  BAR · the s₁ wave opens into a fringe loop and drops onto the bowl (0.9 s); s₂ and the guides unmask.
  *   6.5 / 7.0 the 28 azimuth / 12 range looks merge into one ≈ 90 m pixel; 7.0–7.5 the raster wipes to 90 m pixels.
  *  C · PHASE 4 UNWRAPPING (25.5–27.5, camera → 1.10)
