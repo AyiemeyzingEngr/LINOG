@@ -159,10 +159,20 @@
   const cutY = (sp, x) => sp.y0 - SEAM_A * Math.cos((TAU * (x - X0)) / LAM);
   const openAt = (sp, x) => L.ease.inOutSine(clamp((sp.front - x) / sp.R));
 
+  /* The headline is drawn word by word (kinetic type, unregistered 'deco' glyphs); QA sees each line as ONE headline
+   * string, registered once all of its words are in (registerLine). */
   function drawWordIn(ctx, w, lt, pMax = 1) {
     const p = Math.min(wordIn(lt, w), pMax);
     if (p <= 0.001) return;
-    L.text(ctx, w.s, w.x, w.y + wordRise(lt, w), { ...TYPE, color: C.text, p, id: 'a1-w' + w.i });
+    L.text(ctx, w.s, w.x, w.y + wordRise(lt, w), { ...TYPE, color: C.text, p, role: 'deco' });
+  }
+  /** QA registry: register headline line `ln` (its true box, drawing nothing) while every word is ≥ 60 % in. */
+  function registerLine(ctx, lt, lay, ln, pOut) {
+    const ws = lay.words.filter((w) => w.line === ln);
+    if (Math.min(pOut, ...ws.map((w) => wordIn(lt, w))) < 0.6) return;
+    ctx.save(); ctx.beginPath(); ctx.rect(0, 0, 0, 0); ctx.clip();
+    L.text(ctx, ws.map((w) => w.s).join(' '), ws[0].x, BASE[ln], { ...TYPE, color: C.text, role: 'headline', id: 'a1-line' + ln });
+    ctx.restore();
   }
   /** One half of line 2 over source range [a, b]: the displacement is linear in x inside the range,
    *  so it is one affine map (shear + scale) — adjacent ranges agree at their shared edge → continuous. */
@@ -180,12 +190,6 @@
     for (let i = n; i >= 0; i--) { const x = xa + ((xb - xa) * i) / n; ctx.lineTo(x, cutY(sp, x)); }
     ctx.closePath(); ctx.clip();
     for (const w of ws) if (w.x - 6 < xb && w.x + w.w + 6 > xa) L.text(ctx, w.s, w.x, w.y + wordRise(lt, w), { ...TYPE, color: C.text, role: 'deco' });
-    ctx.restore();
-  }
-  /** QA registry for split words: register the word's true (unsplit) box once, drawing nothing. */
-  function registerWords(ctx, lt, ws) {
-    ctx.save(); ctx.beginPath(); ctx.rect(0, 0, 0, 0); ctx.clip();
-    for (const w of ws) L.text(ctx, w.s, w.x, w.y + wordRise(lt, w), { ...TYPE, color: C.text, id: 'a1-w' + w.i });
     ctx.restore();
   }
   function drawLine2(ctx, lt, lay, sp) {
@@ -209,8 +213,8 @@
         if (b > x0) segs.push([Math.max(a, x0 - 8), b]);
       }
       for (const [a, b] of segs) if (b - a > 0.5) { drawHalf(ctx, lt, ws, sp, a, b, true); drawHalf(ctx, lt, ws, sp, a, b, false); }
-      if (pOut >= 0.6) registerWords(ctx, lt, ws.filter((w) => w.x < sp.front - SPLIT.OV));
     }
+    registerLine(ctx, lt, lay, 1, pOut);
     ctx.restore();
     if (pOut < 1) scanBar(ctx, bx, by, bw, bh, pOut);
   }
@@ -271,7 +275,7 @@
     ctx.restore();
     const pt = Math.min(L.sp(lt, 1.0, 0.45), pOut);
     if (pt > 0.001) { // parameter annotation (mono 20)
-      L.text(ctx, [{ s: 'L-BAND', color: C.cyan, weight: 600 }, { s: ' · λ = 23.6 cm', color: C.text }], bx, CALL.yT, { kind: 'mono', size: 20, weight: 400, align: 'center', p: pt, tracking: 0.02, id: 'a1-lband' });
+      L.text(ctx, [{ s: 'L-band', color: C.cyan, weight: 600 }, { s: ' · λ = 23.6 cm', color: C.text }], bx, CALL.yT, { kind: 'mono', size: 20, weight: 400, align: 'center', p: pt, tracking: 0.02, id: 'a1-lband' });
     }
   }
 
@@ -660,20 +664,18 @@
   }
   /* satellite tag: rides beside ALOS-1 (right of the body, clear of the paddle and above the beam) */
   const SAT_TAG = { dx: 86, dy: -10 };
-  const SAT_O1 = { kind: 'mono', size: 20, weight: 400, tracking: 0.04 }, SAT_O2 = { kind: 'mono', size: 18, weight: 400, tracking: 0.02 };
-  const SAT_L1 = [{ s: 'ALOS-1 PALSAR', color: C.text, weight: 600 }, { s: ' · ASCENDING PASS', color: C.textDim }];
-  const SAT_L2 = () => [{ s: 'L-band', color: L.ink(C.cyan, C.card) }, { s: ' radar sees through cloud', color: C.textDim }];
+  const SAT_O = { kind: 'sans', size: 20, weight: 500, tracking: 0.01 };
+  const SAT_L = [{ s: 'ALOS-1 PALSAR', color: C.text, weight: 600 }, { s: ' · ascending pass', color: C.textDim }];
   function drawSatTag(ctx, lt, pg) {
-    const p1 = L.inout(lt, 5.5, 9.4, 0.5, 0.4), p2 = L.inout(lt, 6.0, 9.4, 0.5, 0.4);
-    if (p1 <= 0.001) return;
-    const c = mctx(), m1 = L.measure(c, SAT_L1, SAT_O1), w = Math.max(m1.w, L.measure(c, SAT_L2(), SAT_O2).w);
+    const p = L.inout(lt, 5.5, 9.4, 0.5, 0.4);
+    if (p <= 0.001) return;
+    const m = L.measure(mctx(), SAT_L, SAT_O);
     const x = pg.S[0] + SAT_TAG.dx, y = pg.S[1] + SAT_TAG.dy;
-    plate(ctx, x - 16, y - m1.asc - 8, w + 32, lerp(36, 66, clamp(L.sp(lt, 6.0, 0.45))), p1, true); // grows for line 2
-    L.text(ctx, SAT_L1, x, y, { ...SAT_O1, p: p1, bg: C.card, id: 'a1-sat' });
-    if (p2 > 0.001) L.text(ctx, SAT_L2(), x, y + 28, { ...SAT_O2, p: p2, bg: C.card, id: 'a1-cloud' });
+    plate(ctx, x - 16, y - m.asc - 8, m.w + 32, m.asc + m.desc + 16, p, true);
+    L.text(ctx, SAT_L, x, y, { ...SAT_O, p, bg: C.card, id: 'a1-sat' });
   }
-  /* map label: east of Luzon on a backplate, leader to the coast (Isabela) */
-  const MAP_LBL = { anchor: [122.05, 16.4], dx: 46, str: 'LUZON · PHILIPPINES', o: { kind: 'mono', size: 19, weight: 400, tracking: 0.08 } };
+  /* map label (sans 500 19, Title Case): east of Luzon on a backplate, leader to the coast (Isabela) */
+  const MAP_LBL = { anchor: [122.05, 16.4], dx: 46, str: 'Luzon, Philippines', o: { kind: 'sans', size: 19, weight: 500, tracking: 0.01 } };
   function drawMapLabel(ctx, lt, g) {
     const p = L.inout(lt, 5.0, 9.1, 0.5, 0.4);
     if (p <= 0.001) return;
@@ -689,58 +691,68 @@
     plate(ctx, x - 12, y - m.asc - 4, m.w + 24, m.asc + m.desc + 8, pp, false);
     if (pp > 0.001) L.text(ctx, MAP_LBL.str, x, y, { ...MAP_LBL.o, color: C.text, p: pp, bg: C.card, id: 'a1-luzon' });
   }
-  const TITLE = { x: 172, y: 232 };
-  const ACR = [0, 1, 2, 3].map((i) => 7.0 + 0.5 * i); // acronym decode on quarter notes
+
+  /* ---- title card (in space above the limb, top left): real logos · PROJECT LInOG · the full name.
+   * 6.5 the NIGS seal and the white EGG lockup fade + rise in (a hairline draws between them), 7.0 the headline scans
+   * in, 7.125 / 7.25 the full name; 7.5–9.0 the acronym decodes on quarter notes (L · In · O · G). Everything is
+   * fully readable through VO-04 (7.8–9.6) and leaves together 9.6 → 9.95 (scan-out / fade), as the iris closes. */
+  const TITLE = { x: 172, y: 286, size: 96 };          // headline baseline (world)
+  const LOGO = { y: 98, h: 80, gap: 24 };             // logo row: top + height (≥ 48 px on screen, never stretched)
+  const SUB_O = { kind: 'sans', size: 31, weight: 500 }, SUB_Y = [TITLE.y + 56, TITLE.y + 98];
+  const T_OUT = 9.95, T_OUT_D = 0.35;                  // exit springs start at 9.6
+  const ACR = [0, 1, 2, 3].map((i) => 7.5 + 0.5 * i);  // acronym decode on quarter notes
   const acrK = (lt, i) => L.sp(lt, ACR[i], 0.35);
   const hi = (lt, i) => L.css(L.mix(C.text, C.cyan, clamp(acrK(lt, i))));
   const SUB = [
     [['L', 0], ['everaging '], ['In', 1], ['SAR for '], ['O', 2], ['bservation']],
     [['and Modeling of Earthquake '], ['G', 3], ['enerators']],
   ];
-  /* plain-language mission under the expansion (caption role: sans 500, 26 px) */
-  const MISSION = [
-    [{ s: 'Mapping ground motion in Central Luzon', color: C.text }],
-    [{ s: 'from satellite radar · 2007–2011', color: C.textDim }],
-  ];
+  /** One logo: contain-fit, high-quality resampling (L.drawImg); fades + rises in, fades out with the title. */
+  function drawLogo(ctx, lt, name, x, w, at) {
+    const im = L.img(name);
+    if (!im) return 0;
+    const p = L.inout(lt, at, T_OUT, 0.6, T_OUT_D);
+    const dw = (LOGO.h * im.width) / im.height; // natural aspect at the row height
+    if (p > 0.002) L.drawImg(ctx, im, x, LOGO.y + 14 * (1 - L.sp(lt, at, 0.6)) - 6 * L.sp(lt, T_OUT - T_OUT_D, T_OUT_D), Math.min(w, dw), LOGO.h, { alpha: clamp(p), ax: 0, id: name });
+    return Math.min(w, dw);
+  }
   function drawTitle(ctx, lt) {
-    const pT = L.inout(lt, 6.0, 9.5, 0.55, 0.45);
-    const pS = L.inout(lt, 6.5, 9.5, 0.6, 0.45);
-    const pM = L.inout(lt, 7.0, 9.5, 0.5, 0.4);
-    const pX = L.inout(lt, 7.0, 9.6, 0.45, 0.45); // from the 7.0 beat so line 2 holds ≥ 1.5 s
-    if (pM > 0.001) {
-      L.text(ctx, 'UPD NIGS · Earthquake Geodesy and Geology (EGG) Laboratory', TITLE.x + 2, TITLE.y - 106, { kind: 'mono', size: 18, weight: 400, color: C.textDim, p: pM, id: 'a1-lab' });
-      ctx.save(); ctx.fillStyle = L.rgba(C.cyan, 0.7); ctx.fillRect(TITLE.x + 2, TITLE.y - 96, 56 * clamp(pM), 2); ctx.restore();
+    // logos: NIGS seal (colour, reads on dark) · hairline · white EGG lockup
+    const xN = TITLE.x + 2, wN = drawLogo(ctx, lt, 'logo:nigs', xN, LOGO.h, 6.5) || LOGO.h;
+    const xD = xN + wN + LOGO.gap;
+    const pD = Math.min(L.sp(lt, 6.56, 0.5), 1 - L.sp(lt, T_OUT - T_OUT_D, T_OUT_D * 0.8));
+    if (pD > 0.002) {
+      ctx.save(); ctx.strokeStyle = L.rgba(C.textDim, 0.55); ctx.lineWidth = 1.2;
+      L.polyPartial(ctx, [[xD, LOGO.y + LOGO.h / 2 - 26], [xD, LOGO.y + LOGO.h / 2 + 26]], clamp(pD)); ctx.stroke(); ctx.restore();
     }
+    drawLogo(ctx, lt, 'logo:egg_lockup_white', xD + LOGO.gap, 400, 6.625);
+    // headline (display 700, ALL CAPS; LInOG keeps its casing)
+    const pT = L.inout(lt, 7.0, T_OUT, 0.55, T_OUT_D);
     if (pT > 0.001) {
-      L.text(ctx, [{ s: 'Project ', color: C.text }, { s: 'L', color: C.cyan }, { s: 'In', color: C.cyan }, { s: 'O', color: C.cyan }, { s: 'G', color: C.cyan }],
-        TITLE.x, TITLE.y, { kind: 'display', size: 100, weight: 700, p: pT, tracking: -0.01, id: 'a1-title' });
+      L.text(ctx, [{ s: 'PROJECT ', color: C.text }, { s: 'LInOG', color: C.cyan }], TITLE.x, TITLE.y,
+        { kind: 'display', size: TITLE.size, weight: 700, p: pT, tracking: 0.01, role: 'headline', id: 'a1-title' });
     }
+    // the full name (Title Case), its initials decoding to cyan with a tick under each
+    const pS = L.inout(lt, 7.125, T_OUT, 0.6, T_OUT_D), stag = 0.2;
     if (pS > 0.001) {
-      const o = { kind: 'sans', size: 32, weight: 500 }, stag = 0.25;
       SUB.forEach((ln, li) => { // one id per line (QA tracks each line's readable span)
         const segs = ln.map(([s, i]) => ({ s, color: i === undefined ? C.text : hi(lt, i) }));
-        L.text(ctx, segs, TITLE.x + 2, TITLE.y + 58 + li * 42, { ...o, p: clamp(pS * (1 + stag) - stag * li), id: 'a1-sub' + li });
+        L.text(ctx, segs, TITLE.x + 2, SUB_Y[li], { ...SUB_O, p: clamp(pS * (1 + stag) - stag * li), id: 'a1-sub' + li });
       });
       const c = mctx();
       ctx.save();
       SUB.forEach((ln, li) => {
         let x = TITLE.x + 2;
         for (const [s, i] of ln) {
-          const w = L.measure(c, s, o).w;
+          const w = L.measure(c, s, SUB_O).w;
           if (i !== undefined) {
             const k = clamp(acrK(lt, i)) * clamp(pS);
-            if (k > 0.002) { ctx.fillStyle = L.rgba(C.cyan, 0.95 * k); ctx.fillRect(x + (w * (1 - k)) / 2, TITLE.y + 58 + li * 42 + 8, w * k, 2.5); }
+            if (k > 0.002) { ctx.fillStyle = L.rgba(C.cyan, 0.95 * k); ctx.fillRect(x + (w * (1 - k)) / 2, SUB_Y[li] + 8, w * k, 2.5); }
           }
           x += w;
         }
       });
       ctx.restore();
-    }
-    if (pX > 0.001) {
-      MISSION.forEach((ln, i) => {
-        const lp = clamp(pX * 1.15 - 0.15 * i);
-        if (lp > 0.001) L.text(ctx, ln, TITLE.x + 2, TITLE.y + 156 + i * 36, { kind: 'sans', size: 26, weight: 500, p: lp, id: 'a1-mission' + i });
-      });
     }
   }
 
@@ -868,6 +880,7 @@
         ctx.save();
         if (zk < 1) { ctx.translate(VIEW.ax, VIEW.ay); ctx.scale(zk, zk); ctx.translate(-VIEW.ax, -VIEW.ay); }
         for (const w of lay.words) if (w.line === 0) drawWordIn(ctx, w, lt, lineOut(lt, 0));
+        registerLine(ctx, lt, lay, 0, lineOut(lt, 0));
         const sp = splitState(lt, Lo.pa), aOut = 1 - L.sp(lt, 4.0, 0.45);
         drawTrail(ctx, lt, Lo.pa, aOut);
         drawLine2(ctx, lt, lay, sp);

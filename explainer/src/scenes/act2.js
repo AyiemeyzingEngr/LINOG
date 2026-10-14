@@ -1,53 +1,54 @@
-/* Act 2 — Raw ingestion & unification (10–18 s) · pipeline Phases 01–02.
+/* Act 2 — Phases 0–1 (10–14 s): stage, unpack and unify the two modes · Phase 2 (14–18 s): DEM and stack configuration.
  *
- * LAYOUT  Phase 01: SLC chip on the RIGHT (the act-1 pulse arrives right of centre, so the pixel seats close by);
- *         archive (top) + spectrum (bottom) on the LEFT.  Phase 02: the DEM mesh builds where the chip was (right),
- *         the baseline network where the spectrum was (left).  Everything stays inside the HUD-safe box at the
- *         section's maximum camera push (×1.04 in 10–14, ×1.0816 in 14–18).
+ * LAYOUT  Phases 0–1: archive card on the LEFT — the 779 counter, the archive grid and the FBS/FBD unification (the
+ *         VO-05 spotlight target 'archives': it must read on its own while the rest of the frame is dimmed); SLC chip
+ *         on the RIGHT (the act-1 pulse arrives right of centre and seats in it as one complex pixel).
+ *         Phase 2: the DEM mesh builds where the chip was (right), the baseline network where the archive was (left;
+ *         the VO-06 spotlight target 'network').  Everything stays inside the HUD-safe box at the section's maximum
+ *         camera push (×1.04 in 10–14, ×1.0816 in 14–18).
+ * TEXT  (v2, narrated film: ≤ 6 readable strings per section; the narration carries the story)
+ *   10–14  "779" · "PALSAR Level 1.1 archives · 1.04 TB" · "FBS" · "FBD" ·
+ *          "FBS band-limited 28 → 14 MHz · FBD resampled to the FBS grid" · "Level 1.1 SLC"
+ *   14–18  "Elevation model" · "NAMRIA IfSAR DEM (+ SRTM) · schematic" · "Baseline network" · "P448 F0290 · 24 dates" ·
+ *          "· 149 pairs formed" · "Schematic dates and baselines"
+ *   Counters roll as unregistered digits ('deco'); only the settled value registers, and it holds ≥ 1.5 s.
+ *   Tick labels (MHz, years, B⊥) are 'deco'.
  *
  * BEAT PLAN  (lt = t − 10 s · 1 beat = 0.5 s · bars start at 10, 12, 14, 16 s)
- * ── Bar 6 · 10–12 s · PHASE 01 (the HUD header is automatic; only sub-labels here) ────────────────
+ * ── Bar 6 · 10–12 s · Phases 0–1 (the HUD header is automatic) ──────────────────────────────────────
  *  10.000  TL (L-band pulse from act 1) springs onto cell (3,4) of a 12×12 SLC chip and opens into a pixel
  *          (pulse→pixel, 0.85 s) at the hand-off size; on the 10.5 beat it compresses into the cell (0.75 s).
- *          10.25 the SLC card blooms OUT OF the TL's live position.
- *  10.500  "LEVEL 1.1 SLC" / 10.625 "Single Look Complex · amplitude + phase"; archive card constructs.
- *  10.625  speckled SLC scene strip scans in above the chip (crisp 2:1); 10.75 zoom box, 10.875 zoom leaders
- *          → the chip is that box blown up: one sample per cell.  10.75–11.625: 41×19 = 779 tiles fill in
- *          eight 16th-note sweeps; hero counter (display 700, amber ink, plain integers in a fixed box) rolls
- *          0 → 779 and holds.  11.0 "PALSAR Level 1.1 archives · 1.04 TB".
- *  10.750  spectrum card constructs; 10.875 "RANGE BANDWIDTH" (amber card header) + axis −14…+14 MHz.
- *  11.000  FBS 28 MHz band (amber) rises; "FBS  Fine Beam Single" / "28 MHz · HH".  11.125 phase channel
- *          scans over the chip.  11.25 bandpass edges draw down at ±14 MHz with the bracket readout "28 MHz".
- *  11.375  FBD 14 MHz band (blue); "FBD  Fine Beam Dual" / "14 MHz · HH (HV unused)".
- *  11.750 / 11.875  captions (a pickup into the bar, so they hold ≥ 1.5 s before the exit wipe).
+ *          10.25 the SLC card blooms OUT OF the TL's live position; 10.5 its header "Level 1.1 SLC".
+ *  10.500  archive card constructs (left).  10.6–13.7 VO-05 spotlight: the card is marked 'archives' every frame.
+ *  10.625  speckled SLC scene strip scans in above the chip (crisp 2:1); 10.75 zoom box, 10.875 zoom leaders → the
+ *          chip is that box blown up, one sample per cell.  11.125 the phase channel scans over the chip.
+ *  10.750–11.625  41×19 = 779 tiles fill in eight 16th-note sweeps; the hero counter (display 700, amber ink) rolls
+ *          0 → 779 with them and holds to the end of the section.  10.875 "PALSAR Level 1.1 archives · 1.04 TB".
+ *  11.000  divider; 11.25 frequency axis (deco ticks −14…+14 MHz); 11.5 FBS 28 MHz band (amber) + label;
+ *          11.75 FBD 14 MHz band (blue) + label.
  * ── Bar 7 · 12–14 s ────────────────────────────────────────────────────────────────────────────────
- *  12.000  divider + "RANGE SAMPLES" (amber header); the 4.68 m slant-range ruler constructs.  12.125 FBS samples
- *          seat on every tick; 12.25 FBD samples arrive on their own coarser, offset native spacing (no
- *          resampling here — that happens at coregistration, phase 03, as the caption says).
- *  12.250  the "28 MHz" readouts have held; bandpass edges spring ±14 → ±7 MHz (0.35 s, readouts read 14 by
- *          12.5 and hold), FBS out-of-band energy is clipped to a dashed ghost.  From 12.5 samples pulse on the beat.
- *  13.000  a grid sweep runs along the FBS row (band-limited in place, still on the 4.68 m ticks).
- *  13.250→13.60 archive · 13.50→13.85 SLC · 13.65→14.00 spectrum unmask (bottom-up scan wipes, ending ≤ 14.0).
- *          Under the departing chip the DEM's sea-level grid, coastline and a flat land lattice are already
- *          there (13.5 on, S→N); the network card constructs from 13.75 where the archive/spectrum leave.
- * ── Bar 8 · 14–16 s · PHASE 02 ─────────────────────────────────────────────────────────────────────
+ *  12.000  bandpass edges draw down at ±14 MHz through both rows; the unification line scans in (holds 1.7 s).
+ *  12.500  the edges spring ±14 → ±7 MHz (0.35 s): FBS is band-limited to 14 MHz, its out-of-band energy a dashed ghost.
+ *  13.000  "unified": the common 14 MHz band between the edges lights up across both rows, breathing on the beat.
+ *  13.50→13.85  the SLC card scan-wipes away (the DEM sea-level grid + coastline are already under it, S→N);
+ *  13.70→14.00  the archive card unmasks (right after the spotlight window).
+ * ── Bar 8 · 14–16 s · Phase 2 ──────────────────────────────────────────────────────────────────────
  *  14.000  central-Luzon DEM wireframe drops in N→S in six 16th-note bands (springs, cyan while in flight, ×16
- *          vertical); the TL pixel glides onto Cabanatuan (stem to the surface).  14.125 "BASELINE NETWORK"
- *          (blue card header) + axes; 14.25 title "P448 F0290 · 24 dates" + DEM card ("ELEVATION MODEL");
- *          14.75 footprint P448 F0290 draws on, N arrow; 15.0–15.25 place tags.
+ *          vertical); the TL pixel glides onto Cabanatuan (stem to the surface).  The network card constructs (left).
+ *  14.125  DEM card: 14.25 "Elevation model", 14.375 "NAMRIA IfSAR DEM (+ SRTM) · schematic".
+ *  14.250  "Baseline network" + axes; 14.375 "P448 F0290 · 24 dates"; 14.625 "Schematic dates and baselines".
  *  14.500–15.125  24 acquisition dates land on 16ths (FBS amber / FBD blue); the reference slot is a dashed ring.
- *  15.000  search window ±730 d × ±1,500 m springs open around the slot and the slot's 17 pairs radiate;
- *          "· 0 pairs formed" joins the title.  15.125–15.625 the other 132 pairs draw on in 16th-note batches
- *          (left → right); the counter (display, blue ink, fixed box) rolls with them → 149 by 15.75 and holds
- *          to 17.5.  Each date pulses as it is connected, then the whole web breathes on the beat.
- *  15.500  a dashed cyan data link draws from the TL's DEM marker to the reference slot.
+ *  14.750  footprint P448 F0290 draws on the DEM (dashed).
+ *  15.375  the reference slot's 17 pairs radiate; 15.5–15.875 the other 132 pairs draw on in 16th-note batches
+ *          (left → right); the counter rolls with them → 149 by ~15.97 and holds to 17.625.  15.5 a dashed data link
+ *          draws from the TL's DEM marker to the reference slot.  15.6–17.6 VO-06 spotlight: the card is 'network'.
  * ── Bar 9 · 16–18 s ────────────────────────────────────────────────────────────────────────────────
  *  16.000  the TL rides that link to the slot (spring 1.5 s, peak ≈ 1,350 px/s, sagging below the B⊥ = 0 line,
  *          behind the dates, low energy), pixel → node (0.9 s); the travelled part of the link glows.
  *  16.6–17.1  as it docks, the reference pairs latch onto it; 17.0 they light up and a beat-locked signal pulse
- *          travels out along them; the link unmasks from the DEM end.  17.0 mesh unmasks S→N, tags go.
- *  17.250  labels scan out, window collapses.  17.5 title + count scan out; edges + nodes contract into the TL
- *          (one spring), TL glides toward centre (17.5→17.875); 17.625→18.0 network card unmasks.
+ *          travels out along them; the link unmasks from the DEM end.  17.0 mesh unmasks S→N; DEM card leaves.
+ *  17.500  labels scan out; edges + nodes contract into the TL (one spring).  17.625 title + count scan out,
+ *          17.625→18.0 the network card unmasks.
  *  18.000  only the TL remains: pure node (≈63 px), rippling on the beat, inside the hand-off box.
  */
 (function () {
@@ -66,34 +67,30 @@
 
   let INK = null;
   const ink = () => INK || (INK = {
-    amber: L.ink(C.amber, C.card), blue: L.ink(C.blue, C.card), cyan: L.ink(C.cyan, C.card), cyanBg: L.ink(C.cyan, C.bg),
+    amber: L.ink(C.amber, C.card), blue: L.ink(C.blue, C.card), cyan: L.ink(C.cyan, C.card),
   });
 
   /* ---------------------------------------------------------------- layout (world coords) */
-  // Phase 01 — archive (top left), spectrum (bottom left), SLC chip (right, next to the act-1 hand-off)
-  const A = { x: 170, y: 170, w: 930, h: 300, cols: 41, rows: 19, px: 21, py: 10, tw: 17, th: 7, gx: 206, gy: 268 };
-  const F = { x: 170, y: 494, w: 930, h: 436, lx: 202, px0: 476, px1: 1064, r1: 628, r2: 698, bh: 42, ax: 712, top: 572,
-    div: 748, hd: 775, ru: 810, rx0: 292, rx1: 1014, c1: 874, c2: 906 };
-  F.xc = (F.px0 + F.px1) / 2; F.ppm = (F.px1 - F.px0) / 29.6;
-  const S = { x: 1140, y: 170, w: 640, h: 760, n: 12, cell: 38, tc: 3, tr: 4, gy: 412, stx: 1172, sty: 294, sw: 288, sh: 48, bx: 134, by: 18 };
+  // Phases 0–1 — archive card (left: counter row, archive grid, FBS/FBD unification) and SLC chip card (right)
+  const A = { x: 170, y: 170, w: 930, h: 730, cols: 41, rows: 19, px: 21, py: 10, tw: 17, th: 7, gx: 206, gy: 304, cy: 276 };
+  const U = { lx: 206, px0: 336, px1: 1064, r1: 644, r2: 720, bh: 42, ax: 754, top: 594, div: 542, cap: 852 };
+  U.xc = (U.px0 + U.px1) / 2; U.ppm = (U.px1 - U.px0) / 29.6;
+  const S = { x: 1140, y: 170, w: 640, h: 730, n: 12, cell: 38, tc: 3, tr: 4, gy: 412, hd: 214, stx: 1172, sty: 252, sw: 288, sh: 48, bx: 134, by: 18 };
   S.gw = S.n * S.cell; S.gx = S.x + (S.w - S.gw) / 2;
   const slcCell = (c, r) => [S.gx + (c + 0.5) * S.cell, S.gy + (r + 0.5) * S.cell];
-  // Phase 02 — DEM mesh (right), network (left)
+  // Phase 2 — DEM mesh (right) + its card, network (left)
   const M = { lon0: 119.85, lon1: 121.85, lat0: 14.45, lat1: 16.95, nx: 41, ny: 52, S: 205, VX: 16, cx: 1452, cy: 492, pitch: 0.86, yaw: -0.26,
     anchor: [L.geo.places.cabanatuan.lon, L.geo.places.cabanatuan.lat] };
   M.ZS = (M.VX * M.S) / 111320; // world units per metre of height → vertical exaggeration ×VX
-  const ML = { x: 1150, y: 780, w: 600, h: 140 };
+  const ML = { x: 1150, y: 796, w: 600, h: 104 };
   const N = { x: 172, y: 176, w: 930, h: 744, px0: 262, px1: 1067, py0: 322, py1: 814, t0: 2006.95, t1: 2011.25, b: 2600 };
   const nxOf = (yr) => N.px0 + ((yr - N.t0) / (N.t1 - N.t0)) * (N.px1 - N.px0);
   const nyOf = (b) => (N.py0 + N.py1) / 2 - (b / N.b) * ((N.py1 - N.py0) / 2);
   const TLS = { pix: 35, node: 58 };
   const FLY = 1.5; // 16.0 flight DEM → network (≈ 860 px on screen): spring long enough to keep the peak speed ≲ 1,500 px/s
-  const SAG = 60;  // the flight path (and its leader) sags by this much (world px): it docks from below, clear of the B⊥ = 0 line and the reference label
-  const TAGS = [
-    { s: 'Cabanatuan', lon: M.anchor[0], lat: M.anchor[1], at: 5.0, up: -34, side: -1 },
-    { s: 'Sierra Madre', lon: 121.52, lat: 16.3, at: 5.125, up: 40, side: 1 },
-    { s: 'Zambales Mts', lon: 120.13, lat: 15.5, at: 5.25, up: 44, side: 1 },
-  ];
+  const SAG = 60;  // the flight path (and its leader) sags by this much (world px): it docks from below, clear of the B⊥ = 0 line
+  // spotlight targets (VO cue sheet): marked every frame their card is on screen; the runtime uses them inside the windows
+  const SPOT_PAD = { pad: 14, r: 16 };
 
   /* ---------------------------------------------------------------- pure data (lazy: tl() may run before init) */
   let GEO = null;
@@ -183,11 +180,7 @@
       run.push((lon - lonC) * K * M.S, (lat - latC) * M.S, Math.round(((M.lat1 - lat) / (M.lat1 - M.lat0)) * (M.ny - 1)));
     }
     if (run && run.length > 3) coast.push(run);
-    const tags = TAGS.map((tg) => ({ ...tg, w: toW(tg.lon, tg.lat, 3) }));
-    const north = [toW(121.7, 14.6, 0), toW(121.7, 14.93, 0)];
-    north[0][2] = 0; north[1][2] = 0;
-    return { X, Y, Z, rowBin, colBin, fpW, coast, tags, north, fpNE: toW(fp[2][0], fp[2][1], 4),
-      anchorS: toW(M.anchor[0], M.anchor[1], 3), anchor: toW(M.anchor[0], M.anchor[1], 46) };
+    return { X, Y, Z, rowBin, colBin, fpW, coast, anchorS: toW(M.anchor[0], M.anchor[1], 3), anchor: toW(M.anchor[0], M.anchor[1], 46) };
   }
   const meshProj = (lt) => L.persp({ yaw: M.yaw + 0.06 * Math.sin((TAU * (lt - 4)) / 16), pitch: M.pitch, dist: 1600, f: 1600, cx: M.cx, cy: M.cy });
 
@@ -222,27 +215,18 @@
       let ok = true;
       for (let a = 0; a < 24 && ok; a++) for (let b = a + 1; b < 24; b++) if (Math.hypot(P[a][0] - P[b][0], P[a][1] - P[b][1]) < 20) { ok = false; break; }
       if (!ok) continue;
-      // draw order (16th-note batches, so the pair counter runs 15.0–15.75 with the draw-on): the reference
-      // slot's own pairs radiate first (15.0, with the search window), then the other pairs sweep in left → right
-      // by midpoint in five batches 15.125–15.625.  The TL docks into the reserved slot later (16.0–17.0).
+      // draw order (16th-note batches, so the pair counter runs 15.375–15.97 with the draw-on, under VO-06's "linked,
+      // pair by pair"): the reference slot's own pairs radiate first (15.375), then the other pairs sweep in left → right
+      // by midpoint in four batches 15.5–15.875.  The TL docks into the reserved slot later (16.0–17.0).
       const refE = E.filter((e) => e[0] === ref || e[1] === ref);
       const mid = (e) => P[e[0]][0] + P[e[1]][0];
       const other = E.filter((e) => e[0] !== ref && e[1] !== ref).sort((p, q) => mid(p) - mid(q) || p[0] - q[0] || p[1] - q[1]);
-      const order = refE.map((e) => ({ a: ref, b: e[0] === ref ? e[1] : e[0], ref: true, at: 5.0, d: 0.32 }));
-      other.forEach((e, i) => order.push({ a: e[0], b: e[1], ref: false, at: 5.125 + Math.floor((i / other.length) * 5) * 0.125, d: 0.3 }));
+      const order = refE.map((e) => ({ a: ref, b: e[0] === ref ? e[1] : e[0], ref: true, at: 5.375, d: 0.32 }));
+      other.forEach((e, i) => order.push({ a: e[0], b: e[1], ref: false, at: 5.5 + Math.floor((i / other.length) * 4) * 0.125, d: 0.3 }));
       // when each date gets its first pair (its node pulses as it is connected)
       const conn = new Array(24).fill(99);
       for (const e of order) { const tc = e.at + e.d * 0.6; conn[e.a] = Math.min(conn[e.a], tc); conn[e.b] = Math.min(conn[e.b], tc); }
-      // reference label: first candidate box that stays clear of every other node and inside the plot
-      const LW = 300, LH = 30, cands = [[46, -66], [46, 46], [-46 - LW, -66], [-46 - LW, 46], [60, -120]];
-      let lab = cands[0];
-      for (const c of cands) {
-        const x0 = P[ref][0] + c[0] - 10, y0 = P[ref][1] + c[1] - 22, x1 = x0 + LW + 20, y1 = y0 + LH + 14;
-        if (x0 < N.px0 + 8 || x1 > N.px1 || y0 < N.py0 + 30 || y1 > N.py1 - 8) continue;
-        if (P.some((p, i) => i !== ref && p[0] > x0 - 10 && p[0] < x1 + 10 && p[1] > y0 - 10 && p[1] < y1 + 10)) continue;
-        lab = c; break;
-      }
-      return { seed, ks, yr, B, fbs, P, E: order, conn, ref, nEdges: E.length, nRef: refE.length, refYr: REF_YR, lab };
+      return { seed, ks, yr, B, fbs, P, E: order, conn, ref, nEdges: E.length, nRef: refE.length, refYr: REF_YR };
     }
     throw new Error('act2: no network seed gives 149 pairs');
   }
@@ -262,7 +246,7 @@
     const q = meshAnchor(lt);
     return [lerp(c0[0], q[0], m1), lerp(c0[1], q[1], m1), m1];
   }
-  /** The 16.0 flight path (shared by the TL and its leader): DEM marker → reference slot, sagging under the label. */
+  /** The 16.0 flight path (shared by the TL and its leader): DEM marker → reference slot, sagging below it. */
   const flightPt = (a, b, k) => [lerp(a[0], b[0], k), lerp(a[1], b[1], k) + SAG * 4 * clamp(k) * (1 - clamp(k))];
   const flightK = (lt) => L.sp(lt, 6.0, FLY);
   function tlWorld(lt, t) {
@@ -306,21 +290,28 @@
     if (q > 0) scanEdge(ctx, x, y + (h + 4) * (1 - q), w, q, accent);
   }
   const cardText = (ctx, s, x, y, o) => L.text(ctx, s, x, y, Object.assign({ bg: C.card }, o));
-  /** label on a small backplate (for text over meshes / plots) */
-  function plateText(ctx, s, x, y, o, plate = C.card, pad = 7) {
-    const p = o.p === undefined ? 1 : o.p;
-    if (p <= 0) return;
-    const m = L.measure(ctx, s, o);
-    const x0 = o.align === 'right' ? x - m.w : o.align === 'center' ? x - m.w / 2 : x;
-    // the plate unfolds from the anchored side together with the text's scan
-    const pw = (m.w + 2 * pad) * L.ease.outCubic(clamp(p * 1.25)), px = o.align === 'right' ? x0 + m.w + pad - pw : x0 - pad;
-    ctx.save(); ctx.globalAlpha *= clamp(p * 2);
-    ctx.fillStyle = L.rgba(plate, 0.92); ctx.fillRect(px, y - m.capH - pad - 1, pw, m.capH + 2 * pad + 3);
-    ctx.restore();
-    L.text(ctx, s, x, y, Object.assign({ bg: plate }, o));
+  /** Card header (v2 typography: sans 600 19 px, sentence case, phase ink). */
+  const header = (ctx, s, x, y, color, p, scan) => cardText(ctx, s, x, y, { kind: 'sans', size: 19, weight: 600, color, tracking: 0.01, p, scanColor: scan });
+  /** A rolling counter: plain integers right-aligned in a fixed box (the words after it never move). While it rolls the
+   *  digits are unregistered ('deco'); the settled value registers once, together with its prefix/suffix, as ONE string
+   *  drawn at exactly the same glyph positions. */
+  function counter(ctx, x, y, value, final, o, pre, post, id) {
+    const done = value >= final, numW = L.measure(ctx, String(final), o).w, preW = pre ? L.measure(ctx, pre.s, o).w : 0;
+    if (done) {
+      const segs = [];
+      if (pre) segs.push(pre);
+      segs.push({ s: String(final), color: o.color });
+      if (post) segs.push(post);
+      return cardText(ctx, segs, x, y, Object.assign({}, o, { color: C.text, id }));
+    }
+    const d = Object.assign({}, o, { role: 'deco' });
+    if (pre) cardText(ctx, pre.s, x, y, Object.assign({}, d, { color: pre.color }));
+    cardText(ctx, String(value), x + preW + numW, y, Object.assign({}, d, { align: 'right' }));
+    if (post) cardText(ctx, post.s, x + preW + numW, y, Object.assign({}, d, { color: post.color }));
+    return null;
   }
 
-  /* ================================================================ PHASE 01 · SLC chip */
+  /* ================================================================ PHASES 0–1 · SLC chip (right) */
   function drawSLC(ctx, lt, t, org) {
     const open = rv(lt, 0.25, 0.8), ex = qOut(lt, 3.85, 0.35);
     if (open <= 0 || ex >= 0.998) return;
@@ -400,30 +391,8 @@
     L.glow(ctx, cx, cy, cs * 1.6, C.cyan, 0.35 + 0.35 * L.pulse(t));
     ctx.fillStyle = L.rgba(C.cyan, 0.9);
     for (const [px, py, w, h] of [[cx - 1, S.gy - 9, 2, 7], [cx - 1, S.gy + S.gw + 2, 2, 7], [S.gx - 9, cy - 1, 7, 2], [S.gx + S.gw + 2, cy - 1, 7, 2]]) ctx.fillRect(px, py, w, h);
-    // labels (they leave with the card's scan wipe)
-    cardText(ctx, 'LEVEL 1.1 SLC', S.x + 32, 224, { kind: 'display', size: 36, weight: 700, p: rv(lt, 0.5, 0.4), scanColor: C.amber });
-    cardText(ctx, 'Single Look Complex · amplitude + phase', S.x + 32, 256, { kind: 'mono', size: 20, weight: 400, color: C.textDim, p: rv(lt, 0.625, 0.4) });
-    L.text(ctx, 'range → · azimuth ↓', S.stx + sW, S.sty - 8, { kind: 'mono', size: 15, color: C.textDim, p: rv(lt, 0.875, 0.4), role: 'deco', align: 'right' });
-    // legend: amplitude ramp + phase wheel
-    const ly = 904, pL = rv(lt, 1.375, 0.4);
-    if (pL > 0) {
-      ctx.save(); ctx.globalAlpha *= clamp(pL * 1.4);
-      const gr = ctx.createLinearGradient(S.gx, 0, S.gx + 96 * pL, 0);
-      gr.addColorStop(0, '#0E1522'); gr.addColorStop(1, '#D2E6F2');
-      ctx.fillStyle = gr; ctx.fillRect(S.gx, ly - 14, 96 * pL, 14);
-      const wx = S.gx + 300, wy = ly - 7;
-      for (let s = 0; s < 24; s++) {
-        if (s / 24 > pL) break;
-        ctx.strokeStyle = L.css(L.fringeRGB((s / 24) * TAU)); ctx.lineWidth = 4;
-        ctx.beginPath(); ctx.arc(wx, wy, 10, (s / 24) * TAU, ((s + 1) / 24) * TAU + 0.02); ctx.stroke();
-      }
-      ctx.strokeStyle = C.gold; ctx.fillStyle = C.gold; ctx.lineWidth = 1.7;
-      ctx.beginPath(); ctx.moveTo(wx, wy); ctx.lineTo(wx + 7 * Math.cos(-0.7), wy + 7 * Math.sin(-0.7)); ctx.stroke();
-      ctx.beginPath(); ctx.arc(wx, wy, 2, 0, TAU); ctx.fill();
-      ctx.restore();
-    }
-    cardText(ctx, 'amplitude |s|', S.gx + 110, ly, { kind: 'mono', size: 18, color: C.textDim, p: pL });
-    cardText(ctx, 'phase φ', S.gx + 320, ly, { kind: 'mono', size: 18, color: C.textDim, p: pL });
+    // card header (leaves with the card's scan wipe)
+    header(ctx, 'Level 1.1 SLC', S.x + 32, S.hd, ink().amber, rv(lt, 0.5, 0.4), C.amber);
     ctx.restore();
     // construction outline (grows from the TL pixel) and exit scan
     if (open < 0.999) {
@@ -433,9 +402,97 @@
     if (ex > 0) scanEdge(ctx, S.x, y1, S.w, ex, C.amber);
   }
 
-  /* ================================================================ PHASE 01 · archive (779 files) */
+  /* ================================================================ PHASES 0–1 · archive + unification (left) */
+  function bandH(f, half, lt, seed) {
+    const af = Math.abs(f), ro = 0.7;
+    let a;
+    if (af <= half - ro) a = 1; else if (af >= half + ro) a = 0; else a = 0.5 + 0.5 * Math.cos((Math.PI * (af - (half - ro))) / (2 * ro));
+    const rip = 0.08 * (L.noise2(f * 1.1 + seed, lt * 2.4, 9) - 0.5) + 0.025 * Math.sin(f * 2.3 + lt * 3.1 + seed);
+    return 0.05 + 0.95 * a * (0.92 + rip);
+  }
+  function bandPts(base, half, hs, lt, seed) {
+    const pts = [[U.xc - 14.8 * U.ppm, base]];
+    for (let f = -14.8; f <= 14.8 + 1e-6; f += 0.2) pts.push([U.xc + f * U.ppm, base - U.bh * hs * bandH(f, half, lt, seed)]);
+    pts.push([U.xc + 14.8 * U.ppm, base]);
+    return pts;
+  }
+  function fillBand(ctx, pts, base, color, aIn, aOut, fe) {
+    const xl = U.xc - fe * U.ppm, xr = U.xc + fe * U.ppm;
+    const g = ctx.createLinearGradient(0, base - U.bh, 0, base);
+    g.addColorStop(0, L.rgba(color, 0.85)); g.addColorStop(1, L.rgba(color, 0.18));
+    ctx.save(); ctx.beginPath(); ctx.rect(xl, base - U.bh - 10, xr - xl, U.bh + 12); ctx.clip();
+    L.poly(ctx, pts, true); ctx.globalAlpha = aIn; ctx.fillStyle = g; ctx.fill();
+    ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.globalAlpha = aIn; L.poly(ctx, pts.slice(1, -1)); ctx.stroke();
+    ctx.restore();
+    if (aOut > 0) {
+      ctx.save(); ctx.beginPath(); ctx.rect(U.px0 - 30, base - U.bh - 10, xl - U.px0 + 30, U.bh + 12); ctx.rect(xr, base - U.bh - 10, U.px1 + 30 - xr, U.bh + 12); ctx.clip();
+      L.poly(ctx, pts, true); ctx.globalAlpha = aOut; ctx.fillStyle = L.rgba(color, 0.35); ctx.fill();
+      ctx.setLineDash([4, 4]); ctx.strokeStyle = L.rgba(color, 0.9); ctx.lineWidth = 1.2; L.poly(ctx, pts.slice(1, -1)); ctx.stroke();
+      ctx.restore();
+    }
+  }
+  /** Unify the two modes: FBS (28 MHz) is band-limited to the common 14 MHz band of FBD — one stack. */
+  function drawUnify(ctx, lt, t) {
+    const I = ink();
+    // divider between the archive grid and the two modes
+    const pd = rv(lt, 1.0, 0.6);
+    if (pd > 0) { ctx.strokeStyle = L.rgba(C.cyan, 0.16); ctx.lineWidth = 1; L.polyPartial(ctx, [[U.lx, U.div], [U.px1, U.div]], pd); ctx.stroke(); }
+    // range-frequency axis (deco tick labels −14…+14 MHz) + faint guides at ±7 MHz (the common band)
+    const pa = rv(lt, 1.25, 0.5);
+    if (pa > 0) {
+      ctx.strokeStyle = L.rgba(C.textDim, 0.7); ctx.lineWidth = 1.2;
+      L.polyPartial(ctx, [[U.px0 - 8, U.ax], [U.px1 + 8, U.ax]], pa); ctx.stroke();
+      for (const f of [-14, -7, 0, 7, 14]) {
+        const x = U.xc + f * U.ppm, k = clamp(pa * 1.6 - Math.abs(f) / 28);
+        ctx.beginPath(); ctx.moveTo(x, U.ax); ctx.lineTo(x, U.ax + 7 * k); ctx.stroke();
+        L.text(ctx, f === 0 ? '0' : (f > 0 ? '+' : '−') + Math.abs(f), x, U.ax + 24, { kind: 'mono', size: 15, color: C.textDim, align: 'center', p: rv(lt, 1.375 + Math.abs(f) / 56, 0.4), role: 'deco' });
+      }
+      L.text(ctx, 'MHz', U.px0 - 26, U.ax + 24, { kind: 'mono', size: 15, color: C.textDim, align: 'right', p: rv(lt, 1.5, 0.4), role: 'deco' });
+      ctx.setLineDash([3, 5]); ctx.strokeStyle = L.rgba(C.textDim, 0.18 * pa); ctx.beginPath();
+      for (const f of [-7, 7]) { const x = U.xc + f * U.ppm; ctx.moveTo(x, U.top); ctx.lineTo(x, U.ax); }
+      ctx.stroke(); ctx.setLineDash([]);
+    }
+    // 13.0 "unified": the common 14 MHz band lights up across both rows, breathing on the beat (under the bands)
+    const pu = rv(lt, 3.0, 0.5);
+    if (pu > 0) {
+      const xl = U.xc - 7 * U.ppm, xr = U.xc + 7 * U.ppm, y0 = U.top + 2, y1 = U.ax - 2, bt = L.pulse(t);
+      const g = ctx.createLinearGradient(0, y0, 0, y1);
+      g.addColorStop(0, L.rgba(C.cyan, (0.05 + 0.05 * bt) * pu)); g.addColorStop(1, L.rgba(C.cyan, (0.12 + 0.08 * bt) * pu));
+      ctx.fillStyle = g; ctx.fillRect(xl, y1 - (y1 - y0) * pu, xr - xl, (y1 - y0) * pu);
+    }
+    // bands: FBS holds its 28 MHz until the 12.5 beat, then the bandpass edges slide in to ±7 MHz (band-limit)
+    const cut = L.sp(lt, 2.5, 0.35), fe = 14 - 7 * cut;
+    const h1 = rv(lt, 1.5, 0.55), h2 = rv(lt, 1.75, 0.55);
+    if (h1 > 0) fillBand(ctx, bandPts(U.r1, 14, h1, lt, 3), U.r1, C.amber, 1, lerp(0.85, 0.3, clamp(cut)), fe);
+    if (h2 > 0) fillBand(ctx, bandPts(U.r2, 7, h2, lt, 17), U.r2, C.blue, 1, 0.5, 14.6);
+    // row labels (the colour semantics carry through the act: FBS = amber, FBD = blue)
+    const lo = { kind: 'display', size: 30, weight: 700 };
+    cardText(ctx, 'FBS', U.lx, U.r1 - 9, Object.assign({ color: I.amber, p: rv(lt, 1.5, 0.4), scanColor: C.amber }, lo));
+    cardText(ctx, 'FBD', U.lx, U.r2 - 9, Object.assign({ color: I.blue, p: rv(lt, 1.75, 0.4), scanColor: C.blue }, lo));
+    // bandpass edges (cyan), drawn down through both rows at ±14 MHz (12.0), then springing in to ±7 MHz (12.5)
+    const pe = rv(lt, 2.0, 0.4);
+    if (pe > 0) {
+      for (const sgn of [-1, 1]) {
+        const x = U.xc + sgn * fe * U.ppm;
+        L.glow(ctx, x, (U.top + U.ax) / 2, 30, C.cyan, (0.3 + 0.15 * L.pulse(t)) * pe);
+        ctx.strokeStyle = L.rgba(C.cyan, 0.95); ctx.lineWidth = 2;
+        L.polyPartial(ctx, [[x, U.top], [x, U.ax]], pe); ctx.stroke();
+        ctx.fillStyle = C.cyan; ctx.beginPath(); ctx.moveTo(x, U.top - 1); ctx.lineTo(x - sgn * 9 * pe, U.top - 6); ctx.lineTo(x, U.top - 11); ctx.closePath(); ctx.fill();
+      }
+      // bracket between the edges (follows them in)
+      const xl = U.xc - fe * U.ppm + 6, xr = U.xc + fe * U.ppm - 6, yb = U.top - 6;
+      ctx.strokeStyle = L.rgba(C.cyan, 0.7 * pe); ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.moveTo(lerp(U.xc, xl + 8, pe), yb); ctx.lineTo(lerp(U.xc, xr - 8, pe), yb); ctx.stroke();
+    }
+    // the unification, in one line (revealed with the edges so it holds ≥ 1.5 s before the card leaves)
+    cardText(ctx, [{ s: 'FBS', color: I.amber, weight: 700 }, { s: ' band-limited 28 → 14 MHz  ·  ', color: C.text }, { s: 'FBD', color: I.blue, weight: 700 }, { s: ' resampled to the FBS grid', color: C.text }],
+      U.lx, U.cap, { kind: 'sans', size: 24, weight: 500, p: rv(lt, 2.0, 0.45), scanColor: C.amber, id: 'a2-unify' });
+  }
   function drawArchive(ctx, lt, t) {
-    const pIn = rv(lt, 0.5, 0.5), q = qOut(lt, 3.6, 0.35);
+    const pIn = rv(lt, 0.5, 0.5), q = qOut(lt, 4.0, 0.3);
+    if (pIn <= 0 || q >= 0.998) return;
+    // VO-05 spotlight target: the whole card (779 counter + archive grid + the unification) — constant box
+    L.spot.mark(ctx, 'archives', A.x, A.y, A.w, A.h, SPOT_PAD);
     panel(ctx, A.x, A.y, A.w, A.h, pIn, q, C.amber, () => {
       const I = imgs();
       // tiles grouped by brightness (3 amber fills) + a write-head flash group
@@ -471,159 +528,16 @@
         ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = g; ctx.fillRect(hx - 60, A.gy - 3, 68, A.rows * A.py + 3);
         ctx.restore();
       }
-      // hero counter (display 700, phase ink, plain integers right-aligned in a fixed "779"-wide box) + caption
-      const co = { kind: 'display', size: 64, weight: 700, color: ink().amber };
+      // hero counter (display 700, phase ink) + caption
+      const co = { kind: 'display', size: 88, weight: 700, color: ink().amber, p: rv(lt, 0.625, 0.3), scanColor: C.amber };
+      counter(ctx, A.gx - 4, A.cy, count, A.cols * A.rows, co, null, null, 'a2-count');
       const wBox = L.measure(ctx, '779', co).w;
-      cardText(ctx, String(count), A.gx - 2 + wBox, 244, Object.assign({ align: 'right', p: rv(lt, 0.625, 0.3), scanColor: C.amber, id: 'a2-count' }, co));
-      cardText(ctx, 'PALSAR Level 1.1 archives · 1.04 TB', A.gx + wBox + 24, 240, { kind: 'sans', size: 26, weight: 500, p: rv(lt, 1.0, 0.4), scanColor: C.amber });
+      cardText(ctx, 'PALSAR Level 1.1 archives · 1.04 TB', A.gx - 4 + wBox + 26, A.cy, { kind: 'sans', size: 26, weight: 500, p: rv(lt, 0.875, 0.4), scanColor: C.amber });
+      drawUnify(ctx, lt, t);
     });
   }
 
-  /* ================================================================ PHASE 01 · range spectrum + common grid */
-  function bandH(f, half, lt, seed) {
-    const af = Math.abs(f), ro = 0.7;
-    let a;
-    if (af <= half - ro) a = 1; else if (af >= half + ro) a = 0; else a = 0.5 + 0.5 * Math.cos((Math.PI * (af - (half - ro))) / (2 * ro));
-    const rip = 0.08 * (L.noise2(f * 1.1 + seed, lt * 2.4, 9) - 0.5) + 0.025 * Math.sin(f * 2.3 + lt * 3.1 + seed);
-    return 0.05 + 0.95 * a * (0.92 + rip);
-  }
-  function bandPts(base, half, hs, lt, seed) {
-    const pts = [[F.xc - 14.8 * F.ppm, base]];
-    for (let f = -14.8; f <= 14.8 + 1e-6; f += 0.2) pts.push([F.xc + f * F.ppm, base - F.bh * hs * bandH(f, half, lt, seed)]);
-    pts.push([F.xc + 14.8 * F.ppm, base]);
-    return pts;
-  }
-  function fillBand(ctx, pts, base, color, aIn, aOut, fe) {
-    const xl = F.xc - fe * F.ppm, xr = F.xc + fe * F.ppm;
-    const g = ctx.createLinearGradient(0, base - F.bh, 0, base);
-    g.addColorStop(0, L.rgba(color, 0.85)); g.addColorStop(1, L.rgba(color, 0.18));
-    ctx.save(); ctx.beginPath(); ctx.rect(xl, base - F.bh - 10, xr - xl, F.bh + 12); ctx.clip();
-    L.poly(ctx, pts, true); ctx.globalAlpha = aIn; ctx.fillStyle = g; ctx.fill();
-    ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.globalAlpha = aIn; L.poly(ctx, pts.slice(1, -1)); ctx.stroke();
-    ctx.restore();
-    if (aOut > 0) {
-      ctx.save(); ctx.beginPath(); ctx.rect(F.px0 - 30, base - F.bh - 10, xl - F.px0 + 30, F.bh + 12); ctx.rect(xr, base - F.bh - 10, F.px1 + 30 - xr, F.bh + 12); ctx.clip();
-      L.poly(ctx, pts, true); ctx.globalAlpha = aOut; ctx.fillStyle = L.rgba(color, 0.35); ctx.fill();
-      ctx.setLineDash([4, 4]); ctx.strokeStyle = L.rgba(color, 0.9); ctx.lineWidth = 1.2; L.poly(ctx, pts.slice(1, -1)); ctx.stroke();
-      ctx.restore();
-    }
-  }
-  function drawSpectrum(ctx, lt, t) {
-    const pIn = rv(lt, 0.75, 0.5), q = qOut(lt, 4.0, 0.35);
-    const I = ink();
-    panel(ctx, F.x, F.y, F.w, F.h, pIn, q, C.amber, () => {
-      // ---------------- spectral domain: range bandwidth
-      cardText(ctx, 'RANGE BANDWIDTH', F.lx, 534, { kind: 'mono', size: 18, weight: 600, color: I.amber, tracking: 0.12, p: rv(lt, 0.875, 0.4), scanColor: C.amber });
-      const pa = rv(lt, 0.875, 0.5);
-      if (pa > 0) {
-        ctx.strokeStyle = L.rgba(C.textDim, 0.7); ctx.lineWidth = 1.2;
-        L.polyPartial(ctx, [[F.px0 - 8, F.ax], [F.px1 + 8, F.ax]], pa); ctx.stroke();
-        for (const f of [-14, -7, 0, 7, 14]) {
-          const x = F.xc + f * F.ppm, k = clamp(pa * 1.6 - Math.abs(f) / 28);
-          ctx.beginPath(); ctx.moveTo(x, F.ax); ctx.lineTo(x, F.ax + 7 * k); ctx.stroke();
-          L.text(ctx, f === 0 ? '0' : (f > 0 ? '+' : '−') + Math.abs(f), x, F.ax + 24, { kind: 'mono', size: 15, color: C.textDim, align: 'center', p: rv(lt, 1.0 + Math.abs(f) / 56, 0.4), role: 'deco' });
-        }
-        L.text(ctx, 'MHz', F.px0 - 26, F.ax + 24, { kind: 'mono', size: 15, color: C.textDim, align: 'right', p: rv(lt, 1.125, 0.4), role: 'deco' });
-        // faint guide lines at ±7 MHz (the common band)
-        ctx.setLineDash([3, 5]); ctx.strokeStyle = L.rgba(C.textDim, 0.18 * pa); ctx.beginPath();
-        for (const f of [-7, 7]) { const x = F.xc + f * F.ppm; ctx.moveTo(x, F.top); ctx.lineTo(x, F.ax); }
-        ctx.stroke(); ctx.setLineDash([]);
-      }
-      // FBS holds its 28 MHz readout until 12.25, then the bandpass edges slide in (fast: 14 MHz shows by 12.5)
-      const cut = L.sp(lt, 2.25, 0.35), fe = 14 - 7 * cut, bw = Math.round(2 * fe);
-      // row labels: mode (+ its expansion), then bandwidth (FBS rolls 28 → 14 with the edges) · polarisation used
-      const xE = F.lx + 74, wBw = L.measure(ctx, '28 MHz', { kind: 'mono', size: 18, weight: 600 }).w;
-      cardText(ctx, 'FBS', F.lx, F.r1 - 14, { kind: 'display', size: 30, weight: 700, color: I.amber, p: rv(lt, 1.0, 0.4), scanColor: C.amber });
-      cardText(ctx, 'Fine Beam Single', xE, F.r1 - 14, { kind: 'mono', size: 18, color: C.textDim, p: rv(lt, 1.0625, 0.4) });
-      cardText(ctx, `${bw} MHz`, F.lx, F.r1 + 14, { kind: 'mono', size: 18, weight: 600, color: I.amber, p: rv(lt, 1.0625, 0.35), id: 'a2-fbs-bw' });
-      cardText(ctx, ' · HH', F.lx + wBw, F.r1 + 14, { kind: 'mono', size: 18, color: C.textDim, p: rv(lt, 1.125, 0.35) });
-      cardText(ctx, 'FBD', F.lx, F.r2 - 14, { kind: 'display', size: 30, weight: 700, color: I.blue, p: rv(lt, 1.375, 0.4), scanColor: C.blue });
-      cardText(ctx, 'Fine Beam Dual', xE, F.r2 - 14, { kind: 'mono', size: 18, color: C.textDim, p: rv(lt, 1.4375, 0.4) });
-      cardText(ctx, '14 MHz', F.lx, F.r2 + 14, { kind: 'mono', size: 18, weight: 600, color: I.blue, p: rv(lt, 1.4375, 0.35) });
-      cardText(ctx, ' · HH (HV unused)', F.lx + wBw, F.r2 + 14, { kind: 'mono', size: 18, color: C.textDim, p: rv(lt, 1.5, 0.35) });
-      // bands
-      const h1 = rv(lt, 1.0, 0.55), h2 = rv(lt, 1.375, 0.55);
-      if (h1 > 0) fillBand(ctx, bandPts(F.r1, 14, h1, lt, 3), F.r1, C.amber, 1, lerp(0.85, 0.3, clamp(cut)), fe);
-      if (h2 > 0) fillBand(ctx, bandPts(F.r2, 7, h2, lt, 17), F.r2, C.blue, 1, 0.5, 14.6);
-      // bandpass edges (cyan), drawn down at ±14 MHz around the FBS band, then spring in to ±7 MHz at 12.25
-      const pe = rv(lt, 1.25, 0.4);
-      if (pe > 0) {
-        for (const sgn of [-1, 1]) {
-          const x = F.xc + sgn * fe * F.ppm;
-          L.glow(ctx, x, (F.top + F.ax) / 2, 26, C.cyan, 0.35 * pe);
-          ctx.strokeStyle = L.rgba(C.cyan, 0.95); ctx.lineWidth = 2;
-          L.polyPartial(ctx, [[x, F.top], [x, F.ax]], pe); ctx.stroke();
-          ctx.fillStyle = C.cyan; ctx.beginPath(); ctx.moveTo(x, F.top - 1); ctx.lineTo(x - sgn * 9 * pe, F.top - 6); ctx.lineTo(x, F.top - 11); ctx.closePath(); ctx.fill();
-        }
-        // bracket + rolling readout (28 → 14 MHz)
-        const pb = rv(lt, 1.25, 0.3);
-        if (pb > 0) {
-          const xl = F.xc - fe * F.ppm + 6, xr = F.xc + fe * F.ppm - 6, yb = F.top - 6;
-          ctx.strokeStyle = L.rgba(C.cyan, 0.7 * pb); ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(xl + 8, yb); ctx.lineTo(xr - 8, yb); ctx.stroke();
-          cardText(ctx, `${bw} MHz`, F.xc, yb - 10, { kind: 'mono', size: 18, weight: 600, color: I.cyan, align: 'center', p: pb, id: 'a2-bw' });
-        }
-      }
-      // ---------------- spatial domain: range samples. FBS keeps its native 4.68 m slant-range grid; the FBD
-      // samples stay on their own, coarser native spacing (they are resampled onto the FBS grid later, at coregistration)
-      const pr = rv(lt, 2.0, 0.45);
-      if (pr > 0) {
-        ctx.strokeStyle = L.rgba(C.cyan, 0.16); ctx.lineWidth = 1;
-        L.polyPartial(ctx, [[F.lx, F.div], [F.px1, F.div]], pr); ctx.stroke();
-      }
-      cardText(ctx, 'RANGE SAMPLES', F.lx, F.hd, { kind: 'mono', size: 18, weight: 600, color: I.amber, tracking: 0.12, p: rv(lt, 2.0, 0.4), scanColor: C.amber });
-      cardText(ctx, [{ s: '4.68 m', color: I.cyan, weight: 600 }, { s: ' slant-range grid', color: C.textDim }], F.rx1, F.hd, { kind: 'mono', size: 18, align: 'right', p: rv(lt, 2.0625, 0.4) });
-      const NT = 24, sp = (F.rx1 - F.rx0) / NT;
-      if (pr > 0) {
-        ctx.strokeStyle = L.rgba(C.textDim, 0.65); ctx.lineWidth = 1.2;
-        L.polyPartial(ctx, [[F.rx0, F.ru], [F.rx1, F.ru]], pr); ctx.stroke();
-        ctx.strokeStyle = L.rgba(C.cyan, 0.35); ctx.beginPath();
-        for (let i = 0; i <= NT; i++) {
-          const k = clamp(L.spring(lt - 2.0 - i * 0.012, 0.3));
-          if (k <= 0) continue;
-          const x = F.rx0 + i * sp; ctx.moveTo(x, F.ru - 18 * k); ctx.lineTo(x, F.ru + 18 * k);
-        }
-        ctx.stroke();
-        // dimension bracket over the last interval: this is the 4.68 m spacing
-        const pd = rv(lt, 2.125, 0.4);
-        if (pd > 0) {
-          const xa = F.rx1 - sp, yb = F.ru - 26;
-          ctx.strokeStyle = L.rgba(C.cyan, 0.85); ctx.lineWidth = 1.3;
-          L.polyPartial(ctx, [[xa, yb + 5], [xa, yb], [F.rx1, yb], [F.rx1, yb + 5]], pd); ctx.stroke();
-        }
-        const beat = lt > 2.5 ? L.pulse(t) : 0;
-        // FBS samples (upper row) on every tick — native sampling kept
-        ctx.fillStyle = C.amber; ctx.beginPath();
-        for (let i = 0; i <= NT; i++) {
-          const k = clamp(L.spring(lt - 2.125 - i * 0.01, 0.3)); if (k <= 0) continue;
-          const x = F.rx0 + i * sp, r = 4 * k * (1 + 0.3 * beat); ctx.moveTo(x + r, F.ru - 12); ctx.arc(x, F.ru - 12, r, 0, TAU);
-        }
-        ctx.fill();
-        // FBD samples (lower row): their own coarser native spacing, offset from the FBS ticks
-        ctx.fillStyle = C.blue; ctx.beginPath();
-        for (let i = 0; i < NT; i += 2) {
-          const k = clamp(L.spring(lt - 2.25 - i * 0.01, 0.3)); if (k <= 0) continue;
-          const x = F.rx0 + (i + 0.42) * sp, r = 4 * k * (1 + 0.3 * beat); ctx.moveTo(x + r, F.ru + 12); ctx.arc(x, F.ru + 12, r, 0, TAU);
-        }
-        ctx.fill();
-        // 13.0 s: a grid sweep runs along the FBS row — band-limited in place, still on the 4.68 m ticks
-        const sw = (lt - 3.0) / 0.45;
-        if (sw > 0 && sw < 1) {
-          const xs = lerp(F.rx0 - 20, F.rx1 + 20, L.ease.inOutSine(sw)), a = Math.sin(Math.PI * sw);
-          const g = ctx.createLinearGradient(xs - 90, 0, xs + 6, 0);
-          g.addColorStop(0, L.rgba(C.cyan, 0)); g.addColorStop(0.9, L.rgba(C.cyan, 0.32 * a)); g.addColorStop(1, L.rgba(C.cyan, 0));
-          ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = g; ctx.fillRect(xs - 90, F.ru - 24, 96, 22);
-          ctx.fillStyle = L.rgba(C.cyan, 0.9 * a); ctx.fillRect(xs - 1, F.ru - 24, 2, 22); ctx.restore();
-        }
-      }
-      cardText(ctx, 'FBS', F.lx, F.ru - 12, { kind: 'mono', size: 18, weight: 600, color: I.amber, baseline: 'middle', p: rv(lt, 2.125, 0.4) });
-      cardText(ctx, 'FBD', F.lx, F.ru + 13, { kind: 'mono', size: 18, weight: 600, color: I.blue, baseline: 'middle', p: rv(lt, 2.25, 0.4) });
-      // captions (revealed as a pickup into the 12.0 bar so they hold ≥ 1.5 s before the exit wipe)
-      cardText(ctx, [{ s: 'FBS', color: I.amber, weight: 700 }, { s: ' 28 → 14 MHz · band-limited, native 4.68 m sampling kept', color: C.text }], F.lx, F.c1, { kind: 'sans', size: 22, weight: 500, p: rv(lt, 1.75, 0.35), scanColor: C.amber });
-      cardText(ctx, [{ s: 'FBD', color: I.blue, weight: 700 }, { s: ' 14 MHz · resampled to the FBS grid at coregistration', color: C.text }], F.lx, F.c2, { kind: 'sans', size: 22, weight: 500, p: rv(lt, 1.875, 0.35), scanColor: C.blue });
-    });
-  }
-
-  /* ================================================================ PHASE 02 · DEM wireframe */
+  /* ================================================================ PHASE 2 · DEM wireframe */
   const BIN_STYLE = [
     ['rgba(0,229,255,0.2)', 1],
     [L.css(L.mix('#1D5A63', C.cyan, 0.32), 0.6), 1.1],
@@ -636,7 +550,7 @@
   const _gx = new Float32Array(M.nx * M.ny), _gy = new Float32Array(M.nx * M.ny);
   function drawMesh(ctx, lt) {
     if (lt < 3.5 || lt > 7.95) return;
-    const m = geo().mesh, pr = meshProj(lt), nx = M.nx, ny = M.ny, Ik = ink();
+    const m = geo().mesh, pr = meshProj(lt), nx = M.nx, ny = M.ny;
     const rowA = new Float32Array(ny), rowQ = new Float32Array(ny), rowG = new Float32Array(ny), rowF = new Float32Array(ny);
     let any = false;
     for (let j = 0; j < ny; j++) {
@@ -717,7 +631,7 @@
     }
     if (settled.length) strokeRows(settled, 1, 0);
     ctx.globalAlpha = 1;
-    // ---- P448 F0290 footprint draped on the DEM (draws on, then retracts)
+    // ---- P448 F0290 footprint draped on the DEM (draws on, then retracts); named by the network title
     const pf = Math.min(rv(lt, 4.75, 0.7), 1 - rv(lt, 7.0, 0.4));
     if (pf > 0) {
       const pts = m.fpW.map((w) => { const p = pr(w[0], w[1], w[2]); return [p[0], p[1]]; });
@@ -726,19 +640,6 @@
       ctx.setLineDash([7, 5]); ctx.lineDashOffset = -lt * 24; ctx.strokeStyle = L.rgba(C.cyan, 0.95); ctx.lineWidth = 1.8;
       L.polyPartial(ctx, pts, pf); ctx.stroke();
       ctx.restore();
-    }
-    // ---- north arrow on the sea-level plane
-    const pn = Math.min(rv(lt, 4.75, 0.5), 1 - rv(lt, 7.0, 0.35));
-    if (pn > 0) {
-      const a = pr(...m.north[0]), b = pr(...m.north[1]);
-      const ux = b[0] - a[0], uy = b[1] - a[1], ul = Math.hypot(ux, uy) || 1, nxv = ux / ul, nyv = uy / ul;
-      ctx.strokeStyle = L.rgba(C.text, 0.85); ctx.fillStyle = L.rgba(C.text, 0.85 * pn); ctx.lineWidth = 1.6;
-      L.polyPartial(ctx, [[a[0], a[1]], [b[0], b[1]]], pn); ctx.stroke();
-      if (pn > 0.6) {
-        ctx.beginPath(); ctx.moveTo(b[0] + nxv * 4, b[1] + nyv * 4);
-        ctx.lineTo(b[0] - nxv * 9 - nyv * 5, b[1] - nyv * 9 + nxv * 5); ctx.lineTo(b[0] - nxv * 9 + nyv * 5, b[1] - nyv * 9 - nxv * 5); ctx.closePath(); ctx.fill();
-      }
-      L.text(ctx, 'N', b[0] + nxv * 20, b[1] + nyv * 20, { kind: 'mono', size: 18, weight: 600, color: C.text, align: 'center', baseline: 'middle', p: pn });
     }
     // ---- stem from the TL pixel to the surface
     const ps = Math.min(rv(lt, 4.6, 0.4), 1 - rv(lt, 5.75, 0.3));
@@ -749,67 +650,34 @@
       ctx.fillStyle = L.rgba(C.cyan, 0.9 * ps); ctx.beginPath(); ctx.ellipse(s[0], s[1], 6 * ps, 2.6 * ps, 0, 0, TAU); ctx.fill();
     }
     ctx.restore();
-    // ---- place tags (ride the projection) + footprint label, each on a backplate
-    for (const tg of m.tags) {
-      const p = vis(lt, tg.at, 7.0, 0.4, 0.35);
-      if (p <= 0) continue;
-      const s = pr(tg.w[0], tg.w[1], tg.w[2]), ly = s[1] - tg.up;
-      ctx.save(); ctx.globalAlpha *= clamp(p * 1.5);
-      ctx.strokeStyle = L.rgba(C.text, 0.6); ctx.lineWidth = 1.1;
-      L.polyPartial(ctx, [[s[0], s[1]], [s[0], ly]], p); ctx.stroke();
-      ctx.fillStyle = C.text; ctx.beginPath(); ctx.arc(s[0], s[1], 3, 0, TAU); ctx.fill();
-      ctx.restore();
-      plateText(ctx, tg.s, s[0] + tg.side * 8, ly + 6, { kind: 'mono', size: 18, weight: 500, color: C.text, align: tg.side < 0 ? 'right' : 'left', p }, C.bg, 6);
-    }
-    const pl = vis(lt, 5.0, 7.0, 0.4, 0.35);
-    if (pl > 0) {
-      const ne = pr(m.fpNE[0], m.fpNE[1], m.fpNE[2]);
-      plateText(ctx, 'P448 F0290', ne[0] + 14, ne[1] - 2, { kind: 'mono', size: 18, weight: 600, color: Ik.cyanBg, p: pl }, C.bg, 6);
-    }
   }
   function drawMeshLabel(ctx, lt) {
-    const pIn = rv(lt, 4.25, 0.5), q = qOut(lt, 7.6, 0.35);
+    const pIn = rv(lt, 4.125, 0.5), q = qOut(lt, 7.6, 0.35);
     panel(ctx, ML.x, ML.y, ML.w, ML.h, pIn, q, C.blue, () => {
-      cardText(ctx, 'ELEVATION MODEL', ML.x + 24, ML.y + 34, { kind: 'mono', size: 18, weight: 600, color: ink().blue, tracking: 0.12, p: rv(lt, 4.375, 0.4), scanColor: C.blue });
-      cardText(ctx, 'NAMRIA IfSAR DEM (+ SRTM) · schematic', ML.x + 24, ML.y + 70, { kind: 'sans', size: 24, weight: 600, p: rv(lt, 4.4375, 0.4), scanColor: C.blue });
-      cardText(ctx, `central Luzon · vertical ×${M.VX}`, ML.x + 24, ML.y + 98, { kind: 'mono', size: 18, color: C.text, p: rv(lt, 4.5, 0.4) });
-      cardText(ctx, 'coregistration · geocoding · topo-phase removal', ML.x + 24, ML.y + 124, { kind: 'mono', size: 18, color: C.textDim, p: rv(lt, 4.625, 0.4) });
+      header(ctx, 'Elevation model', ML.x + 24, ML.y + 38, ink().blue, rv(lt, 4.25, 0.4), C.blue);
+      cardText(ctx, [{ s: 'NAMRIA IfSAR DEM (+ SRTM)', color: C.text }, { s: ' · schematic', color: C.textDim }], ML.x + 24, ML.y + 76,
+        { kind: 'sans', size: 24, weight: 500, p: rv(lt, 4.375, 0.4), scanColor: C.blue });
     });
   }
 
-  /* ================================================================ PHASE 02 · baseline network */
+  /* ================================================================ PHASE 2 · baseline network */
   function drawNetwork(ctx, lt, t, env) {
     const n = geo().net, I = ink();
-    // OUT: labels scan out · OUT_T: title + pair count (the final "149" holds 15.75 → 17.5)
-    const pIn = rv(lt, 3.75, 0.6), q = qOut(lt, 8.0, 0.375), OUT = 7.25, OUT_T = 7.5;
+    // OUT: header + caveat scan out · OUT_T: title + pair count (the settled "149" holds ~15.97 → 17.7)
+    const pIn = rv(lt, 4.0, 0.6), q = qOut(lt, 8.0, 0.375), OUT = 7.5, OUT_T = 7.625;
     if (pIn <= 0) return;
+    // VO-06 spotlight target: the network card — constant box while it is on screen (14.0–18.0)
+    if (q < 0.998) L.spot.mark(ctx, 'network', N.x, N.y, N.w, N.h, SPOT_PAD);
     const tw = tlWorld(lt, t), ref = n.P[n.ref], beat = L.pulse(t);
-    const hw = (730 / 365.25 / (N.t1 - N.t0)) * (N.px1 - N.px0), hh = (1500 / N.b) * ((N.py1 - N.py0) / 2);
     panel(ctx, N.x, N.y, N.w, N.h, pIn, q, C.blue, () => {
-      cardText(ctx, 'BASELINE NETWORK', N.x + 34, 204, { kind: 'mono', size: 18, weight: 600, color: I.blue, tracking: 0.12, p: vis(lt, 4.125, OUT), scanColor: C.blue });
+      header(ctx, 'Baseline network', N.x + 34, 214, I.blue, vis(lt, 4.25, OUT), C.blue);
       const to = { kind: 'display', size: 36, weight: 700 };
-      const tb = cardText(ctx, 'P448 F0290 · 24 dates', N.x + 34, 250, Object.assign({ p: vis(lt, 4.25, OUT_T), scanColor: C.blue }, to));
-      // the pair count is earned: it rolls with the edges as they draw (15.0–15.75); plain integers, right-aligned
-      // in a fixed "149"-wide box so the words after it never move
-      const pc = vis(lt, 5.0, OUT_T), x1 = N.x + 34 + tb.w;
-      const xn = x1 + L.measure(ctx, ' · ', to).w + L.measure(ctx, '149', to).w;
-      cardText(ctx, ' · ', x1, 250, Object.assign({ p: pc, scanColor: C.blue }, to));
-      cardText(ctx, String(pairsDrawn(lt)), xn, 250, Object.assign({ align: 'right', p: pc, scanColor: C.blue, id: 'a2-pairs' }, to, { color: I.blue }));
-      cardText(ctx, ' pairs formed', xn, 250, Object.assign({ p: pc, scanColor: C.blue }, to));
-      cardText(ctx, 'Δt ≤ 730 days · |B⊥| ≤ 1,500 m', N.x + 34, 284, { kind: 'mono', size: 20, weight: 600, color: I.cyan, p: vis(lt, 4.375, OUT) });
-      // legend (header row)
-      const pg = vis(lt, 4.5, OUT);
-      if (pg > 0) {
-        const lgx = N.x + N.w - 34;
-        const b2 = L.measure(ctx, 'FBD', { kind: 'mono', size: 18, weight: 600 }).w, b1 = L.measure(ctx, 'FBS', { kind: 'mono', size: 18, weight: 600 }).w;
-        const xD = lgx - b2, xS = xD - 40 - b1;
-        ctx.fillStyle = C.amber; ctx.beginPath(); ctx.arc(xS - 14, 198, 6 * pg, 0, TAU); ctx.fill();
-        ctx.fillStyle = C.blue; ctx.beginPath(); ctx.arc(xD - 14, 198, 6 * pg, 0, TAU); ctx.fill();
-        cardText(ctx, 'FBS', xS, 204, { kind: 'mono', size: 18, weight: 600, color: I.amber, p: pg });
-        cardText(ctx, 'FBD', xD, 204, { kind: 'mono', size: 18, weight: 600, color: I.blue, p: pg });
-      }
-      // axes
-      const pa = rv(lt, 4.125, 0.6);
+      const tb = cardText(ctx, 'P448 F0290 · 24 dates', N.x + 34, 262, Object.assign({ p: vis(lt, 4.375, OUT_T), scanColor: C.blue }, to));
+      // the pair count is earned: it rolls with the edges as they draw (15.375–15.97)
+      counter(ctx, N.x + 34 + tb.w, 262, pairsDrawn(lt), n.nEdges, Object.assign({ p: vis(lt, 5.375, OUT_T), scanColor: C.blue, color: I.blue }, to),
+        { s: ' · ', color: C.text }, { s: ' pairs formed', color: C.text }, 'a2-pairs');
+      // axes (deco tick labels)
+      const pa = rv(lt, 4.25, 0.6);
       if (pa > 0) {
         ctx.strokeStyle = L.rgba(C.textDim, 0.6); ctx.lineWidth = 1.2;
         L.polyPartial(ctx, [[N.px0, N.py0], [N.px0, N.py1], [N.px1, N.py1]], pa); ctx.stroke();
@@ -825,21 +693,11 @@
           ctx.beginPath(); ctx.moveTo(N.px0, y); ctx.lineTo(lerp(N.px0, N.px1, k), y); ctx.stroke(); ctx.setLineDash([]);
           L.text(ctx, b === 0 ? '0' : (b > 0 ? '+' : '−') + Math.abs(b), N.px0 - 12, y + 5, { kind: 'mono', size: 15, color: C.textDim, align: 'right', p: vis(lt, 4.375 + Math.abs(b) / 40000, OUT), role: 'deco' });
         }
-        cardText(ctx, 'B⊥ rel. 2009-02-08 (m)', N.x + 34, 312, { kind: 'mono', size: 18, color: C.textDim, p: vis(lt, 4.5, OUT) });
-        cardText(ctx, 'dates and baselines schematic', N.px1, N.y + N.h - 22, { kind: 'mono', size: 18, color: C.textDim, align: 'right', p: vis(lt, 4.625, OUT) });
+        L.text(ctx, 'B⊥ (m)', N.px0 - 12, N.py0 + 6, { kind: 'mono', size: 15, color: C.textDim, align: 'right', p: vis(lt, 4.5, OUT), role: 'deco' });
       }
-      // search window around the reference date: ±730 d × ±1,500 m (opens with the reference pairs, 15.0)
-      const pw = Math.min(rv(lt, 5.0, 0.55), 1 - rv(lt, OUT, 0.4));
-      if (pw > 0) {
-        const x0 = ref[0] - hw * pw, y0 = ref[1] - hh * pw;
-        ctx.fillStyle = L.rgba(C.cyan, (0.045 + 0.035 * (lt > 5.5 ? beat : 0)) * pw); ctx.fillRect(x0, y0, 2 * hw * pw, 2 * hh * pw);
-        ctx.setLineDash([6, 6]); ctx.lineDashOffset = -lt * 20; ctx.strokeStyle = L.rgba(C.cyan, 0.55 * pw); ctx.lineWidth = 1.3;
-        ctx.strokeRect(x0, y0, 2 * hw * pw, 2 * hh * pw); ctx.setLineDash([]);
-      }
+      // honest caveat: the counts are real, the plotted dates and baselines are not
+      cardText(ctx, 'Schematic dates and baselines', N.px1, N.y + N.h - 24, { kind: 'sans', size: 18, weight: 500, color: C.textDim, align: 'right', p: vis(lt, 4.625, OUT) });
     });
-    const pwl = (at) => vis(lt, at, OUT, 0.3, 0.35);
-    plateText(ctx, '±730 d', ref[0] + hw - 10, ref[1] - hh + 24, { kind: 'mono', size: 18, weight: 600, color: I.cyan, align: 'right', p: pwl(5.125) }, C.card, 5);
-    plateText(ctx, '±1,500 m', ref[0] - hw + 10, ref[1] - hh + 24, { kind: 'mono', size: 18, weight: 600, color: I.cyan, p: pwl(5.1875) }, C.card, 5);
 
     // ----- edges and nodes are drawn above the card so they can contract into the TL
     const ce = rv(lt, 7.5, 0.4); // contraction into the TL (one spring for every edge and node)
@@ -848,7 +706,7 @@
     const P = n.P.map((p) => (ce > 0 ? [lerp(p[0], tw.x, ce), lerp(p[1], tw.y, ce)] : p));
     if (latch > 0) P[n.ref] = [lerp(ref[0], tw.x, latch), lerp(ref[1], tw.y, latch)];
     const fade = 1 - ce, lit = rv(lt, 7.0, 0.35); // lit: the docked TL lights up its own pairs (17.0)
-    if (lt >= 5.0 && ce < 0.995) {
+    if (lt >= 5.375 && ce < 0.995) {
       const full = [[], []];
       for (const e of n.E) {
         const p = edgeP(lt, e);
@@ -859,7 +717,7 @@
         L.polyPartial(ctx, [pa, pb], p); ctx.stroke();
       }
       // the held web breathes on the beat
-      const bw = lt > 5.75 ? beat : 0;
+      const bw = lt > 6.0 ? beat : 0;
       for (const [fi, col, a, w] of [[0, C.textDim, 0.27 + 0.22 * bw, 1.1], [1, C.cyan, lerp(0.34 + 0.2 * bw, 0.58 + 0.34 * bw, lit), lerp(1.3, 1.8, lit)]]) {
         const f = full[fi]; if (!f.length) continue;
         ctx.beginPath(); for (let k = 0; k < f.length; k += 2) { ctx.moveTo(f[k][0], f[k][1]); ctx.lineTo(f[k + 1][0], f[k + 1][1]); }
@@ -926,18 +784,6 @@
         ctx.restore();
       }
     }
-    // reference-date label (backplate), leader to the slot
-    const pr = vis(lt, 4.5 + Math.floor(n.ref / 4) * 0.125, OUT);
-    if (pr > 0) {
-      const lx = ref[0] + n.lab[0], ly = ref[1] + n.lab[1] + 20;
-      const ax = n.lab[0] > 0 ? lx - 6 : lx + 306, ay = n.lab[1] < 0 ? ly + 6 : ly - 22;
-      ctx.save(); ctx.globalAlpha *= clamp(pr * 1.5);
-      ctx.strokeStyle = L.rgba(C.cyan, 0.6); ctx.lineWidth = 1.2;
-      const dx = ax - ref[0], dy = ay - ref[1], dl = Math.hypot(dx, dy) || 1;
-      L.polyPartial(ctx, [[ref[0] + (dx / dl) * 18, ref[1] + (dy / dl) * 18], [ax, ay]], pr); ctx.stroke();
-      ctx.restore();
-      plateText(ctx, 'reference 2009-02-08 · FBS', lx, ly, { kind: 'mono', size: 18, weight: 600, color: I.cyan, p: pr }, C.card, 8);
-    }
   }
 
   /* ================================================================ scene */
@@ -968,10 +814,9 @@
       if (lt < 4.0) {
         const tw = env.tl ? env.cam.toWorld(env.tl.x, env.tl.y) : null;
         drawArchive(ctx, lt, t);
-        drawSpectrum(ctx, lt, t);
         drawSLC(ctx, lt, t, tw ? [tw[0], tw[1], (env.tl.size * 0.62) / env.cam.z] : null);
       }
-      if (lt >= 3.75) {
+      if (lt >= 4.0) {
         drawMeshLabel(ctx, lt);
         drawNetwork(ctx, lt, t, env);
       }
