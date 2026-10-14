@@ -570,7 +570,7 @@
   }
   /** Look-ahead peak limiter, in place: no added latency (offline), linear attack over `la` s reaching the gain
    *  needed at each peak exactly on it, exponential release. Returns the deepest gain reduction (dB). */
-  function limiter(chs, ceil, la, rel) {
+  function limiter(chs, ceil, la, rel, gainOut = null) { // gainOut: Float32Array(n) receives the gain applied per sample
     const n = chs[0].length, W = Math.max(1, Math.round(la * SR)), k = 1 - Math.exp(-1 / (rel * SR));
     const req = new Float32Array(n);
     for (let i = 0; i < n; i++) { let p = 0; for (const c of chs) { const v = c[i] < 0 ? -c[i] : c[i]; if (v > p) p = v; } req[i] = p > ceil ? ceil / p : 1; }
@@ -589,6 +589,7 @@
       sum += e[i] - (i >= W ? e[i - W] : 1);
       const gi = sum / W;
       if (gi < minG) minG = gi;
+      if (gainOut) gainOut[i] = gi;
       for (const c of chs) c[i] *= gi;
     }
     return toDb(minG);
@@ -708,28 +709,48 @@
     if (scoreP) return scoreP;
     const t0 = performance.now();
     scoreP = renderScore().then(({ buf, events }) => {
-      const t1 = performance.now(), ch = [];
-      for (let c = 0; c < 8; c++) ch.push(buf.getChannelData(c));
-      const [eL, eR] = echo(ch[6], ch[7], { time: 0.375, fb: 0.36, lp: 3200 });
-      const [rL, rR] = reverb(ch[2], ch[3], ROOMV);
-      const hl = new Float32Array(N), hr = new Float32Array(N);
-      for (let i = 0; i < N; i++) { hl[i] = ch[4][i] + 0.4 * eL[i]; hr[i] = ch[5][i] + 0.4 * eR[i]; }
-      const [wL, wR] = reverb(hl, hr, HALLV);
-      const Lm = new Float32Array(N), Rm = new Float32Array(N);
-      for (let i = 0; i < N; i++) { Lm[i] = ch[0][i] + rL[i] + wL[i] + 0.55 * eL[i]; Rm[i] = ch[1][i] + rR[i] + wR[i] + 0.55 * eR[i]; }
-      const hp = bq('highpass', 28, 0.707); biquad(Lm, hp); biquad(Rm, hp);
+      const t1 = performance.now();
+      const [Lm, Rm] = fxMix(buf);
       // level: active RMS to MUSIC_RMS_DB (sets the bed); a look-ahead limiter at the master ceiling catches anything above it
       const g1 = dbg(MUSIC_RMS_DB - activeLevel([Lm, Rm]).db);
       for (let i = 0; i < N; i++) { Lm[i] *= g1; Rm[i] *= g1; }
-      const grDb = limiter([Lm, Rm], dbg(MASTER_CEIL_DB), 0.004, 0.09);
+      const lim = new Float32Array(N), grDb = limiter([Lm, Rm], dbg(MASTER_CEIL_DB), 0.004, 0.09, lim);
       // trim (cut only): the stem as ducked by the cue sheet alone (no VO) and dropped never peaks above the master ceiling
       const probe = [Float32Array.from(Lm), Float32Array.from(Rm)];
       shape(probe, duckCurves(null));
       const pk = peakOf(probe), g = pk > dbg(MASTER_CEIL_DB) ? dbg(MASTER_CEIL_DB) / pk : 1;
       for (let i = 0; i < N; i++) { Lm[i] *= g; Rm[i] *= g; }
-      return { L: Lm, R: Rm, info: { source: 'score', events, gainDb: r3(toDb(g1 * g)), limiterDb: r3(grDb), activeDb: r3(activeLevel([Lm, Rm]).db), msSynth: Math.round(t1 - t0), msFx: Math.round(performance.now() - t1) } };
+      return { L: Lm, R: Rm, gains: { g1, lim, g }, info: { source: 'score', events, gainDb: r3(toDb(g1 * g)), limiterDb: r3(grDb), activeDb: r3(activeLevel([Lm, Rm]).db), msSynth: Math.round(t1 - t0), msFx: Math.round(performance.now() - t1) } };
     });
     return scoreP;
+  }
+  /** The score's 8 rendered channels (dry, room, hall and echo sends) → stereo: echo, room and hall reverbs, 28 Hz
+   *  high-pass. Linear, so a stem's mix plus the other stems' mixes is the score's. */
+  function fxMix(buf) {
+    const ch = [];
+    for (let c = 0; c < 8; c++) ch.push(buf.getChannelData(c));
+    const [eL, eR] = echo(ch[6], ch[7], { time: 0.375, fb: 0.36, lp: 3200 });
+    const [rL, rR] = reverb(ch[2], ch[3], ROOMV);
+    const hl = new Float32Array(N), hr = new Float32Array(N);
+    for (let i = 0; i < N; i++) { hl[i] = ch[4][i] + 0.4 * eL[i]; hr[i] = ch[5][i] + 0.4 * eR[i]; }
+    const [wL, wR] = reverb(hl, hr, HALLV);
+    const Lm = new Float32Array(N), Rm = new Float32Array(N);
+    for (let i = 0; i < N; i++) { Lm[i] = ch[0][i] + rL[i] + wL[i] + 0.55 * eL[i]; Rm[i] = ch[1][i] + rR[i] + wR[i] + 0.55 * eR[i]; }
+    const hp = bq('highpass', 28, 0.707); biquad(Lm, hp); biquad(Rm, hp);
+    return [Lm, Rm];
+  }
+  /* Stems, for editing the soundtrack in a video editor (tools/layers.js --stems). Each renders the score with only its
+   * buses sounding, through the same effects, level, limiter gain curve and trim as the whole score, and gets the drop
+   * ending but no ducking: together they are the score as `wavBase64({stem: 'music', duck: false})` gives it. */
+  const STEMS = {
+    strings: ['pad', 'low'], ostinato: ['ost'], brass: ['brass'], percussion: ['perc'], keys_textures: ['keys', 'air'], hits_fx: ['hit', 'fx', 'sub'],
+  };
+  async function stem(name) {
+    const full = await score(), { buf } = await renderScore({ solo: STEMS[name] });
+    const [l, r] = fxMix(buf), { g1, lim, g } = full.gains;
+    for (let i = 0; i < N; i++) { const k = g1 * lim[i] * g; l[i] *= k; r[i] *= k; }
+    shape([l, r], { db: new Float32Array(N), amt: new Float32Array(N) });
+    return [l, r];
   }
   function decodeInput(raw) {
     let chs = toStereo(raw.channels);
@@ -906,6 +927,9 @@
     wav(x) { return toWav16(x.getChannelData ? [x.getChannelData(0), x.getChannelData(Math.min(1, x.numberOfChannels - 1))] : x, 44100); },
     /** Levels, gains, ducking windows and timings of the current mix. */
     info() { return mixed().then((m) => m.info); },
+    /** Score stems (names: STEMS) as base64 16-bit WAVs; they sum to the unducked score. */
+    STEMS: Object.keys(STEMS),
+    async stemBase64(name) { if (!STEMS[name]) throw new Error('no stem ' + name); return b64(toWav16(await stem(name), 44103)); },
     cueWindows, parseWav, resample, fromBase64: fromB64,
     _renderScore: renderScore, // development aid: renderScore({solo: ['pad', …]}) → {buf (8 ch), events}
   };

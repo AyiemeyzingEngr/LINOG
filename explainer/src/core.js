@@ -337,8 +337,16 @@
    *     baseline:'alphabetic'|'top'|'middle', tracking (em), p (reveal 0..1), mode:'scan'|'wipe'|'type'|'fade',
    *     alpha, bg (background colour behind the text, for contrast QA), role, id, scanColor}
    * Registers the screen-space bbox in LINOG.LAYOUT when visible. Returns the local bbox {x,y,w,h,asc,desc}.
+   * On a layer router (main.js, seek(t, {layer})) everything it paints counts as the text layer.
    */
   L.text = (ctx, str, x, y, o = {}) => {
+    const rt = ctx.__router;
+    if (!rt) return drawText(ctx, str, x, y, o);
+    const was = rt.painting;
+    rt.painting = 'text';
+    try { return drawText(ctx, str, x, y, o); } finally { rt.painting = was; }
+  };
+  const drawText = (ctx, str, x, y, o) => {
     const p = o.p === undefined ? 1 : o.p;
     const size = o.size || 28, weight = o.weight || 500, kind = o.kind || 'sans';
     const color = o.color || C.text, alpha = o.alpha === undefined ? 1 : o.alpha;

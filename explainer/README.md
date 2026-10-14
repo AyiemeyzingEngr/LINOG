@@ -24,6 +24,7 @@ real logos, and the **real LInOG velocity products**.
 | `SCENE_GUIDE.md` | The scene contract, typography rules, fact sheet and storyboard. |
 | `tools/snap.js` | Renders chosen times to PNG, with a contact sheet and automated QA. |
 | `tools/vo.js` | Cue table, CSV and Audacity labels; silent template; per-line assembly; test signal. |
+| `tools/layers.js` | The film as editable layers for a video editor: graphics, text (alpha) and HUD (alpha) videos, plus the score as six stems. |
 
 ## Render the MP4
 
@@ -114,6 +115,54 @@ To replace the narration:
 5. Optional captions: `node tools/vo.js --cues` also writes `out/vo_captions.srt` (for any player) and
    `out/vo_captions.ass`; `node tools/vo.js --burn` burns them into `out/linog_explainer_captions.mp4` without re-rendering
    (Inter Medium on a translucent slate box, bottom centre above the HUD tracker; the end-card line sits at the top).
+
+## Editing as layers (invideo or any editor)
+
+The animation is drawn by code, so no editor can open its motion design as keyframes. To edit the film in a timeline,
+`tools/layers.js` splits it into layers that stack back into the film, and the soundtrack into stems.
+
+```bash
+node tools/layers.js            # → out/layers/LInOG_L1_graphics.mp4, LInOG_L2_text.webm, LInOG_L3_hud.webm (≈ 15 min)
+node tools/layers.js --stems    # → out/layers/stems/: the score as 6 stems + the whole score, unducked
+node tools/layers.js --verify   # restack the layers (+ the fade) and measure them against out/linog_explainer.mp4
+node tools/layers.js --check 3,12,29,50   # stills of each layer and of the restack vs the film frame
+```
+
+**Picture layers** (`seek(t, {layer})` in `src/main.js`):
+- **L1 · graphics and motion** is opaque H.264. It holds everything except the scene text, the HUD and the fade: maps,
+  data, cards, logos, the through-line and the spotlight.
+- **L2 · text and labels** is VP9 with alpha. It holds whatever `L.text` paints, spotlit like the picture.
+- **L3 · HUD** is VP9 with alpha: the phase header, tracker and logo.
+
+Stacked L1 → L2 → L3 under a fade to black over 57–60 s, the layers rebuild the film: SSIM 0.994 over all 3,600 frames
+for the encoded layers, and 47–76 dB PSNR for most stills. Known differences:
+- the through-line passes under the headline at about 3 s instead of over it;
+- the scan-line texture sits on L1 only;
+- the spotlight defocuses text and picture separately.
+
+**Stems** (`L.audio.stemBase64`): strings, spiccato ostinato, brass, percussion, keys and textures, and hits & FX.
+- Each renders only its own score buses, through the same reverbs, level, limiter gain curve and drop ending.
+- Together they sum to the unducked score, with a residual 63 dB down.
+
+**The invideo project**, "Project LInOG · 60 s explainer (editable layers)", timeline "LInOG explainer · editable
+layers", 1080p60, has a checkpoint "v1" that matches the rendered film.
+- **Video tracks:**
+  - L1 and L2 are cut at the act boundaries (10, 18, 30, 42, 52 s), giving six named clips each.
+  - L3 runs 10–52 s.
+  - A black shape with an opacity ramp makes the fade to black.
+  - The captions track holds the 16 VO lines as native, editable caption slides. It is hidden.
+- **Audio tracks:**
+  - The narration is split into 16 named clips, VO-01 to VO-16, on their cues.
+  - The six stems are routed to a music bus whose ducker follows the narration track, so moved lines stay ducked.
+  - The film's music mix sits on a muted reference track. invideo's ducker approximates the film's ducking: it has no
+    hit protection and no speech-band dip.
+- **Markers:** the six acts and the music hits.
+- **Bin:** the layers, narration, stems, the reference mix, the brand fonts (Inter, Space Grotesk, JetBrains Mono)
+  and the 11 official logos.
+
+**What stays in code:** the content inside a layer (a label's wording, a number, a map colour, an animation) is changed
+in `src/` and re-rendered with `tools/layers.js --layers text` (for example). The new file replaces the clip in the
+editor at the same timing, so edits made around it survive.
 
 ## Determinism
 

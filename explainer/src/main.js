@@ -1,5 +1,5 @@
 /* LInOG explainer — timeline runtime.
- * window.seek(t[, {subframes, shutter}]) draws the frame at time t (seconds) deterministically.
+ * window.seek(t[, {subframes, shutter, layer}]) draws the frame (or one layer of it) at time t (seconds) deterministically.
  * Scenes register with LINOG.scene({...}); see SCENE_GUIDE.md for the contract.
  */
 (function () {
@@ -99,10 +99,67 @@
     c.restore();
   }
 
-  function drawFrame(c, t) {
+  /* Layers (tools/layers.js), for editing the film as tracks in a video editor. seek(t, {layer}) draws one layer:
+   *   'base'  everything except the scene text, the HUD and the fade to black (opaque);
+   *   'text'  the scene text alone (whatever L.text paints in a scene), on transparency, spotlit like the picture;
+   *   'hud'   the HUD alone, on transparency.
+   * Stacked base → text → hud under a fade to black over 57–60 s, they give the film. While a scene draws, a router
+   * stands in for its 2D context: state and path calls reach both canvases, so transforms, clips and alpha stay in step;
+   * paint calls reach only the layer being drawn (L.text marks its paint as text). Questions are answered by the base. */
+  const PAINT = new Set(['fill', 'stroke', 'fillRect', 'strokeRect', 'clearRect', 'fillText', 'strokeText', 'drawImage', 'putImageData', 'drawFocusIfNeeded']);
+  const ASK = new Set(['measureText', 'getTransform', 'isPointInPath', 'isPointInStroke', 'createLinearGradient', 'createRadialGradient', 'createConicGradient', 'createPattern', 'createImageData', 'getLineDash', 'getImageData', 'getContextAttributes', 'isContextLost']);
+  function router(base, text, keep) { // keep: the paint that survives, 'base' or 'text' (into `text`)
+    const st = { painting: 'base' }, fns = new Map();
+    return new Proxy(st, {
+      get(o, k) {
+        if (k === '__router') return st;
+        if (k === 'canvas') return base.canvas;
+        const v = base[k];
+        if (typeof v !== 'function') return v;
+        let f = fns.get(k);
+        if (!f) {
+          if (PAINT.has(k)) f = (...a) => { if (st.painting === keep) (keep === 'text' ? text : base)[k](...a); };
+          else if (ASK.has(k)) f = (...a) => base[k](...a);
+          else f = (...a) => { if (text) text[k](...a); return base[k](...a); };
+          fns.set(k, f);
+        }
+        return f;
+      },
+      set(o, k, v) { base[k] = v; if (text) text[k] = v; return true; },
+    });
+  }
+  /** applySpot for a transparent layer: outside the target the layer fades by k toward its blurred, dimmed copy. */
+  function applySpotLayer(c, m, k) {
+    if (!SP.l) { SP.l = L.canvas(W / 4, H / 4); SP.m = L.canvas(W / 4, H / 4); }
+    const cut = (x) => {
+      x.globalCompositeOperation = 'destination-out'; x.filter = 'blur(5px)'; x.fillStyle = '#000';
+      x.beginPath();
+      for (const q of m) x.roundRect((q.x - q.pad) / 4, (q.y - q.pad) / 4, (q.w + 2 * q.pad) / 4, (q.h + 2 * q.pad) / 4, q.r / 4);
+      x.fill();
+    };
+    const lx = SP.l.getContext('2d'), mx = SP.m.getContext('2d');
+    lx.save();
+    lx.globalCompositeOperation = 'copy'; lx.imageSmoothingEnabled = true; lx.imageSmoothingQuality = 'high';
+    lx.filter = 'blur(2.5px)'; lx.drawImage(c.canvas, 0, 0, W / 4, H / 4); lx.filter = 'none';
+    lx.globalCompositeOperation = 'source-atop'; lx.fillStyle = 'rgba(3,6,12,0.6)'; lx.fillRect(0, 0, W / 4, H / 4);
+    cut(lx); lx.restore();
+    mx.save(); mx.globalCompositeOperation = 'copy'; mx.fillStyle = '#fff'; mx.fillRect(0, 0, W / 4, H / 4); cut(mx); mx.restore();
+    c.save(); c.setTransform(1, 0, 0, 1, 0, 0);
+    c.imageSmoothingEnabled = true; c.imageSmoothingQuality = 'low'; c.globalAlpha = k;
+    c.globalCompositeOperation = 'destination-out'; c.drawImage(SP.m, 0, 0, W, H); // k of the sharp text goes outside the target…
+    c.globalCompositeOperation = 'source-over'; c.drawImage(SP.l, 0, 0, W, H); //    …and k of its dimmed, defocused copy comes in
+    c.restore();
+  }
+  const LT = {}; // layer canvases: LT.text (the text layer of one draw), LT.out (the sub-frame average)
+
+  function drawFrame(c, t, layer = null) {
     L.resetLayout();
     c.reset(); // clears pixels AND the save/restore stack, so a scene error can never leak state
-    L.bg.draw(c, t);
+    if (layer === 'hud') { L._sceneId = 'hud'; L.hud.draw(c, t); return null; }
+    let tx = null;
+    if (layer === 'text') { if (!LT.text) LT.text = L.canvas(W, H); tx = LT.text.getContext('2d'); tx.reset(); }
+    else L.bg.draw(c, t);
+    const g = layer ? router(c, tx, layer === 'text' ? 'text' : 'base') : c; // what the scene draws on
     const i = scenes.indexOf(sceneAt(t));
     const sc = scenes[i];
     let env = null, spot = null;
@@ -121,24 +178,26 @@
           cut = (1 - Math.exp(-env.lt / 0.02)) * Math.exp(-env.lt / 0.16);
           env.tl.energy += 1.3 * cut;
         }
-        c.save(); env.cam.apply(c);
-        sc.draw(c, env);
-        c.restore();
-        if (!env.tlDrawn && env.tl) L.TL.draw(c, env.tl);
-        if (env.tl && i > 0 && env.lt < 0.75) {
-          const k = L.ease.outCubic(env.lt / 0.75), col = L.mix(C.cyan, C.crimson, L.TL.weight(env.tl, 'contour'));
-          c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.globalCompositeOperation = 'lighter';
-          c.strokeStyle = L.css(col, 0.55 * (1 - k) * Math.min(1, env.lt / 0.03)); c.lineWidth = 1.5;
-          c.beginPath(); c.arc(env.tl.x, env.tl.y, env.tl.size * (0.9 + 2.4 * k), 0, L.TAU); c.stroke();
-          c.restore();
+        g.save(); env.cam.apply(g);
+        sc.draw(g, env);
+        g.restore();
+        if (layer !== 'text') {
+          if (!env.tlDrawn && env.tl) L.TL.draw(c, env.tl);
+          if (env.tl && i > 0 && env.lt < 0.75) {
+            const k = L.ease.outCubic(env.lt / 0.75), col = L.mix(C.cyan, C.crimson, L.TL.weight(env.tl, 'contour'));
+            c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.globalCompositeOperation = 'lighter';
+            c.strokeStyle = L.css(col, 0.55 * (1 - k) * Math.min(1, env.lt / 0.03)); c.lineWidth = 1.5;
+            c.beginPath(); c.arc(env.tl.x, env.tl.y, env.tl.size * (0.9 + 2.4 * k), 0, L.TAU); c.stroke();
+            c.restore();
+          }
         }
-        if (sc.overlay) { c.save(); sc.overlay(c, env); c.restore(); }
+        if (sc.overlay) { g.save(); sc.overlay(g, env); g.restore(); }
         // VO spotlight: dim + defocus everything but the data point the narration names
         const sp = L.spot.at(t);
         if (sp) {
           const m = L.spot.marks.get(sp.target);
           spot = { cue: sp.id, target: sp.target, k: sp.k, found: !!m };
-          if (m && sp.k > 0.004) applySpot(c, m, sp.k);
+          if (m && sp.k > 0.004) { if (tx) applySpotLayer(tx, m, sp.k); else applySpot(c, m, sp.k); }
         }
       } catch (e) {
         const msg = `${sc.id} @ ${t.toFixed(3)}s: ${e && e.message}`;
@@ -148,33 +207,51 @@
       }
       L._sceneId = 'hud';
     }
-    L.hud.draw(c, t);
+    if (env) env.spot = spot;
+    if (layer === 'text') return env;
+    if (!layer) L.hud.draw(c, t);
     L.bg.post(c, t);
-    // the picture fades to black over the last three seconds (the music drops out under it in audio.js)
-    if (t > L.FADE[0]) {
+    // the picture fades to black over the last three seconds (the music drops out under it in audio.js); a layer
+    // leaves it to the editor
+    if (!layer && t > L.FADE[0]) {
       c.save(); c.setTransform(1, 0, 0, 1, 0, 0);
       c.fillStyle = `rgba(0,0,0,${L.ease.inOutSine((t - L.FADE[0]) / (L.FADE[1] - L.FADE[0])).toFixed(5)})`;
       c.fillRect(0, 0, W, H); c.restore();
     }
-    if (env) env.spot = spot;
     return env;
   }
 
   let accum = null;
-  /** Deterministic frame draw. opts.subframes > 1 averages that many samples across opts.shutter (fraction of a 1/60 s frame). */
+  /** Deterministic frame draw. opts.subframes > 1 averages that many samples across opts.shutter (fraction of a 1/60 s
+   *  frame). opts.layer ('base' | 'text' | 'hud') draws one layer (see drawFrame); 'text' and 'hud' are transparent and
+   *  left in window.__layerCanvas (the stage shows 'base' only). */
   window.seek = function (t, opts = {}) {
     t = Math.max(0, Math.min(L.DURATION - 1e-6, +t || 0));
     const t0 = performance.now();
     const n = Math.max(1, opts.subframes | 0), shutter = opts.shutter === undefined ? 0.5 : opts.shutter;
+    const layer = opts.layer || null, clear = layer === 'text' || layer === 'hud';
+    const at = (k) => Math.min(L.DURATION - 1e-6, t + (k / n) * (shutter / (opts.fps || L.FPS)));
     let env;
-    if (n === 1) env = drawFrame(ctx, t);
+    if (clear) {
+      // transparent layers: the samples are averaged in premultiplied space ('lighter' at 1/n each)
+      if (!accum) { accum = L.canvas(W, H); }
+      if (!LT.hud) { LT.hud = L.canvas(W, H); LT.out = L.canvas(W, H); }
+      const src = layer === 'hud' ? LT.hud : null, sctx = src ? src.getContext('2d') : accum.getContext('2d', { alpha: false });
+      const o = LT.out.getContext('2d');
+      o.reset();
+      o.globalCompositeOperation = 'lighter'; o.globalAlpha = 1 / n;
+      for (let k = n - 1; k >= 0; k--) {
+        env = drawFrame(sctx, at(k), layer);
+        o.drawImage(src || LT.text, 0, 0);
+      }
+      window.__layerCanvas = LT.out;
+    } else if (n === 1) env = drawFrame(ctx, t, layer);
     else {
       if (!accum) { accum = L.canvas(W, H); }
       const actx = accum.getContext('2d', { alpha: false });
       // running average: sample k is composited with weight 1/(k+1); samples span [t, t + shutter/FPS)
       for (let k = n - 1; k >= 0; k--) {
-        const ts = Math.min(L.DURATION - 1e-6, t + (k / n) * (shutter / (opts.fps || L.FPS)));
-        env = drawFrame(actx, ts);
+        env = drawFrame(actx, at(k), layer);
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.globalAlpha = 1 / (n - k);
         ctx.drawImage(accum, 0, 0);
