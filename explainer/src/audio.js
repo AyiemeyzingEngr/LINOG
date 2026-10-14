@@ -657,3 +657,184 @@
   }
   function b64(ab) { const u8 = new Uint8Array(ab); let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s); }
   function fromB64(s) { const bin = atob(s), u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i); return u8.buffer; }
+
+  /* ------------------------------------------------------------------ music stem, VO, ducking, mix */
+  const ROOMV = { rt60: 1.3, hf: 0.45, size: 0.55, pre: 0.012 };
+  const HALLV = { rt60: 3.4, hf: 0.5, size: 1.0, pre: 0.028 };
+  const fit = (c) => { const y = new Float32Array(N); y.set(c.length > N ? c.subarray(0, N) : c); return y; };
+  const toStereo = (chs) => (chs.length === 1 ? [chs[0], chs[0].slice()] : [chs[0], chs[1]]);
+  const r3 = (x) => (isFinite(x) ? Math.round(x * 1000) / 1000 : x);
+
+  let scoreP = null;
+  /** The synthesised score as a stereo music stem (before ducking), peak-normalised to −1 dBFS. Cached. */
+  function score() {
+    if (scoreP) return scoreP;
+    const t0 = performance.now();
+    scoreP = renderScore().then(({ buf, events }) => {
+      const t1 = performance.now(), ch = [];
+      for (let c = 0; c < 8; c++) ch.push(buf.getChannelData(c));
+      const [eL, eR] = echo(ch[6], ch[7], { time: 0.375, fb: 0.36, lp: 3200 });
+      const [rL, rR] = reverb(ch[2], ch[3], ROOMV);
+      const hl = new Float32Array(N), hr = new Float32Array(N);
+      for (let i = 0; i < N; i++) { hl[i] = ch[4][i] + 0.4 * eL[i]; hr[i] = ch[5][i] + 0.4 * eR[i]; }
+      const [wL, wR] = reverb(hl, hr, HALLV);
+      const Lm = new Float32Array(N), Rm = new Float32Array(N);
+      for (let i = 0; i < N; i++) { Lm[i] = ch[0][i] + rL[i] + wL[i] + 0.55 * eL[i]; Rm[i] = ch[1][i] + rR[i] + wR[i] + 0.55 * eR[i]; }
+      const hp = bq('highpass', 28, 0.707); biquad(Lm, hp); biquad(Rm, hp);
+      const pk = peakOf([Lm, Rm]), g = pk > 0 ? dbg(MASTER_CEIL_DB) / pk : 1;
+      for (let i = 0; i < N; i++) { Lm[i] *= g; Rm[i] *= g; }
+      return { L: Lm, R: Rm, info: { source: 'score', events, gainDb: r3(toDb(g)), activeDb: r3(activeLevel([Lm, Rm]).db), msSynth: Math.round(t1 - t0), msFx: Math.round(performance.now() - t1) } };
+    });
+    return scoreP;
+  }
+  function decodeInput(raw) {
+    let chs = toStereo(raw.channels);
+    if (raw.sampleRate !== SR) chs = chs.map((c) => resample(c, raw.sampleRate, SR));
+    return chs.map(fit);
+  }
+  const inputInfo = (raw) => ({ sampleRate: raw.sampleRate, channels: raw.channels.length, bits: raw.bits, format: raw.format, seconds: r3(raw.frames / raw.sampleRate) });
+  /** External music: matched to the score's gated RMS (−20 dBFS) or lower so its peak stays ≤ −1 dBFS. */
+  function prepMusic(raw) {
+    const [l, r] = decodeInput(raw), hp = bq('highpass', 20, 0.707);
+    biquad(l, hp); biquad(r, hp);
+    const lev = activeLevel([l, r], -70), pk = peakOf([l, r]);
+    let g = isFinite(lev.db) ? dbg(MUSIC_EXT_RMS_DB - lev.db) : 1;
+    if (pk * g > dbg(MASTER_CEIL_DB)) g = dbg(MASTER_CEIL_DB) / pk;
+    for (let i = 0; i < N; i++) { l[i] *= g; r[i] *= g; }
+    return { L: l, R: r, info: { source: 'external', ...inputInfo(raw), activeDb: r3(lev.db), gainDb: r3(toDb(g)) } };
+  }
+  /** VO: 70 Hz high-pass → active speech level to −19 dBFS → peak limiter at −3 dBFS → silent over the last 0.5 s. */
+  function prepVO(raw) {
+    const [l, r] = decodeInput(raw), hp = bq('highpass', 70, 0.707);
+    biquad(l, hp); biquad(r, hp);
+    const lev = activeLevel([l, r]), silent = !isFinite(lev.db);
+    const gDb = silent ? 0 : clamp(VO_TARGET_DB - lev.db, -30, 40), g = dbg(gDb);
+    for (let i = 0; i < N; i++) { l[i] *= g; r[i] *= g; }
+    const grDb = silent ? 0 : limiter([l, r], dbg(VO_CEIL_DB), 0.003, 0.06);
+    const f0 = N - Math.round(0.5 * SR);
+    for (let i = f0; i < N; i++) { const k = 0.5 + 0.5 * Math.cos(Math.PI * (i - f0) / (N - 1 - f0)); l[i] *= k; r[i] *= k; }
+    return { L: l, R: r, silent, info: { ...inputInfo(raw), silent, levelDb: r3(lev.db), active: r3(lev.active), gainDb: r3(gDb), limiterDb: r3(grDb), peakDb: r3(toDb(peakOf([l, r]))) } };
+  }
+
+  /** Merge [start, end] windows closer than DUCK.merge (no pumping between close lines). */
+  function mergeWins(ws) {
+    const out = [];
+    for (const w of ws.slice().sort((a, b) => a[0] - b[0])) { const last = out[out.length - 1]; if (last && w[0] - last[1] < DUCK.merge) last[1] = Math.max(last[1], w[1]); else out.push([w[0], w[1]]); }
+    return out;
+  }
+  const cueWindows = () => mergeWins(cueList().map((c) => [c.in, c.out]));
+  /** Ducking: dB curve (≤ 0) + normalised amount (0..1) for the presence dip, from the cue windows and the VO signal. */
+  function duckCurves(vo) {
+    const wc = cueWindows();
+    let wv = [], mono = null;
+    if (vo && !vo.silent) { // speech windows + sidechain, from the band-passed mid signal of the normalised VO
+      mono = new Float32Array(N);
+      for (let i = 0; i < N; i++) mono[i] = 0.5 * (vo.L[i] + vo.R[i]);
+      biquad(mono, bq('highpass', 150, 0.707)); biquad(mono, bq('lowpass', 5000, 0.707));
+      const BL = Math.round(0.02 * SR), nb = Math.floor(N / BL), thr = Math.pow(10, Math.max(-45, VO_TARGET_DB - 25) / 10);
+      let s = -1;
+      for (let b = 0; b <= nb; b++) {
+        let on = false;
+        if (b < nb) { let e = 0; for (let i = b * BL; i < (b + 1) * BL; i++) e += mono[i] * mono[i]; on = e / BL > thr; }
+        if (on && s < 0) s = b; else if (!on && s >= 0) { wv.push([s * BL / SR, b * BL / SR]); s = -1; }
+      }
+      wv = mergeWins(wv).filter((w) => w[1] - w[0] >= 0.1);
+    }
+    const wins = mergeWins(wc.concat(wv)), a = new Float32Array(N);
+    for (const [s, e] of wins) {
+      const i0 = Math.max(0, Math.floor((s - DUCK.pre) * SR)), i1 = Math.min(N, Math.ceil((e + DUCK.post) * SR));
+      for (let i = i0; i < i1; i++) {
+        const t = i / SR;
+        const v = t < s ? 0.5 - 0.5 * Math.cos(Math.PI * Math.max(0, t - (s - DUCK.pre)) / DUCK.pre) : t > e ? 0.5 + 0.5 * Math.cos(Math.PI * Math.min(1, (t - e) / DUCK.post)) : 1;
+        if (v > a[i]) a[i] = v;
+      }
+    }
+    const sc = new Float32Array(N);
+    let scMax = 0;
+    if (mono) { // envelope follower: fast peak detector → 0..1 above −48 dBFS (full at −30) → 30 ms attack / 300 ms release
+      const fa = 1 - Math.exp(-1 / (0.001 * SR)), fr = 1 - Math.exp(-1 / (0.04 * SR));
+      const sa = 1 - Math.exp(-1 / (DUCK.scAttack * SR)), sr = 1 - Math.exp(-1 / (DUCK.scRelease * SR));
+      const la = Math.round(DUCK.scLook * SR);
+      let env = 0, sm = 0;
+      for (let i = 0; i < N; i++) {
+        const x = mono[i] < 0 ? -mono[i] : mono[i];
+        env += (x - env) * (x > env ? fa : fr);
+        const u = smooth((toDb(env) + 48) / 18);
+        sm += (u - sm) * (u > sm ? sa : sr);
+        const j = i - la; // look-ahead: the gain at j follows the voice at j + la
+        if (j >= 0) sc[j] = sm;
+      }
+      for (let j = N - la; j < N; j++) sc[j] = sm;
+      for (let i = 0; i < N; i++) if (sc[i] > scMax) scMax = sc[i];
+    }
+    const db = new Float32Array(N), amt = new Float32Array(N);
+    for (let i = 0; i < N; i++) { const d = DUCK.depth * a[i] + DUCK.scDepth * sc[i]; db[i] = -d; amt[i] = d > DUCK.depth ? 1 : d / DUCK.depth; }
+    return { db, amt, wins, nCue: wc.length, nVo: wv.length, scMaxDb: r3(-DUCK.scDepth * scMax) };
+  }
+
+  const state = { vo: null, music: null };
+  let mixP = null;
+  async function mixdown() {
+    const src = state.music || (await score()), vo = state.vo, t0 = performance.now();
+    const ml = Float32Array.from(src.L), mr = Float32Array.from(src.R);
+    const dk = duckCurves(vo);
+    const eq = (i) => bq('peaking', DUCK.eqHz, 0.9, -DUCK.eqDb * dk.amt[i]); // presence dip riding the duck
+    biquadTV(ml, eq); biquadTV(mr, eq);
+    for (let i = 0; i < N; i++) { const g = Math.exp(dk.db[i] * 0.11512925464970229); ml[i] *= g; mr[i] *= g; }
+    // drop ending: 24 dB/oct low-pass (two Butterworth stages) sweeping 18 kHz → 200 Hz over 57–60 s, fade cos(π/2·x²)
+    const d0 = Math.round(DROP[0] * SR), span = N - 1 - d0;
+    const fc = (i) => 18000 * Math.pow(200 / 18000, i < d0 ? 0 : (i - d0) / span);
+    for (const q of [0.5412, 1.3066]) { const c = (i) => bq('lowpass', fc(i), q); biquadTV(ml, c); biquadTV(mr, c); }
+    for (let i = d0; i < N; i++) { const x = (i - d0) / span, g = Math.cos(Math.PI / 2 * x * x); ml[i] *= g; mr[i] *= g; }
+    ml[N - 1] = 0; mr[N - 1] = 0;
+    const xl = new Float32Array(N), xr = new Float32Array(N);
+    for (let i = 0; i < N; i++) { xl[i] = ml[i] + (vo ? vo.L[i] : 0); xr[i] = mr[i] + (vo ? vo.R[i] : 0); }
+    const grDb = limiter([xl, xr], dbg(MASTER_CEIL_DB), 0.005, 0.12);
+    xl[N - 1] = 0; xr[N - 1] = 0;
+    const info = {
+      music: src.info, vo: vo ? vo.info : null,
+      duck: { depthDb: -DUCK.depth, sidechainMaxDb: dk.scMaxDb, presenceDipDb: -DUCK.eqDb, windows: dk.wins.map((w) => w.map(r3)), fromCues: dk.nCue, fromVO: dk.nVo },
+      mix: { peakDb: r3(toDb(peakOf([xl, xr]))), limiterDb: r3(grDb), musicPeakDb: r3(toDb(peakOf([ml, mr]))), msMix: Math.round(performance.now() - t0) },
+    };
+    return { mix: [xl, xr], music: [ml, mr], vo: vo ? [vo.L, vo.R] : null, info, buffer: null };
+  }
+  const mixed = () => mixP || (mixP = mixdown());
+  const asBuffer = (x) => (typeof x === 'string' ? fromB64(x) : x);
+
+  L.audio = {
+    SR, DUR, FRAMES: N, HITS, ACCENT, DROP, DUCK,
+    /** Final mix (music + VO) as an AudioBuffer (2 ch, 44.1 kHz, 2,646,000 frames). Cached until setVO/setMusic. */
+    render() {
+      return mixed().then((m) => {
+        if (!m.buffer) { const b = new AudioBuffer({ numberOfChannels: 2, length: N, sampleRate: SR }); b.copyToChannel(m.mix[0], 0); b.copyToChannel(m.mix[1], 1); m.buffer = b; }
+        return m.buffer;
+      });
+    },
+    /** External voice-over (ArrayBuffer of a WAV, a base64 string, or null to remove). Resolves {ok, vo | error}. */
+    async setVO(data) {
+      if (data == null) { state.vo = null; mixP = null; return { ok: true, vo: null }; }
+      try { const v = prepVO(parseWav(asBuffer(data))); state.vo = v; mixP = null; return { ok: true, vo: v.info }; }
+      catch (e) { console.error('LINOG.audio.setVO: ' + e.message); return { ok: false, error: e.message }; }
+    },
+    /** External music replacing the score (still ducked, still gets the drop ending); null restores the score. */
+    async setMusic(data) {
+      if (data == null) { state.music = null; mixP = null; return { ok: true, music: null }; }
+      try { const m = prepMusic(parseWav(asBuffer(data))); state.music = m; mixP = null; return { ok: true, music: m.info }; }
+      catch (e) { console.error('LINOG.audio.setMusic: ' + e.message); return { ok: false, error: e.message }; }
+    },
+    setVOBase64(s) { return this.setVO(fromB64(s)); },
+    setMusicBase64(s) { return this.setMusic(fromB64(s)); },
+    /** Base64 16-bit WAV. opts.stem: 'mix' (default) | 'music' (ducked, as in the mix) | 'vo' (normalised VO). */
+    async wavBase64(opts = {}) {
+      const m = await mixed(), stem = opts.stem || 'mix';
+      const chs = stem === 'music' ? m.music : stem === 'vo' ? m.vo || [new Float32Array(N), new Float32Array(N)] : m.mix;
+      return b64(toWav16(chs, stem === 'mix' ? 44100 : stem === 'music' ? 44101 : 44102));
+    },
+    /** 16-bit WAV (ArrayBuffer) of an AudioBuffer or [L, R] Float32Arrays. */
+    wav(x) { return toWav16(x.getChannelData ? [x.getChannelData(0), x.getChannelData(Math.min(1, x.numberOfChannels - 1))] : x, 44100); },
+    /** Levels, gains, ducking windows and timings of the current mix. */
+    info() { return mixed().then((m) => m.info); },
+    cueWindows, parseWav, resample, fromBase64: fromB64,
+    _renderScore: renderScore, // development aid: renderScore({solo: ['pad', …]}) → {buf (8 ch), events}
+  };
+})();
