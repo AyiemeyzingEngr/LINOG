@@ -108,7 +108,7 @@ async function soundtrack(p) {
     const norm = path.join(tmp, `${kind}_44k1.wav`), src = normaliseInput(inp[kind], norm);
     if (Math.abs(src.seconds - 60) > 0.001) log(`  ⚠ ${rel(inp[kind])} is ${src.seconds.toFixed(3)} s long — ${src.seconds < 60 ? 'padded' : 'trimmed'} to 60.000 s (it must start at t = 0)`);
     const info = await sendAudio(p.page, kind, norm);
-    if (kind === 'vo') log(`  VO: ${src.channels} ch → stereo; ${info.silent ? 'silent (no speech: music ducks by the cue sheet only)' : `active speech level ${info.levelDb} dBFS → gain ${info.gainDb > 0 ? '+' : ''}${info.gainDb} dB (target −19 dBFS), peak limiter ${info.limiterDb} dB, peak ${info.peakDb} dBFS`}`);
+    if (kind === 'vo') log(`  VO: ${src.channels} ch → stereo; ${info.silent ? 'silent (no speech: music ducks by the cue sheet only)' : `active speech level ${info.levelDb} dBFS → gain ${info.gainDb > 0 ? '+' : ''}${info.gainDb} dB (target ${info.targetDb} dBFS), peak limiter ${info.limiterDb} dB, peak ${info.peakDb} dBFS`}`);
     else log(`  music: ${src.channels} ch, active level ${info.activeDb} dBFS → gain ${info.gainDb} dB`);
   }
   const t0 = Date.now();
@@ -123,7 +123,7 @@ async function soundtrack(p) {
   fs.rmSync(tmp, { recursive: true, force: true });
   const info = await p.page.evaluate(() => window.LINOG.audio.info());
   log(`soundtrack: ${rel(file)} — ${frames} frames @ 44.1 kHz = ${(frames / 44100).toFixed(3)} s, 16-bit stereo (mixed in ${((Date.now() - t0) / 1000).toFixed(1)} s)`);
-  log(`  music: ${info.music.source === 'score' ? `score (${info.music.events} events, synth ${info.music.msSynth} ms + effects ${info.music.msFx} ms, hit limiter ${info.music.limiterDb} dB)` : 'external file'}; ducking −8 dB on ${info.duck.windows.length} windows (${info.duck.fromCues} from the cue sheet${info.duck.fromVO ? `, ${info.duck.fromVO} detected in the VO` : ''}), sidechain down to ${info.duck.sidechainMaxDb} dB`);
+  log(`  music: ${info.music.source === 'score' ? `score (${info.music.events} events, synth ${info.music.msSynth} ms + effects ${info.music.msFx} ms, music limiter ${info.music.limiterDb} dB)` : 'external file'}; ducking −8 dB on ${info.duck.windows.length} windows (${info.duck.fromCues} from the cue sheet${info.duck.fromVO ? `, ${info.duck.fromVO} detected in the VO` : ''}), sidechain down to ${info.duck.sidechainMaxDb} dB`);
   log(`  mix: peak ${info.mix.peakDb} dBFS (master limiter ${info.mix.limiterDb} dB) · ${loudnessOf(file)}`);
   log(`  stems: ${rel(stems.music)}${inp.vo ? ', ' + rel(stems.vo) : ''}`);
   return file;

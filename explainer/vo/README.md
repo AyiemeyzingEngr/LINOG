@@ -33,7 +33,7 @@ Pronunciation: **LInOG** = "lee-nog" · **Cabanatuan** = "ka-ba-na-tu-an" (all f
 - Deliver clean, dry narration: no music, no reverb, no heavy compression or limiting. Mono or stereo, any sample rate
   and bit depth (PCM 16/24/32-bit or 32-bit float). Aim for speech around −20 dBFS RMS with peaks below −3 dBFS; quiet room
   tone (below about −50 dBFS) between lines is fine.
-- Levels are handled in the mix: the active speech level (gated RMS, ITU-T P.56-style) is normalised to −19 dBFS and
+- Levels are handled in the mix: the active speech level (gated RMS, ITU-T P.56-style) is normalised to −16.5 dBFS and
   peaks are limited at −3 dBFS, under a −1 dBFS master limiter.
 
 ## 3. Deliver — either way works
@@ -70,8 +70,9 @@ exactly as recorded, from its first sample).
   −3 dB presence dip around 2.8 kHz.
 - **From the recording itself:** the speech the mix detects in `vo.wav` is ducked the same way even where it drifts out of
   its slot, and an envelope follower (30 ms look-ahead, 30 ms attack, 300 ms release) takes the music up to −5 dB further
-  down under the words. The act hits (10, 18, 30, 42 s) and the 48 s reveal sit in the gaps between lines — keep those
-  gaps clear.
+  down under the words. The act hits (10, 18, 30, 42 s), the 48 s reveal and the 56.0 s end-card arrival sit in the gaps
+  between lines — keep those gaps clear. They are mixed at about the narrator's level (≈ −16.5 dBFS RMS), never above it;
+  the bed sits ≈ −22 dBFS between lines and ≈ −30 dBFS under them.
 
 ## Test signal (QA only)
 

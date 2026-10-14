@@ -45,11 +45,11 @@ What `render.js` does:
 3. **Mix the soundtrack in the page** (`src/audio.js`).
    - An OfflineAudioContext renders the score (44.1 kHz, exactly 60.000 s, seeded noise). Reverbs, ducking and limiting run in plain JS.
    - The score is mixed with `vo/vo.wav` (`--vo FILE`, `--no-vo`; `--music FILE` replaces the score). FFmpeg first normalises these inputs to 44.1 kHz stereo of exactly 60.000 s.
-   - The VO's speech level is set to −19 dBFS.
+   - The VO's speech level is set to −16.5 dBFS (mix ≈ −16 LUFS with narration, for web delivery).
    - The music ducks −8 dB under every cue-sheet line, plus up to −5 dB from a sidechain on the recording.
    - The music drops out with a low-pass sweep and a reverb tail over 57–60 s.
    - Outputs:
-     - `out/soundtrack.wav`: 16-bit, −1 dBFS peak, TPDF dither, last sample 0.
+     - `out/soundtrack.wav`: 16-bit, peaks held at or below −1 dBFS by the master limiter, TPDF dither, last sample 0.
      - `out/music_stem.wav` and `out/vo_stem.wav`.
      - `out/vo_cues.csv` and `out/vo_cues_audacity.txt`.
    - The mix is reproducible to ±1 LSB. It is cached by a hash of `src/audio.js`, `src/core.js`, `src/vo_cues.js` and the VO and music files; `--fresh-audio` forces a new mix.

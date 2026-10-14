@@ -1,18 +1,20 @@
 /* LInOG explainer — soundtrack engine (v2, documentary): original hybrid-orchestral score + voice-over mix.
  *
- * Output: 44.1 kHz stereo, exactly 60.000 s (2,646,000 frames); 16-bit WAV with seeded TPDF dither, −1 dBFS peak,
- * last sample 0. Reproducible to ±1 LSB (Chromium's vectorised DSP paths can round differently run to run).
+ * Output: 44.1 kHz stereo, exactly 60.000 s (2,646,000 frames); 16-bit WAV with seeded TPDF dither, peaks held at or below
+ * −1 dBFS by the master limiter (the levels are set by the voice and the bed, not by peak normalisation), last sample 0. Reproducible to ±1 LSB (Chromium's vectorised DSP paths can round differently run to run).
  * No ConvolverNode, no Math.random, no Date.
  *
  * Pipeline
  *   1. Score: an OfflineAudioContext renders the instruments into 8 discrete channels (dry, room send, hall send,
  *      echo send). Voices are created just in time at ctx.suspend() points, so the live graph stays small.
  *   2. Effects in plain JS (bit-exact): two feedback-delay-network reverbs (room, hall) and a ping-pong echo.
- *   3. Music stem: the score (active level −20 dBFS, its hits caught by a look-ahead limiter at −1 dBFS) or an external
- *      music file (setMusic: matched to −20 dBFS, peak-safe) → ducking under the VO → drop ending (57–60 s: exponential
+ *   3. Music stem: the score (active level −20.7 dBFS, a look-ahead limiter at −1 dBFS as a safety ceiling) or an external
+ *      music file (setMusic: matched to −20.7 dBFS, peak-safe) → ducking under the VO → drop ending (57–60 s: exponential
  *      low-pass sweep 18 kHz → 200 Hz while the final chord's reverb tail fades to exactly 0 at 60.000 s).
+ *      Balance for a narrated web documentary (silent VO, RMS over 0.4 s): bed ≈ −22 dBFS between lines, ≈ −30 dBFS under
+ *      a line; the act hits, the 48 s accent and the 56 s arrival ≈ the narrator's level, never above it.
  *   4. VO (setVO): WAV parsed in JS (PCM 16/24/32-bit int, 32/64-bit float; any channel count; any sample rate, resampled
- *      with a windowed-sinc kernel) → 70 Hz high-pass → active-speech level (gated RMS) normalised to −19 dBFS →
+ *      with a windowed-sinc kernel) → 70 Hz high-pass → active-speech level (gated RMS) normalised to VO_TARGET_DB (−16.5 dBFS) →
  *      look-ahead peak limiter at −3 dBFS.
  *   5. Mix = ducked music + VO → look-ahead limiter at −1 dBFS → 16-bit TPDF dither.
  *
@@ -44,8 +46,8 @@
   const HITS = [10, 18, 30, 42]; // act cuts: riser → ensemble hit (the picture flares the through-line on each)
   const ACCENT = 48; // the Cabanatuan reveal
   const DROP = [57, 60]; // music low-pass sweep + fade to silence (the picture fades to black over the same span)
-  const VO_TARGET_DB = -19, VO_CEIL_DB = -3, MASTER_CEIL_DB = -1;
-  const MUSIC_RMS_DB = -20; // active (gated) RMS of the music stem before ducking — the score and external music alike
+  const VO_TARGET_DB = -16.5, VO_CEIL_DB = -1.5, MASTER_CEIL_DB = -1; // web delivery: mix ≈ −16 LUFS with narration
+  const MUSIC_RMS_DB = -18.2; // active (gated) RMS of the music stem before ducking — the score and external music alike
   const DUCK = { depth: 8, pre: 0.15, post: 0.4, merge: 0.6, eqDb: 3, eqHz: 2800, scDepth: 5, scLook: 0.03, scAttack: 0.03, scRelease: 0.3 };
   const mtof = (m) => 440 * Math.pow(2, (m - 69) / 12);
   const dbg = (db) => Math.pow(10, db / 20);
@@ -76,7 +78,7 @@
     [52, 54, 'Bb'], [54, 55, 'Csus'], [55, 56, 'C'], [56, 60, 'D'],
   ];
   // bus levels (the mix): strings carry, grooves support, hits accent
-  const MIX = { pad: 1.6, low: 1.4, ost: 2.0, brass: 1.5, perc: 0.3, hit: 0.5, fx: 0.7, sub: 0.6, keys: 0.5, air: 0.35 };
+  const MIX = { pad: 1.6, low: 1.4, ost: 2.0, brass: 1.5, perc: 0.3, hit: 0.17, fx: 0.55, sub: 0.6, keys: 0.5, air: 0.35 };
   const chordAt = (t) => { for (const c of PROG) if (t >= c[0] - 1e-9 && t < c[1] - 1e-9) return CH[c[2]]; return CH.D; };
   /** Piecewise-linear curve through [t, v] points (repeat a time for a step). */
   const curve = (pts) => (t) => {
@@ -86,11 +88,11 @@
   };
   // section levels (0..1) — the arrangement's dynamics
   const LV = {
-    pad: curve([[4, 0.42], [9.8, 0.62], [10, 0.56], [17.8, 0.62], [18, 0.52], [29.8, 0.66], [30, 0.6], [35.6, 0.7], [36.2, 0.38], [38, 0.45], [41.8, 0.72], [42, 0.66], [47.8, 0.78], [48, 0.82], [52, 0.68], [55.8, 0.76], [56, 0.88], [60, 0.88]]),
+    pad: curve([[4, 0.5], [9.8, 0.66], [10, 0.64], [17.8, 0.66], [18, 0.56], [29.8, 0.66], [30, 0.6], [35.6, 0.66], [36.2, 0.46], [38, 0.5], [41.8, 0.72], [42, 0.66], [47.8, 0.66], [48, 0.55], [52, 0.6], [55.8, 0.58], [56, 0.5], [60, 0.5]]),
     cut: curve([[4, 900], [10, 1500], [18, 1700], [30, 1950], [36, 1150], [38, 1300], [42, 2300], [48, 2700], [52, 2000], [56, 2500], [60, 2500]]),
-    low: curve([[4, 0.3], [9.9, 0.5], [10, 0.62], [29.9, 0.68], [30, 0.74], [35.8, 0.78], [36.2, 0.32], [38, 0.42], [42, 0.74], [47.9, 0.8], [48, 0.68], [52, 0.5], [56, 0.56], [57.2, 0.5], [60, 0.4]]),
-    ost: curve([[6, 0.22], [9.9, 0.5], [10, 0.62], [14, 0.66], [17.9, 0.74], [18, 0.62], [29.9, 0.82], [30, 0.8], [35.9, 0.9], [38, 0.3], [41.9, 0.95], [42, 0.82], [47.9, 0.95], [52, 0.26], [55.9, 0.34]]),
-    perc: curve([[4, 0.3], [9.9, 0.85], [10, 0.62], [17.9, 0.72], [18, 0.66], [29.9, 0.84], [30, 0.82], [35.9, 0.9], [38, 0.35], [41.9, 0.95], [42, 0.8], [47.9, 1], [52, 0.3], [56, 0.38]]),
+    low: curve([[4, 0.3], [9.9, 0.5], [10, 0.72], [17.9, 0.72], [18, 0.68], [29.9, 0.68], [30, 0.74], [35.8, 0.78], [36.2, 0.32], [38, 0.42], [42, 0.74], [47.9, 0.8], [48, 0.68], [52, 0.5], [56, 0.46], [57.2, 0.42], [60, 0.36]]),
+    ost: curve([[6, 0.26], [9.9, 0.55], [10, 0.72], [14, 0.74], [17.9, 0.78], [18, 0.62], [29.9, 0.82], [30, 0.8], [35.9, 0.82], [38, 0.3], [41.9, 0.95], [42, 0.82], [47.9, 0.95], [52, 0.26], [55.9, 0.34]]),
+    perc: curve([[4, 0.3], [9.9, 0.85], [10, 0.62], [17.9, 0.72], [18, 0.66], [29.9, 0.84], [30, 0.82], [35.9, 0.8], [38, 0.35], [41.9, 0.85], [42, 0.8], [47.9, 0.85], [52, 0.3], [56, 0.38]]),
   };
 
   /* ------------------------------------------------------------------ score: OfflineAudioContext → 8 discrete channels */
@@ -169,7 +171,7 @@
       chain(lp, g, p); p.connect(B.low);
       if (o.marc) {
         lp.frequency.setValueAtTime(1500, t0); lp.frequency.exponentialRampToValueAtTime(560, t0 + 0.4);
-        g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(o.lv * 1.6, t0 + 0.012); g.gain.exponentialRampToValueAtTime(o.lv, t0 + 0.45);
+        g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(o.lv * 1.3, t0 + 0.012); g.gain.exponentialRampToValueAtTime(o.lv, t0 + 0.45);
         g.gain.setValueAtTime(o.lv, t1); g.gain.linearRampToValueAtTime(0, end);
       } else { glide(g.gain, t0, t0 + o.att, 0, o.lv); glide(g.gain, t1, end, o.lv, 0); }
       return ns;
@@ -205,8 +207,11 @@
       frame: { f: 166, f0: 1.4, d: 0.22, m2: 0.3, sk: 850, skd: 0.05, nz: 0.8, bp: 1.1 },
       slap: { f: 205, f0: 1.3, d: 0.14, m2: 0.2, sk: 2300, skd: 0.035, nz: 1.0, bp: 1.2 },
     };
-    function drum(t, kind, v, pan, off, bus) { // pitched membrane (+ first overtone) and a filtered-noise skin attack
-      const k = KIT[kind], p = P(pan);
+    function drum(t, kind, v, pan, off, bus, dk = 1, stick = 0) { // pitched membrane (+ first overtone), a filtered-noise
+      // skin attack and, for the ensemble hits, the stick: a 6 ms high-passed transient (snap and peak, almost no body)
+      const k0 = KIT[kind], k = dk === 1 ? k0 : { ...k0, d: k0.d * dk, skd: k0.skd * Math.min(1, dk + 0.15), nz: k0.nz * (2 - dk) }, p = P(pan);
+      const extra = [];
+      if (stick) { const n = NZ(t, t + 0.03, off + 0.7), hp = F('highpass', 1200, 0.6), g = G(0); pk(g.gain, t, v * stick, 0.0003, 0.006); chain(n, hp, g, p); extra.push(n, hp, g); }
       const b = O('sine', k.f * k.f0, t, t + k.d + 0.02), bg = G(0);
       b.frequency.setValueAtTime(k.f * k.f0, t); b.frequency.exponentialRampToValueAtTime(k.f, t + 0.03); b.frequency.exponentialRampToValueAtTime(k.f * 0.9, t + k.d);
       pk(bg.gain, t, v, 0.0015, k.d);
@@ -215,7 +220,7 @@
       const n = NZ(t, t + k.skd + 0.02, off), nf = F(k.bp ? 'bandpass' : 'lowpass', k.sk, k.bp || 0.7), ng = G(0);
       pk(ng.gain, t, v * k.nz, 0.0006, k.skd);
       chain(b, bg, p); chain(o2, og, p); chain(n, nf, ng, p); p.connect(bus || B.perc);
-      return [b, bg, o2, og, n, nf, ng, p];
+      return [b, bg, o2, og, n, nf, ng, p].concat(extra);
     }
     const METAL = [205.3, 304.4, 369.6, 522.7, 540.0, 800.0];
     function crash(t, v, d, off) { // metallic square cluster + bright noise wash, long decay into the hall
@@ -316,7 +321,7 @@
     const hv = (v, amt = 0.08) => v * (1 - amt + 2 * amt * R());
     let noff = 0;
     const off = () => (noff = (noff + 0.618034) % 2.9);
-    const dr = (t, kind, v, pan = 0, bus) => { const o = off(), vv = hv(v, 0.06); at(t, t + KIT[kind].d + 0.1, () => drum(t, kind, vv, pan, o, bus)); };
+    const dr = (t, kind, v, pan = 0, bus, dk, stick) => { const o = off(), vv = hv(v, 0.06); at(t, t + KIT[kind].d + 0.1, () => drum(t, kind, vv, pan, o, bus, dk, stick)); };
     const cel = (t, m, v, pan) => { const vv = hv(v, 0.05); at(t, t + 2.3, () => celesta(t, m, vv, pan)); };
     const pno = (t, ms, v, pan = -0.15) => ms.forEach((m, i) => { const vv = hv(v, 0.05), tt = t + i * 0.014; at(tt, tt + 3.4, () => piano(tt, m, vv, pan + i * 0.08)); });
     const rise = (t0, T, v) => { const o = off(); at(t0, T + 0.05, () => riser(t0, T, v, o)); };
@@ -333,10 +338,10 @@
     }));
     /** Ensemble hit: taiko trio, sub boom, crash, brass stab on the new chord settling to a soft sustain. */
     const hit = (T, big, chord) => {
-      [['odaiko', 1.0, -0.1, 0], ['taiko', 0.8, 0.28, 0.004], ['tom', 0.55, -0.3, 0.009]].forEach(([k, v, pn, dt]) => dr(T + dt, k, v * big, pn, B.hit));
-      bm(T, 0.5 * big);
-      cr(T, 0.5 * big, 2.7);
-      CH[chord].brass.forEach((m, i) => at(T, T + 2.7, () => brassNote(m, [[T, 0], [T + 0.018, big], [T + 0.32, 0.62 * big], [T + 1.4, 0.34 * big], [T + 2.6, 0]], { lv: 0.1, bright: 2600, pan: brassPan(i) })));
+      [['odaiko', 1.0, -0.1, 0, 3.2], ['taiko', 0.8, 0.28, 0.004, 2.4], ['tom', 0.55, -0.3, 0.009, 0]].forEach(([k, v, pn, dt, st]) => dr(T + dt, k, v * big, pn, B.hit, 0.6, st));
+      bm(T, 0.1 * big);
+      cr(T, 0.15 * big, 2.7);
+      CH[chord].brass.forEach((m, i) => at(T, T + 2.7, () => brassNote(m, [[T, 0], [T + 0.018, 0.36 * big], [T + 0.32, 0.27 * big], [T + 1.4, 0.21 * big], [T + 2.6, 0]], { lv: 0.1, bright: 2600, pan: brassPan(i) })));
     };
 
     follow(B.pad.gain, (t) => busLv.pad * LV.pad(t), 0, DUR, 0.25);
@@ -344,32 +349,32 @@
 
     // prologue 0–10: the earth (boom + drone), shimmer, celesta + felt piano motif, radar ping, heartbeat, build
     bm(0, 0.12, 3.2);
-    at(0, 10.9, () => drone(0, 10.8, 38, 0.1, 2.8, 0.9));
+    at(0, 10.9, () => drone(0, 10.8, 38, 0.13, 2.8, 0.9));
     [[86, 0.12, 0.23, -0.5], [88, 0.09, 0.31, 0.45], [93, 0.08, 0.17, -0.2], [98, 0.036, 0.41, 0.6]].forEach(([m, lv, hz, pn], i) => { const t0 = 0.3 + i * 0.7; at(t0, 10.7, () => shimmer(t0, 10.6, m, lv, hz, pn, 2.5, 0.9)); });
     { const o = off(); at(0, 10.7, () => air(0, 10.6, 0.035, 3, 1, o)); }
     [[0, 74, 0.8], [0.75, 76, 0.5], [1, 77, 0.62], [2, 81, 0.7], [2.75, 79, 0.45], [3, 76, 0.6], [4, 77, 0.7], [4.75, 79, 0.45], [5, 81, 0.6],
-      [6, 84, 0.7], [6.75, 82, 0.45], [7, 81, 0.6], [8, 79, 0.55], [8.75, 76, 0.4], [9, 79, 0.45]].forEach(([t, m, v]) => cel(t, m, v * 0.34, 0.25));
+      [6, 84, 0.7], [6.75, 82, 0.45], [7, 81, 0.6], [8, 79, 0.55], [8.75, 76, 0.4], [9, 79, 0.45]].forEach(([t, m, v]) => cel(t, m, v * 0.4, 0.25));
     pno(0, [50, 62], 0.2); pno(2, [57], 0.14); pno(4, [46, 58], 0.18); pno(6, [53, 60], 0.17); pno(8, [48, 55], 0.16);
     at(4, 5.9, () => ping(4, 0.16));
     [[4, 0.32], [4.375, 0.22], [6, 0.38], [6.375, 0.27]].forEach(([t, v]) => dr(t, 'tom', v, -0.1));
-    [[8, 'odaiko', 0.5], [8.75, 'taiko', 0.36], [9, 'taiko', 0.5], [9.5, 'taiko', 0.56], [9.75, 'tom', 0.6], [9.875, 'tom', 0.68]].forEach(([t, k, v]) => dr(t, k, v, 0.1));
-    for (let i = 0; i < 8; i++) dr(9 + i * 0.125, 'frame', 0.14 + 0.06 * i, -0.2);
+    [[8, 'odaiko', 0.5], [8.75, 'taiko', 0.36], [9, 'taiko', 0.46], [9.5, 'taiko', 0.48], [9.75, 'tom', 0.45], [9.875, 'tom', 0.5]].forEach(([t, k, v]) => dr(t, k, v, 0.1));
+    for (let i = 0; i < 8; i++) dr(9 + i * 0.125, 'frame', 0.14 + 0.04 * i, -0.2);
 
     // act hits, the 48 s accent, swells and risers into them
-    hit(10, 1, 'Dm'); hit(18, 0.95, 'Dm'); hit(30, 1, 'Dm'); hit(42, 1, 'F'); hit(ACCENT, 1.12, 'Bbmaj7');
-    swell(8.6, 10, 'C'); rise(8, 10, 0.4);
-    swell(16.6, 18, 'C', 0.85); rise(16.5, 18, 0.34);
-    swell(28.8, 30, 'C', 0.88); rise(28.5, 30, 0.38);
-    swell(40.4, 42, 'C', 0.95); rise(40, 42, 0.44);
-    swell(46.2, 48, 'Dm', 1.0, 0.11); rise(46, 48, 0.52);
+    hit(10, 1, 'Dm'); hit(18, 0.95, 'Dm'); hit(30, 1, 'Dm'); hit(42, 0.62, 'F'); hit(ACCENT, 0.6, 'Bbmaj7');
+    swell(8.6, 10, 'C', 0.75); rise(8, 10, 0.4);
+    swell(16.6, 18, 'C', 0.7); rise(16.5, 18, 0.34);
+    swell(28.8, 30, 'C', 0.72); rise(28.5, 30, 0.38);
+    swell(40.4, 42, 'C', 0.78); rise(40, 42, 0.44);
+    swell(46.2, 48, 'Dm', 0.82, 0.11); rise(46, 48, 0.44);
     rise(50.6, 52, 0.16); rise(54.6, 56, 0.2);
     wh(13.2, 14.05, 0.2); wh(21.2, 22.05, 0.22); wh(26.9, 27.55, 0.15);
-    bm(36, 0.3, 2.8); bm(52, 0.32, 2.8); bm(56, 0.3, 3.2);
-    cr(52, 0.12, 3.5); cr(56, 0.14, 3.6);
+    bm(36, 0.05, 2.8); bm(52, 0.12, 2.8); bm(56, 0.08, 3.2);
+    cr(52, 0.08, 3.5); cr(56, 0.08, 3.6);
 
     // grooves: syncopated taiko (TK), toms (TM), frame drum (FR); never on every beat
     const TK = { A: { 0: 1, 6: 0.6, 10: 0.75 }, B: { 0: 1, 3: 0.55, 8: 0.8, 11: 0.6, 14: 0.7 }, C: { 0: 1, 3: 0.5, 6: 0.8, 10: 0.8, 12: 0.55, 13: 0.6, 14: 0.7, 15: 0.8 } };
-    const TM = { a: { 4: 0.5, 12: 0.6 }, b: { 7: 0.45, 12: 0.6, 14: 0.5 }, f: { 12: 0.5, 13: 0.6, 14: 0.7, 15: 0.8 }, g: { 12: 0.4, 14: 0.5 } };
+    const TM = { a: { 4: 0.5, 12: 0.6 }, b: { 7: 0.45, 12: 0.6, 14: 0.5 }, f: { 12: 0.4, 13: 0.45, 14: 0.5, 15: 0.55 }, g: { 12: 0.4, 14: 0.5 } };
     const FR = { 16: [0.5, 0.15, 0.28, 0.18, 0.75, 0.15, 0.32, 0.2, 0.45, 0.15, 0.28, 0.18, 0.8, 0.2, 0.4, 0.3], 8: [0.45, 0, 0.3, 0, 0.7, 0, 0.3, 0, 0.45, 0, 0.3, 0, 0.75, 0, 0.35, 0] };
     const BARS = [
       [10, 'A', null, 8], [12, 'A', 'g', 8], [14, 'B', 'a', 16], [16, 'A', 'f', 16],
@@ -386,9 +391,9 @@
       const fv = FR[fr][i] * (t0 === 40 ? 0.35 + 0.65 * i / 15 : 1);
       if (fv) dr(t, fv >= 0.7 ? 'slap' : 'frame', fv * lv * 0.5, -0.25);
     }
-    [[40, 'odaiko', 0.5], [40.75, 'taiko', 0.4], [41, 'taiko', 0.52], [41.5, 'taiko', 0.58], [41.75, 'tom', 0.62], [41.875, 'tom', 0.7]].forEach(([t, k, v]) => dr(t, k, v, 0.1));
+    [[40, 'odaiko', 0.5], [40.75, 'taiko', 0.4], [41, 'taiko', 0.48], [41.5, 'taiko', 0.5], [41.75, 'tom', 0.45], [41.875, 'tom', 0.5]].forEach(([t, k, v]) => dr(t, k, v, 0.1));
     [[52, 0.28], [52.375, 0.2], [54, 0.3], [54.375, 0.22], [55, 0.3], [55.375, 0.22], [55.75, 0.28], [55.875, 0.33]].forEach(([t, v]) => dr(t, 'tom', v, -0.1));
-    dr(56, 'odaiko', 0.36, 0); dr(56.004, 'taiko', 0.26, 0.2);
+    dr(56, 'odaiko', 0.16, 0, undefined, 0.6); dr(56.004, 'taiko', 0.12, 0.2, undefined, 0.6);
 
     // spiccato ostinato: low strings (8ths → 16ths, 3+3+2 accents) and violins (8ths) from 22 s
     const OST = {
@@ -433,26 +438,26 @@
     const low = [];
     for (const [a, b, name] of PROG) { if (b <= 10) continue; const m = CH[name].bass, last = low[low.length - 1]; if (last && last[2] === m) last[1] = b; else low.push([Math.max(a, 10), b, m]); }
     low.forEach(([t0, t1, m]) => {
-      const last = t1 >= DUR - 1e-6, e1 = last ? 57.6 : t1, o = { lv: 0.06, att: 0.18, rel: last ? 1.4 : 0.35, marc: HITS.includes(t0) || t0 === ACCENT || t0 === 56 };
+      const last = t1 >= DUR - 1e-6, e1 = last ? 57.6 : t1, o = { lv: 0.06, att: 0.18, rel: last ? 1.4 : 0.35, marc: HITS.includes(t0) || t0 === ACCENT };
       at(t0, e1 + o.rel + 0.1, () => lowNote(t0, e1, m, o));
     });
 
     // horns: lift 42–48, awe after the accent, warm close (D major from 56.0)
     horn(42.3, 44.3, [53, 60, 65], 0.42); horn(44.1, 46.3, [55, 60, 64], 0.42);
-    horn(48.3, 51.4, [46, 53, 62, 69], 0.36);
-    horn(52.2, 54.2, [53, 58, 62], 0.3); horn(54.0, 56.2, [55, 60, 64], 0.34); horn(56.0, 58.8, [54, 57, 62], 0.42);
+    horn(48.3, 51.4, [46, 53, 62, 69], 0.22);
+    horn(52.2, 54.2, [53, 58, 62], 0.3); horn(54.0, 56.2, [55, 60, 64], 0.28); horn(56.0, 58.8, [54, 57, 62], 0.24);
 
     // celesta / piano: phase sparkles, the breath, the lift, the reveal, the end motif arriving in D major at 56.0
     [[14, 72], [14.125, 77], [14.25, 81], [14.375, 84]].forEach(([t, m], i) => cel(t, m, 0.2 + i * 0.03, 0.3));
     [[22, 77], [22.125, 81], [22.25, 84], [22.375, 89], [22.5, 93]].forEach(([t, m], i) => cel(t, m, 0.22 + i * 0.02, 0.35));
     cel(27.5, 86, 0.2, 0.3); cel(27.625, 81, 0.16, 0.3);
-    [[36, 74], [36.75, 77], [37, 79], [38, 82], [38.75, 81], [39, 77]].forEach(([t, m], i) => cel(t, m, i % 3 ? 0.24 : 0.32, 0.2));
-    pno(36, [43, 55], 0.3); pno(38, [46, 58], 0.3);
+    [[36, 74], [36.75, 77], [37, 79], [38, 82], [38.75, 81], [39, 77]].forEach(([t, m], i) => cel(t, m, i === 0 ? 0.24 : i % 3 ? 0.24 : 0.3, 0.2));
+    pno(36, [43, 55], 0.18); pno(38, [46, 58], 0.22);
     [[43, 81], [43.5, 84], [45, 79], [45.5, 84], [47, 81], [47.5, 77]].forEach(([t, m]) => cel(t, m, 0.16, 0.4));
-    [[48, 81], [49, 77], [49.75, 79], [50, 76], [51, 72], [51.75, 74]].forEach(([t, m], i) => cel(t, m, i === 0 ? 0.34 : 0.26, 0.25));
-    pno(48, [46, 53, 57, 62], 0.34); pno(50, [45, 53, 57, 60], 0.3);
-    [[52, 74, 0.3], [52.75, 76, 0.22], [53, 77, 0.28], [54, 79, 0.28], [54.75, 77, 0.2], [55, 76, 0.26], [55.5, 79, 0.22], [56, 78, 0.38], [56.25, 81, 0.3], [56.5, 86, 0.32]].forEach(([t, m, v]) => cel(t, m, v, 0.25));
-    pno(52, [46, 58], 0.3); pno(54, [48, 55], 0.3); pno(55, [48, 52], 0.24); pno(56, [38, 50, 57, 66], 0.34);
+    [[48, 81], [49, 77], [49.75, 79], [50, 76], [51, 72], [51.75, 74]].forEach(([t, m], i) => cel(t, m, i === 0 ? 0.22 : 0.26, 0.25));
+    pno(48, [46, 53, 57, 62], 0.16); pno(50, [45, 53, 57, 60], 0.22);
+    [[52, 74, 0.3], [52.75, 76, 0.22], [53, 77, 0.28], [54, 79, 0.28], [54.75, 77, 0.2], [55, 76, 0.26], [55.5, 79, 0.22], [56, 78, 0.3], [56.25, 81, 0.26], [56.5, 86, 0.28]].forEach(([t, m, v]) => cel(t, m, v, 0.25));
+    pno(52, [46, 58], 0.3); pno(54, [48, 55], 0.3); pno(55, [48, 52], 0.24); pno(56, [38, 50, 57, 66], 0.13);
 
     // shimmer + air: discovery (22), the reveal (48), the close (52–60)
     [[84, 0.07, 0.26, -0.3], [89, 0.06, 0.34, 0.35], [91, 0.05, 0.19, 0]].forEach(([m, lv, hz, pn], i) => { const t0 = 22 + i * 0.25; at(t0, 26.5, () => shimmer(t0, 26.4, m, lv, hz, pn, 1.0, 1.2)); });
@@ -690,8 +695,8 @@
   const r3 = (x) => (isFinite(x) ? Math.round(x * 1000) / 1000 : x);
 
   let scoreP = null;
-  /** The synthesised score as a stereo music stem (before ducking): active level −20 dBFS, hits limited at −1 dBFS, then
-   *  trimmed so that the stem as ducked by the cue sheet alone peaks at exactly −1 dBFS. Cached. */
+  /** The synthesised score as a stereo music stem (before ducking): active level −20.7 dBFS, a −1 dBFS look-ahead limiter,
+   *  and a trim that only ever cuts (if the stem as ducked by the cue sheet alone would still peak above −1 dBFS). Cached. */
   function score() {
     if (scoreP) return scoreP;
     const t0 = performance.now();
@@ -706,14 +711,14 @@
       const Lm = new Float32Array(N), Rm = new Float32Array(N);
       for (let i = 0; i < N; i++) { Lm[i] = ch[0][i] + rL[i] + wL[i] + 0.55 * eL[i]; Rm[i] = ch[1][i] + rR[i] + wR[i] + 0.55 * eR[i]; }
       const hp = bq('highpass', 28, 0.707); biquad(Lm, hp); biquad(Rm, hp);
-      // level: active RMS to −20 dBFS; the hits' transients are caught by a look-ahead limiter at −1 dBFS
+      // level: active RMS to −20.7 dBFS (sets the bed); a look-ahead limiter at −1 dBFS catches anything above it
       const g1 = dbg(MUSIC_RMS_DB - activeLevel([Lm, Rm]).db);
       for (let i = 0; i < N; i++) { Lm[i] *= g1; Rm[i] *= g1; }
       const grDb = limiter([Lm, Rm], dbg(MASTER_CEIL_DB), 0.004, 0.09);
-      // trim: the stem as ducked by the cue sheet alone (no VO) and dropped peaks at exactly −1 dBFS
+      // trim (cut only): the stem as ducked by the cue sheet alone (no VO) and dropped never peaks above −1 dBFS
       const probe = [Float32Array.from(Lm), Float32Array.from(Rm)];
       shape(probe, duckCurves(null));
-      const pk = peakOf(probe), g = pk > 0 ? dbg(MASTER_CEIL_DB) / pk : 1;
+      const pk = peakOf(probe), g = pk > dbg(MASTER_CEIL_DB) ? dbg(MASTER_CEIL_DB) / pk : 1;
       for (let i = 0; i < N; i++) { Lm[i] *= g; Rm[i] *= g; }
       return { L: Lm, R: Rm, info: { source: 'score', events, gainDb: r3(toDb(g1 * g)), limiterDb: r3(grDb), activeDb: r3(activeLevel([Lm, Rm]).db), msSynth: Math.round(t1 - t0), msFx: Math.round(performance.now() - t1) } };
     });
@@ -725,7 +730,7 @@
     return chs.map(fit);
   }
   const inputInfo = (raw) => ({ sampleRate: raw.sampleRate, channels: raw.channels.length, bits: raw.bits, format: raw.format, seconds: r3(raw.frames / raw.sampleRate) });
-  /** External music: matched to the score's gated RMS (−20 dBFS) or lower so its peak stays ≤ −1 dBFS. */
+  /** External music: matched to the score's gated RMS (−20.7 dBFS) or lower so its peak stays ≤ −1 dBFS. */
   function prepMusic(raw) {
     const [l, r] = decodeInput(raw), hp = bq('highpass', 20, 0.707);
     biquad(l, hp); biquad(r, hp);
@@ -735,7 +740,7 @@
     for (let i = 0; i < N; i++) { l[i] *= g; r[i] *= g; }
     return { L: l, R: r, info: { source: 'external', ...inputInfo(raw), activeDb: r3(lev.db), gainDb: r3(toDb(g)) } };
   }
-  /** VO: 70 Hz high-pass → active speech level to −19 dBFS → peak limiter at −3 dBFS → silent over the last 0.5 s. */
+  /** VO: 70 Hz high-pass → active speech level to VO_TARGET_DB → peak limiter at VO_CEIL_DB → silent over the last 0.5 s. */
   function prepVO(raw) {
     const [l, r] = decodeInput(raw), hp = bq('highpass', 70, 0.707);
     biquad(l, hp); biquad(r, hp);
@@ -745,7 +750,7 @@
     const grDb = silent ? 0 : limiter([l, r], dbg(VO_CEIL_DB), 0.003, 0.06);
     const f0 = N - Math.round(0.5 * SR);
     for (let i = f0; i < N; i++) { const k = 0.5 + 0.5 * Math.cos(Math.PI * (i - f0) / (N - 1 - f0)); l[i] *= k; r[i] *= k; }
-    return { L: l, R: r, silent, info: { ...inputInfo(raw), silent, levelDb: r3(lev.db), active: r3(lev.active), gainDb: r3(gDb), limiterDb: r3(grDb), peakDb: r3(toDb(peakOf([l, r]))) } };
+    return { L: l, R: r, silent, info: { ...inputInfo(raw), silent, levelDb: r3(lev.db), targetDb: VO_TARGET_DB, active: r3(lev.active), gainDb: r3(gDb), limiterDb: r3(grDb), peakDb: r3(toDb(peakOf([l, r]))) } };
   }
 
   /** Merge [start, end] windows closer than DUCK.merge (no pumping between close lines). */
