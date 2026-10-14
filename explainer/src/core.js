@@ -56,6 +56,10 @@
   L.HUD_WINDOW = [10, 52];
   /** The film fades to black over its last three seconds (picture here, music in audio.js). */
   L.FADE = [57, 60];
+  /** Shared by act 5 (ends on it) and act 6 (starts on it): the real P448 F0290 map around the Cabanatuan bowl, in WORLD
+   *  coordinates (before the camera). The bowl's deepest point in the product is at BOWL. */
+  L.CABANATUAN_VIEW = { lon: 121.1, lat: 15.45, ppd: 2000, cx: 960, cy: 540 };
+  L.CABANATUAN_BOWL = { lon: 120.963, lat: 15.488 }; // weighted centre of the < −3 cm/yr bowl (≈ 11 × 7 km); Cabanatuan City is at 120.967, 15.486
 
   /* ------------------------------------------------------------------ math */
   const clamp = (v, a = 0, b = 1) => (v < a ? a : v > b ? b : v);
