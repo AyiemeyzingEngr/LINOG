@@ -29,7 +29,9 @@
  *          30, 42; violins join at 22 ("motion turns to colour"); a breath 36–38 (Gm, drums out) rebuilding into 42
  *   42–48  lift (F – C – Dm), horns, then the big accent at 48.0 (B♭maj7) and a reflective, awe-filled 48–52
  *          (felt piano, celesta, low drone; no drums)
- *   52–57  pull-back: B♭ – Csus – C, rising bass, and a warm D-major (add 9) final chord at 55.0; last note 56.0
+ *   52–56  pull-back (wonder): B♭ – Csus – C over a rising bass, gentle 8th-note pulse, heartbeat toms
+ *   56.0   end-card arrival, on the bar line with the picture's orbital ripple: a warm D-major (add 9) chord, soft
+ *          boom + taiko, celesta F♯–A–D (no new note onsets after 56.5 s)
  *   57–60  drop: low-pass sweep + reverb tail to true silence at 60.000 s
  */
 (function () {
@@ -68,7 +70,7 @@
     [30, 32, 'Dm'], [32, 34, 'Bb'], [34, 36, 'F'], [36, 38, 'Gm'], [38, 40, 'Bb'], [40, 42, 'C'],
     [42, 44, 'F'], [44, 46, 'C'], [46, 48, 'Dm'],
     [48, 50, 'Bbmaj7'], [50, 52, 'FA'],
-    [52, 54, 'Bb'], [54, 54.5, 'Csus'], [54.5, 55, 'C'], [55, 60, 'D'],
+    [52, 54, 'Bb'], [54, 55, 'Csus'], [55, 56, 'C'], [56, 60, 'D'],
   ];
   const chordAt = (t) => { for (const c of PROG) if (t >= c[0] - 1e-9 && t < c[1] - 1e-9) return CH[c[2]]; return CH.D; };
   /** Piecewise-linear curve through [t, v] points (repeat a time for a step). */
@@ -79,11 +81,11 @@
   };
   // section levels (0..1) — the arrangement's dynamics
   const LV = {
-    pad: curve([[4, 0.42], [9.8, 0.62], [10, 0.5], [17.8, 0.6], [18, 0.52], [29.8, 0.66], [30, 0.6], [35.6, 0.7], [36.2, 0.38], [38, 0.45], [41.8, 0.72], [42, 0.66], [47.8, 0.78], [48, 0.82], [52, 0.68], [54.8, 0.74], [55, 0.86], [60, 0.86]]),
-    cut: curve([[4, 900], [10, 1500], [18, 1700], [30, 1950], [36, 1150], [38, 1300], [42, 2300], [48, 2700], [52, 2000], [55, 2500], [60, 2500]]),
-    low: curve([[4, 0.3], [9.9, 0.5], [10, 0.62], [29.9, 0.68], [30, 0.74], [35.8, 0.78], [36.2, 0.32], [38, 0.42], [42, 0.74], [47.9, 0.8], [48, 0.68], [52, 0.5], [55, 0.62], [60, 0.62]]),
-    ost: curve([[6, 0.18], [9.9, 0.5], [10, 0.5], [14, 0.6], [17.9, 0.72], [18, 0.62], [29.9, 0.82], [30, 0.8], [35.9, 0.9], [38, 0.3], [41.9, 0.95], [42, 0.82], [47.9, 0.95], [52, 0.26], [54.5, 0.3]]),
-    perc: curve([[4, 0.3], [9.9, 0.85], [10, 0.62], [17.9, 0.72], [18, 0.66], [29.9, 0.84], [30, 0.82], [35.9, 0.9], [38, 0.35], [41.9, 0.95], [42, 0.8], [47.9, 1], [52, 0.3], [55, 0.35]]),
+    pad: curve([[4, 0.42], [9.8, 0.62], [10, 0.5], [17.8, 0.6], [18, 0.52], [29.8, 0.66], [30, 0.6], [35.6, 0.7], [36.2, 0.38], [38, 0.45], [41.8, 0.72], [42, 0.66], [47.8, 0.78], [48, 0.82], [52, 0.68], [55.8, 0.76], [56, 0.88], [60, 0.88]]),
+    cut: curve([[4, 900], [10, 1500], [18, 1700], [30, 1950], [36, 1150], [38, 1300], [42, 2300], [48, 2700], [52, 2000], [56, 2500], [60, 2500]]),
+    low: curve([[4, 0.3], [9.9, 0.5], [10, 0.62], [29.9, 0.68], [30, 0.74], [35.8, 0.78], [36.2, 0.32], [38, 0.42], [42, 0.74], [47.9, 0.8], [48, 0.68], [52, 0.5], [56, 0.64], [60, 0.64]]),
+    ost: curve([[6, 0.18], [9.9, 0.5], [10, 0.5], [14, 0.6], [17.9, 0.72], [18, 0.62], [29.9, 0.82], [30, 0.8], [35.9, 0.9], [38, 0.3], [41.9, 0.95], [42, 0.82], [47.9, 0.95], [52, 0.26], [55.9, 0.34]]),
+    perc: curve([[4, 0.3], [9.9, 0.85], [10, 0.62], [17.9, 0.72], [18, 0.66], [29.9, 0.84], [30, 0.82], [35.9, 0.9], [38, 0.35], [41.9, 0.95], [42, 0.8], [47.9, 1], [52, 0.3], [56, 0.38]]),
   };
 
   /* ------------------------------------------------------------------ score: OfflineAudioContext → 8 discrete channels */
@@ -349,10 +351,10 @@
     swell(28.8, 30, 'C', 0.88); rise(28.5, 30, 0.38);
     swell(40.4, 42, 'C', 0.95); rise(40, 42, 0.44);
     swell(46.2, 48, 'Dm', 1.0, 0.11); rise(46, 48, 0.52);
-    rise(50.6, 52, 0.16); rise(54, 55, 0.14);
+    rise(50.6, 52, 0.16); rise(54.6, 56, 0.2);
     wh(13.2, 14.05, 0.2); wh(21.2, 22.05, 0.22); wh(26.9, 27.55, 0.15);
-    bm(36, 0.3, 2.8); bm(52, 0.32, 2.8); bm(55, 0.38, 2.8);
-    cr(52, 0.12, 3.5); cr(55, 0.1, 3.5);
+    bm(36, 0.3, 2.8); bm(52, 0.32, 2.8); bm(56, 0.45, 3.2);
+    cr(52, 0.12, 3.5); cr(56, 0.14, 3.6);
 
     // grooves: syncopated taiko (TK), toms (TM), frame drum (FR); never on every beat
     const TK = { A: { 0: 1, 6: 0.6, 10: 0.75 }, B: { 0: 1, 3: 0.55, 8: 0.8, 11: 0.6, 14: 0.7 }, C: { 0: 1, 3: 0.5, 6: 0.8, 10: 0.8, 12: 0.55, 13: 0.6, 14: 0.7, 15: 0.8 } };
@@ -374,15 +376,15 @@
       if (fv) dr(t, fv >= 0.7 ? 'slap' : 'frame', fv * lv * 0.5, -0.25);
     }
     [[40, 'odaiko', 0.5], [40.75, 'taiko', 0.4], [41, 'taiko', 0.52], [41.5, 'taiko', 0.58], [41.75, 'tom', 0.62], [41.875, 'tom', 0.7]].forEach(([t, k, v]) => dr(t, k, v, 0.1));
-    [[52, 0.28], [52.375, 0.2], [54, 0.3], [54.375, 0.22]].forEach(([t, v]) => dr(t, 'tom', v, -0.1));
-    dr(55, 'taiko', 0.3, 0);
+    [[52, 0.28], [52.375, 0.2], [54, 0.3], [54.375, 0.22], [55, 0.3], [55.375, 0.22], [55.75, 0.28], [55.875, 0.33]].forEach(([t, v]) => dr(t, 'tom', v, -0.1));
+    dr(56, 'odaiko', 0.42, 0); dr(56.004, 'taiko', 0.3, 0.2);
 
     // spiccato ostinato: low strings (8ths → 16ths, 3+3+2 accents) and violins (8ths) from 22 s
     const OST = {
       16: { idx: [0, 0, 2, 0, 1, 0, 2, 0, 0, 0, 2, 0, 3, 2, 1, 2], acc: [1, 0.42, 0.62, 0.5, 0.58, 0.45, 0.95, 0.48, 0.62, 0.45, 0.6, 0.5, 0.9, 0.55, 0.72, 0.58], step: 0.125 },
       8: { idx: [0, 2, 1, 2, 0, 2, 3, 2], acc: [1, 0.55, 0.65, 0.9, 0.6, 0.65, 0.88, 0.6], step: 0.25 },
     };
-    for (const [a, b, kind] of [[6, 10, 8], [10, 14, 8], [14, 36, 16], [38, 40, 8], [40, 48, 16], [52, 54.5, 8]]) {
+    for (const [a, b, kind] of [[6, 10, 8], [10, 14, 8], [14, 36, 16], [38, 40, 8], [40, 48, 16], [52, 56, 8]]) {
       const pat = OST[kind];
       for (let i = 0, t = a; t < b - 1e-9; t = a + (++i) * pat.step) {
         const j = i % pat.idx.length, m = chordAt(t).ost[pat.idx[j]], lv = LV.ost(t);
@@ -409,7 +411,7 @@
       const last = t1 >= DUR - 1e-6, e1 = last ? 57.6 : t1, o = padOpts(v, i === 0, last);
       at(t0, e1 + o.rel + 0.1, () => padNote(t0, e1, m, o));
     }));
-    for (const [a, b] of [[42, 52], [55, 57.6]]) lines[2].forEach(([t0, t1, m]) => { // violins an octave above the top line
+    for (const [a, b] of [[42, 52], [56, 57.6]]) lines[2].forEach(([t0, t1, m]) => { // violins an octave above the top line
       const s = Math.max(a, t0), e = Math.min(b, t1);
       if (e - s < 0.5) return;
       const o = { ...padOpts(2, true, e >= 57.6), lv: 0.016, att: 0.6, pan: 0.25 };
@@ -420,16 +422,16 @@
     const low = [];
     for (const [a, b, name] of PROG) { if (b <= 10) continue; const m = CH[name].bass, last = low[low.length - 1]; if (last && last[2] === m) last[1] = b; else low.push([Math.max(a, 10), b, m]); }
     low.forEach(([t0, t1, m]) => {
-      const last = t1 >= DUR - 1e-6, e1 = last ? 57.6 : t1, o = { lv: 0.06, att: 0.18, rel: last ? 1.4 : 0.35, marc: HITS.includes(t0) || t0 === ACCENT };
+      const last = t1 >= DUR - 1e-6, e1 = last ? 57.6 : t1, o = { lv: 0.06, att: 0.18, rel: last ? 1.4 : 0.35, marc: HITS.includes(t0) || t0 === ACCENT || t0 === 56 };
       at(t0, e1 + o.rel + 0.1, () => lowNote(t0, e1, m, o));
     });
 
-    // horns: lift 42–48, awe after the accent, warm close
+    // horns: lift 42–48, awe after the accent, warm close (D major from 56.0)
     horn(42.3, 44.3, [53, 60, 65], 0.42); horn(44.1, 46.3, [55, 60, 64], 0.42);
     horn(48.3, 51.4, [46, 53, 62, 69], 0.36);
-    horn(52.2, 54.2, [53, 58, 62], 0.3); horn(54.0, 55.2, [55, 60, 64], 0.32); horn(55.0, 58.6, [54, 57, 62], 0.38);
+    horn(52.2, 54.2, [53, 58, 62], 0.3); horn(54.0, 56.2, [55, 60, 64], 0.34); horn(56.0, 58.8, [54, 57, 62], 0.42);
 
-    // celesta / piano: phase sparkles, the breath, the lift, the reveal, the end motif in D major (last note 56.0)
+    // celesta / piano: phase sparkles, the breath, the lift, the reveal, the end motif arriving in D major at 56.0
     [[14, 72], [14.125, 77], [14.25, 81], [14.375, 84]].forEach(([t, m], i) => cel(t, m, 0.2 + i * 0.03, 0.3));
     [[22, 77], [22.125, 81], [22.25, 84], [22.375, 89], [22.5, 93]].forEach(([t, m], i) => cel(t, m, 0.22 + i * 0.02, 0.35));
     cel(27.5, 86, 0.2, 0.3); cel(27.625, 81, 0.16, 0.3);
@@ -438,14 +440,14 @@
     [[43, 81], [43.5, 84], [45, 79], [45.5, 84], [47, 81], [47.5, 77]].forEach(([t, m]) => cel(t, m, 0.16, 0.4));
     [[48, 81], [49, 77], [49.75, 79], [50, 76], [51, 72], [51.75, 74]].forEach(([t, m], i) => cel(t, m, i === 0 ? 0.34 : 0.26, 0.25));
     pno(48, [46, 53, 57, 62], 0.34); pno(50, [45, 53, 57, 60], 0.3);
-    [[52, 74, 0.3], [52.75, 76, 0.22], [53, 77, 0.28], [54, 79, 0.28], [54.5, 76, 0.22], [55, 78, 0.36], [55.5, 81, 0.3], [56, 86, 0.32]].forEach(([t, m, v]) => cel(t, m, v, 0.25));
-    pno(52, [46, 58], 0.3); pno(54, [48, 55], 0.3); pno(55, [38, 50, 57, 66], 0.4);
+    [[52, 74, 0.3], [52.75, 76, 0.22], [53, 77, 0.28], [54, 79, 0.28], [54.75, 77, 0.2], [55, 76, 0.26], [55.5, 79, 0.22], [56, 78, 0.38], [56.25, 81, 0.3], [56.5, 86, 0.32]].forEach(([t, m, v]) => cel(t, m, v, 0.25));
+    pno(52, [46, 58], 0.3); pno(54, [48, 55], 0.3); pno(55, [48, 52], 0.24); pno(56, [38, 50, 57, 66], 0.42);
 
     // shimmer + air: discovery (22), the reveal (48), the close (52–60)
     [[84, 0.07, 0.26, -0.3], [89, 0.06, 0.34, 0.35], [91, 0.05, 0.19, 0]].forEach(([m, lv, hz, pn], i) => { const t0 = 22 + i * 0.25; at(t0, 26.5, () => shimmer(t0, 26.4, m, lv, hz, pn, 1.0, 1.2)); });
     [[81, 0.1, 0.21, -0.4], [86, 0.09, 0.29, 0.4], [89, 0.07, 0.37, -0.1]].forEach(([m, lv, hz, pn], i) => { const t0 = 48.2 + i * 0.4; at(t0, 52.8, () => shimmer(t0, 52.7, m, lv, hz, pn, 1.6, 0.9)); });
     [[86, 0.1, 0.23, -0.45], [88, 0.075, 0.33, 0.35], [93, 0.07, 0.19, 0.05]].forEach(([m, lv, hz, pn], i) => { const t0 = 52 + i * 0.3; at(t0, 59.7, () => shimmer(t0, 59.6, m, lv, hz, pn, 1.2, 2.4)); });
-    at(55, 59.7, () => shimmer(55, 59.6, 90, 0.07, 0.27, 0.5, 1.0, 2.4));
+    at(56, 59.7, () => shimmer(56, 59.6, 90, 0.07, 0.27, 0.5, 0.8, 2.4));
     { const o = off(); at(48, 59.7, () => air(48, 59.6, 0.04, 2, 2.5, o)); }
 
     /* ---- scheduler: create voices ≥ 1 s before they start, release them once they are silent */
@@ -548,10 +550,10 @@
       const h = req[dq[qh]], r = prev + (1 - prev) * k;
       prev = h < r ? h : r; e[i] = prev;
     }
-    let sum = 0, minG = 1;
+    let sum = W, minG = 1; // running sum of e over [i − W + 1, i] (1 before the start)
     for (let i = 0; i < n; i++) { // box filter: the gain ramps linearly down over W samples to each peak
       sum += e[i] - (i >= W ? e[i - W] : 1);
-      const gi = (sum + (i < W - 1 ? (W - 1 - i) : 0)) / W;
+      const gi = sum / W;
       if (gi < minG) minG = gi;
       for (const c of chs) c[i] *= gi;
     }
@@ -681,7 +683,10 @@
       const Lm = new Float32Array(N), Rm = new Float32Array(N);
       for (let i = 0; i < N; i++) { Lm[i] = ch[0][i] + rL[i] + wL[i] + 0.55 * eL[i]; Rm[i] = ch[1][i] + rR[i] + wR[i] + 0.55 * eR[i]; }
       const hp = bq('highpass', 28, 0.707); biquad(Lm, hp); biquad(Rm, hp);
-      const pk = peakOf([Lm, Rm]), g = pk > 0 ? dbg(MASTER_CEIL_DB) / pk : 1;
+      // level: the stem as ducked by the cue sheet alone (no VO) and dropped peaks at exactly −1 dBFS
+      const probe = [Float32Array.from(Lm), Float32Array.from(Rm)];
+      shape(probe, duckCurves(null));
+      const pk = peakOf(probe), g = pk > 0 ? dbg(MASTER_CEIL_DB) / pk : 1;
       for (let i = 0; i < N; i++) { Lm[i] *= g; Rm[i] *= g; }
       return { L: Lm, R: Rm, info: { source: 'score', events, gainDb: r3(toDb(g)), activeDb: r3(activeLevel([Lm, Rm]).db), msSynth: Math.round(t1 - t0), msFx: Math.round(performance.now() - t1) } };
     });
@@ -772,21 +777,26 @@
     return { db, amt, wins, nCue: wc.length, nVo: wv.length, scMaxDb: r3(-DUCK.scDepth * scMax) };
   }
 
+  /** In place on the music stem [L, R]: presence dip + ducking gain, then the drop ending (24 dB/oct low-pass — two
+   *  Butterworth stages — sweeping 18 kHz → 200 Hz exponentially over 57–60 s, and a cos(π/2·x²) fade to 0 at 60.000 s). */
+  function shape([ml, mr], dk) {
+    const eq = (i) => bq('peaking', DUCK.eqHz, 0.9, -DUCK.eqDb * dk.amt[i]); // presence dip riding the duck
+    biquadTV(ml, eq); biquadTV(mr, eq);
+    for (let i = 0; i < N; i++) { const g = Math.exp(dk.db[i] * 0.11512925464970229); ml[i] *= g; mr[i] *= g; }
+    const d0 = Math.round(DROP[0] * SR), span = N - 1 - d0;
+    const fc = (i) => 18000 * Math.pow(200 / 18000, i < d0 ? 0 : (i - d0) / span);
+    for (const q of [0.5412, 1.3066]) { const c = (i) => bq('lowpass', fc(i), q); biquadTV(ml, c); biquadTV(mr, c); }
+    for (let i = d0; i < N; i++) { const x = (i - d0) / span, g = Math.cos(Math.PI / 2 * x * x); ml[i] *= g; mr[i] *= g; }
+    ml[N - 1] = 0; mr[N - 1] = 0;
+  }
+
   const state = { vo: null, music: null };
   let mixP = null;
   async function mixdown() {
     const src = state.music || (await score()), vo = state.vo, t0 = performance.now();
     const ml = Float32Array.from(src.L), mr = Float32Array.from(src.R);
     const dk = duckCurves(vo);
-    const eq = (i) => bq('peaking', DUCK.eqHz, 0.9, -DUCK.eqDb * dk.amt[i]); // presence dip riding the duck
-    biquadTV(ml, eq); biquadTV(mr, eq);
-    for (let i = 0; i < N; i++) { const g = Math.exp(dk.db[i] * 0.11512925464970229); ml[i] *= g; mr[i] *= g; }
-    // drop ending: 24 dB/oct low-pass (two Butterworth stages) sweeping 18 kHz → 200 Hz over 57–60 s, fade cos(π/2·x²)
-    const d0 = Math.round(DROP[0] * SR), span = N - 1 - d0;
-    const fc = (i) => 18000 * Math.pow(200 / 18000, i < d0 ? 0 : (i - d0) / span);
-    for (const q of [0.5412, 1.3066]) { const c = (i) => bq('lowpass', fc(i), q); biquadTV(ml, c); biquadTV(mr, c); }
-    for (let i = d0; i < N; i++) { const x = (i - d0) / span, g = Math.cos(Math.PI / 2 * x * x); ml[i] *= g; mr[i] *= g; }
-    ml[N - 1] = 0; mr[N - 1] = 0;
+    shape([ml, mr], dk);
     const xl = new Float32Array(N), xr = new Float32Array(N);
     for (let i = 0; i < N; i++) { xl[i] = ml[i] + (vo ? vo.L[i] : 0); xr[i] = mr[i] + (vo ? vo.R[i] : 0); }
     const grDb = limiter([xl, xr], dbg(MASTER_CEIL_DB), 0.005, 0.12);
