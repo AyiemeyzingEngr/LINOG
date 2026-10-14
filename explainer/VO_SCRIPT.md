@@ -42,10 +42,10 @@ The single source of truth for timing is `src/vo_cues.js`. When the timings chan
 | VO-13 | 45.00 | 47.60 | Each frame is delivered as sixteen products. | Matter-of-fact. | "16" products, 45.3–47.9 |
 | VO-14 | 48.30 | 51.90 | Around Cabanatuan, satellite data show subsidence. | The headline, unhurried. | Cabanatuan bowl + value, 48.3–52.0 |
 | VO-15 | 52.30 | 55.10 | This signal still needs validation on the ground. | Measured and careful; not alarming. | – |
-| VO-16 | 55.40 | 57.40 | Project LInOG. The work continues. | Warm sign-off. | – |
+| VO-16 | 56.30 | 58.40 | Project LInOG. The work continues. | Warm sign-off over the fade, just after the 56.0 s music arrival. | – |
 
-The picture fades to black over 57.0–60.0 s, and the music falls away under a low-pass sweep and reverb tail. No
-line may run past 57.4 s.
+The picture fades to black over 57.0–60.0 s, and the music falls away under a low-pass sweep and reverb tail. VO-16 is
+spoken over the fade, after the end card's music arrival at 56.0 s. No line may run past 58.4 s.
 
 ## What changed from v1
 

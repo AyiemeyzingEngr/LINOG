@@ -8,19 +8,24 @@
  * Options: --out FILE (default out/linog_explainer.mp4) --fps 60 --workers N (default: CPUs/2, max 4)
  *          --subframes N (motion blur: N samples per frame across a 180° shutter; default 4 for the final render)
  *          --preset P (x264 preset, default medium) --skip-selftest --force --fresh-audio
+ *          --vo FILE (voice-over, one WAV/any audio aligned to t = 0; default vo/vo.wav when it exists) --no-vo
+ *          --music FILE (replaces the synthesised score; still ducked under the VO and given the drop ending)
  * Exit codes: 0 ok · 1 crash · 2 self-test failed (or fonts missing) · 3 scene errors during the render · 4 output check failed
  *
  * Every frame is drawn by window.seek(t) in the standalone dist/linog_explainer.html, captured losslessly
- * (PNG via CDP) by parallel pages, streamed into FFmpeg in order, and muxed with the 16-bit WAV rendered by
- * the page's OfflineAudioContext: libx264 yuv420p 12 Mb/s + AAC 320 kb/s, BT.709 tagged.
+ * (PNG via CDP) by parallel pages, streamed into FFmpeg in order, and muxed with the soundtrack mixed in the page
+ * (src/audio.js: score + VO, ducking, limiter; 16-bit WAV): libx264 yuv420p 12 Mb/s + AAC 320 kb/s, BT.709 tagged.
+ * Audio outputs: out/soundtrack.wav (the mix, muxed), out/music_stem.wav (music as in the mix), out/vo_stem.wav
+ * (the normalised VO, when there is one), out/vo_cues.csv + out/vo_cues_audacity.txt (the cue sheet).
  */
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const crypto = require('crypto');
-const { spawn, execFileSync } = require('child_process');
+const { spawn, spawnSync, execFileSync } = require('child_process');
 const { build } = require('./build');
 const lib = require('./tools/lib');
+const voTools = require('./tools/vo');
 
 const args = process.argv.slice(2);
 const opt = (k, d) => { const i = args.indexOf('--' + k); return i >= 0 ? args[i + 1] : d; };
@@ -38,22 +43,89 @@ function checkFfmpeg() {
   return v.split('\n')[0];
 }
 
-/** The soundtrack depends only on src/audio.js (+ the RNG in core.js): cache it by their hash. */
+const rel = (f) => path.relative(process.cwd(), f);
+const sha1 = (buf) => crypto.createHash('sha1').update(buf).digest('hex');
+const NORM = 'ffmpeg-44k1-s24-stereo-2646000-v1'; // bump when normaliseInput() changes
+
+/** The external inputs: --vo FILE (default vo/vo.wav when present; --no-vo disables) and --music FILE. */
+function audioInputs() {
+  const pick = (k, dflt) => {
+    if (flag('no-' + k)) return null;
+    const f = opt(k) ? path.resolve(opt(k)) : dflt && fs.existsSync(dflt) ? dflt : null;
+    if (f && !fs.existsSync(f)) throw new Error(`--${k}: ${f} not found`);
+    return f;
+  };
+  return { vo: pick('vo', path.join(__dirname, 'vo', 'vo.wav')), music: pick('music', null) };
+}
+/** Any audio file → 44.1 kHz stereo 24-bit PCM, padded/trimmed to exactly 60.000 s (2,646,000 frames). Mono is
+ *  duplicated to both channels (not −3 dB); more than two channels are downmixed. Deterministic. */
+function normaliseInput(src, dst) {
+  const ch = +execFileSync('ffprobe', ['-v', 'error', '-select_streams', 'a:0', '-show_entries', 'stream=channels', '-of', 'csv=p=0', src], { encoding: 'utf8' }).trim();
+  if (!ch) throw new Error(`${rel(src)}: no audio stream`);
+  const seconds = +execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', src], { encoding: 'utf8' }).trim();
+  const af = `${ch === 1 ? 'pan=stereo|c0=c0|c1=c0,' : ''}aresample=44100,aformat=sample_fmts=s32:channel_layouts=stereo,apad=whole_len=2646000,atrim=end_sample=2646000`;
+  execFileSync('ffmpeg', ['-v', 'error', '-y', '-i', src, '-map', '0:a:0', '-af', af, '-fflags', '+bitexact', '-flags:a', '+bitexact', '-map_metadata', '-1', '-c:a', 'pcm_s24le', dst]);
+  return { channels: ch, seconds };
+}
+/** Send a file to the page in base64 chunks and hand it to LINOG.audio.setVO / setMusic. */
+async function sendAudio(page, kind, file) {
+  const b64 = fs.readFileSync(file).toString('base64'), CH = 4 << 20;
+  await page.evaluate(() => { window.__audioIn = []; });
+  for (let i = 0; i < b64.length; i += CH) await page.evaluate((s) => { window.__audioIn.push(s); }, b64.slice(i, i + CH));
+  const r = await page.evaluate((k) => { const s = window.__audioIn.join(''); window.__audioIn = null; const A = window.LINOG.audio; return k === 'vo' ? A.setVOBase64(s) : A.setMusicBase64(s); }, kind);
+  if (!r.ok) throw new Error(`${kind}: ${r.error}`);
+  return r[kind];
+}
+function loudnessOf(file) {
+  try {
+    const r = spawnSync('ffmpeg', ['-nostats', '-hide_banner', '-i', file, '-af', 'ebur128=peak=true', '-f', 'null', '-'], { encoding: 'utf8' });
+    const sum = (r.stderr || '').split('Summary:').pop();
+    const I = sum.match(/I:\s+(-?[\d.]+) LUFS/), LRA = sum.match(/LRA:\s+([\d.]+) LU/), TP = sum.match(/Peak:\s+(-?[\d.]+|-inf) dBFS/);
+    return `${I ? I[1] : '?'} LUFS integrated, LRA ${LRA ? LRA[1] : '?'} LU, true peak ${TP ? TP[1] : '?'} dBTP`;
+  } catch (_) { return 'loudness: n/a'; }
+}
+
+/** The soundtrack depends on src/audio.js (+ the RNG in core.js), the cue sheet and the external VO/music files:
+ *  it is cached by their hash. Writes out/soundtrack.wav (mix), out/music_stem.wav and out/vo_stem.wav (with a VO). */
 async function soundtrack(p) {
+  const inp = audioInputs();
   const h = crypto.createHash('sha1');
-  for (const f of ['src/audio.js', 'src/core.js']) h.update(fs.readFileSync(path.join(__dirname, f)));
+  for (const f of ['src/audio.js', 'src/core.js', 'src/vo_cues.js']) h.update(fs.readFileSync(path.join(__dirname, f)));
+  h.update(`|${NORM}|vo:${inp.vo ? sha1(fs.readFileSync(inp.vo)) : 'none'}|music:${inp.music ? sha1(fs.readFileSync(inp.music)) : 'none'}`);
   const key = h.digest('hex').slice(0, 12);
   const file = path.join(OUT_DIR, 'soundtrack.wav'), stamp = file + '.key';
-  if (!flag('fresh-audio') && fs.existsSync(file) && fs.existsSync(stamp) && fs.readFileSync(stamp, 'utf8') === key) {
-    log(`soundtrack: reusing ${path.relative(process.cwd(), file)} (sources unchanged)`);
+  const stems = { music: path.join(OUT_DIR, 'music_stem.wav'), vo: path.join(OUT_DIR, 'vo_stem.wav') };
+  const outputs = [file, stems.music].concat(inp.vo ? [stems.vo] : []);
+  log(`soundtrack inputs: VO ${inp.vo ? rel(inp.vo) : '— (none)'} · music ${inp.music ? rel(inp.music) : 'synthesised score'}`);
+  if (!flag('fresh-audio') && outputs.every((f) => fs.existsSync(f)) && fs.existsSync(stamp) && fs.readFileSync(stamp, 'utf8') === key) {
+    log(`soundtrack: reusing ${outputs.map(rel).join(', ')} (sources and inputs unchanged)`);
     return file;
   }
-  const b64 = await p.page.evaluate(() => window.LINOG.audio.wavBase64());
-  const buf = Buffer.from(b64, 'base64');
-  fs.writeFileSync(file, buf); fs.writeFileSync(stamp, key);
+  const tmp = path.join(OUT_DIR, '.audio_in');
+  fs.mkdirSync(tmp, { recursive: true });
+  for (const kind of ['vo', 'music']) {
+    if (!inp[kind]) continue;
+    const norm = path.join(tmp, `${kind}_44k1.wav`), src = normaliseInput(inp[kind], norm);
+    if (Math.abs(src.seconds - 60) > 0.001) log(`  ⚠ ${rel(inp[kind])} is ${src.seconds.toFixed(3)} s long — ${src.seconds < 60 ? 'padded' : 'trimmed'} to 60.000 s (it must start at t = 0)`);
+    const info = await sendAudio(p.page, kind, norm);
+    if (kind === 'vo') log(`  VO: ${src.channels} ch → stereo; ${info.silent ? 'silent (no speech: music ducks by the cue sheet only)' : `active speech level ${info.levelDb} dBFS → gain ${info.gainDb > 0 ? '+' : ''}${info.gainDb} dB (target −19 dBFS), peak limiter ${info.limiterDb} dB, peak ${info.peakDb} dBFS`}`);
+    else log(`  music: ${src.channels} ch, active level ${info.activeDb} dBFS → gain ${info.gainDb} dB`);
+  }
+  const t0 = Date.now();
+  const get = async (stem) => Buffer.from(await p.page.evaluate((s) => window.LINOG.audio.wavBase64({ stem: s }), stem), 'base64');
+  const buf = await get('mix');
   const frames = (buf.length - 44) / 4;
-  log(`soundtrack: ${path.relative(process.cwd(), file)} — ${frames} frames @ 44.1 kHz = ${(frames / 44100).toFixed(3)} s, 16-bit stereo`);
   if (frames !== 44100 * 60) throw new Error('soundtrack is not exactly 60.000 s');
+  fs.writeFileSync(file, buf);
+  fs.writeFileSync(stems.music, await get('music'));
+  if (inp.vo) fs.writeFileSync(stems.vo, await get('vo')); else fs.rmSync(stems.vo, { force: true });
+  fs.writeFileSync(stamp, key);
+  fs.rmSync(tmp, { recursive: true, force: true });
+  const info = await p.page.evaluate(() => window.LINOG.audio.info());
+  log(`soundtrack: ${rel(file)} — ${frames} frames @ 44.1 kHz = ${(frames / 44100).toFixed(3)} s, 16-bit stereo (mixed in ${((Date.now() - t0) / 1000).toFixed(1)} s)`);
+  log(`  music: ${info.music.source === 'score' ? `score (${info.music.events} events, synth ${info.music.msSynth} ms + effects ${info.music.msFx} ms, hit limiter ${info.music.limiterDb} dB)` : 'external file'}; ducking −8 dB on ${info.duck.windows.length} windows (${info.duck.fromCues} from the cue sheet${info.duck.fromVO ? `, ${info.duck.fromVO} detected in the VO` : ''}), sidechain down to ${info.duck.sidechainMaxDb} dB`);
+  log(`  mix: peak ${info.mix.peakDb} dBFS (master limiter ${info.mix.limiterDb} dB) · ${loudnessOf(file)}`);
+  log(`  stems: ${rel(stems.music)}${inp.vo ? ', ' + rel(stems.vo) : ''}`);
   return file;
 }
 
@@ -163,6 +235,9 @@ function probe(file) {
 (async () => {
   fs.mkdirSync(OUT_DIR, { recursive: true });
   log(checkFfmpeg());
+  const cueFiles = voTools.writeCueFiles(OUT_DIR);
+  console.log(voTools.cueTable());
+  log(`VO cue sheet → ${rel(cueFiles.csv)}, ${rel(cueFiles.labels)}`);
   const html = build();
   log(`built ${path.relative(process.cwd(), html)}`);
   const workers = Math.max(1, Math.min(4, +opt('workers', Math.max(1, Math.floor(os.cpus().length / 2)))));
