@@ -1,5 +1,5 @@
 /* LInOG explainer — procedural assets: ALOS-1 satellite vector, SAR amplitude textures,
- * raster painting helpers, simple 3D perspective, and the EGG Lab emblem placeholder.
+ * raster painting helpers and simple 3D perspective. (The EGG Laboratory now appears as its real logo, assets/logos.)
  */
 (function () {
   'use strict';
@@ -193,57 +193,5 @@
       const d = dist + y2, k = f / d;
       return [cx0 + x1 * k, cy0 - z2 * k, d, k];
     };
-  };
-
-  /* --------------------------------------------------------------- EGG Lab emblem (procedural placeholder) */
-  /** Geometry of L.drawEGG (in units of r) for scenes that need to align with it (e.g. the TL becoming ring 0).
-   *  Ring k: ellipse rx × ry rotated by rot; its dot is at angle speed·t + phase. Keep in sync with drawEGG below. */
-  L.EGG_GEOM = {
-    egg: { k: 0.62, wobble: 0.1, sx: 0.86 },
-    rings: [
-      { rx: 1.02, ry: 0.3, rot: -0.42, speed: 1.2, phase: 0, color: '#00E5FF' },
-      { rx: 1.1, ry: 0.3, rot: 0.42, speed: -1.6, phase: 1, color: '#FFD166' },
-    ],
-  };
-  /** Placeholder mark for the UP NIGS Earthquake Geodesy and Geology (EGG) Laboratory — NOT an official logo.
-   *  An egg-shaped geoid with a fault offset, wrapped by two orbital rings. o: {x, y, r, p, t, ringsOnly} */
-  L.drawEGG = (ctx, o) => {
-    const r = o.r || 120, p = o.p === undefined ? 1 : o.p, t = o.t || 0;
-    ctx.save(); ctx.translate(o.x, o.y);
-    const egg = (k) => { ctx.beginPath(); for (let i = 0; i <= 96; i++) { const th = (i / 96) * TAU; const rr = r * 0.62 * (1 + 0.1 * Math.sin(th)); const xx = Math.cos(th) * rr * 0.86, yy = Math.sin(th) * rr * k; i ? ctx.lineTo(xx, yy) : ctx.moveTo(xx, yy); } ctx.closePath(); };
-    const pe = L.clamp(p * 1.6 - 0.3);
-    if (!o.ringsOnly && pe > 0) {
-      ctx.save(); ctx.globalAlpha *= pe;
-      egg(1.0);
-      const g = ctx.createRadialGradient(-r * 0.2, -r * 0.25, r * 0.05, 0, 0, r * 0.7);
-      g.addColorStop(0, '#1F3B57'); g.addColorStop(1, '#0F1D30');
-      ctx.fillStyle = g; ctx.fill();
-      ctx.strokeStyle = L.rgba(C.cyan, 0.9); ctx.lineWidth = 2.2; ctx.stroke();
-      ctx.clip();
-      // stratified "geology" bands with a fault offset (left-lateral strike-slip hint)
-      for (let i = -4; i <= 4; i++) {
-        const yy = i * r * 0.13;
-        ctx.strokeStyle = L.css(L.fringeRGB(i * 0.9 + t * 0.6), 0.55); ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.moveTo(-r, yy - r * 0.05); ctx.lineTo(-r * 0.05, yy); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(r * 0.05, yy + r * 0.07); ctx.lineTo(r, yy + r * 0.12); ctx.stroke();
-      }
-      ctx.strokeStyle = L.rgba(C.crimson, 0.95); ctx.lineWidth = 2.5;
-      ctx.beginPath(); ctx.moveTo(-r * 0.12, -r); ctx.lineTo(r * 0.12, r); ctx.stroke();
-      ctx.restore();
-    }
-    // two orbital rings
-    for (let k = 0; k < 2; k++) {
-      const pk = L.clamp(p * 1.4 - k * 0.2);
-      if (pk <= 0) continue;
-      const rot = k === 0 ? -0.42 : 0.42, rx = r * (1.02 + k * 0.08), ry = r * 0.3;
-      ctx.save(); ctx.rotate(rot);
-      ctx.strokeStyle = L.rgba(k ? C.gold : C.cyan, 0.9); ctx.lineWidth = 2.4;
-      ctx.beginPath(); ctx.ellipse(0, 0, rx, ry, 0, Math.PI, Math.PI + TAU * pk); ctx.stroke();
-      const a = t * (k ? -1.6 : 1.2) + k;
-      ctx.fillStyle = k ? C.gold : C.cyan;
-      if (pk >= 1) { ctx.beginPath(); ctx.arc(Math.cos(a) * rx, Math.sin(a) * ry, 5, 0, TAU); ctx.fill(); }
-      ctx.restore();
-    }
-    ctx.restore();
   };
 })();

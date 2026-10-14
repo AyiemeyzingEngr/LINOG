@@ -15,7 +15,7 @@ const opt = (k, d) => { const i = args.indexOf('--' + k); return i >= 0 ? args[i
     const info = await p.page.evaluate((tt) => window.seek(tt), t);
     for (const b of info.layout.text) {
       if (b.role === 'hud' && !/PHASE|FINDINGS|RESULT/.test(b.str) && b.id !== 'hud-phase') continue;
-      const key = b.scene + '|' + b.str.replace(/[0-9]/g, '#');
+      const key = b.scene + '|' + (b.id ? 'id:' + b.id : b.str.replace(/[0-9]/g, '#')); // counters keep one row (as QA does)
       const e = cur.get(key);
       if (e && t - e.last <= step + 1e-6) { e.last = t; e.final = b.str; }
       else { const n = { scene: b.scene, first: t, last: t, str: b.str, final: b.str, size: Math.round(b.size), color: b.color }; cur.set(key, n); rows.push(n); }
