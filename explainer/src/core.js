@@ -730,7 +730,9 @@
         L.text(ctx, hd.label, 118 + b.w + 16, 83, { kind: 'display', size: 26, weight: 500, color: C.text, p: clamp(pin * 1.1 - 0.05), tracking: 0.005, role: 'hud', id: 'hud-phase', scanColor: hd.color });
       }
       // --- top-right: wordmark + radar readout
-      L.text(ctx, 'LInOG', 1824, 86, { kind: 'display', size: 28, weight: 700, color: C.cyan, align: 'right', p: v, role: 'hud', id: 'hud-logo' });
+      const logo = L.img('logo:linog');
+      if (logo) L.drawImg(ctx, logo, 1824 - 160, 50, 160, 46, { alpha: v, ax: 1 }); // official logo (cream sticker reads on dark)
+      else L.text(ctx, 'LInOG', 1824, 86, { kind: 'display', size: 28, weight: 700, color: C.cyan, align: 'right', p: v, role: 'hud', id: 'hud-logo' });
       L.text(ctx, `ALOS-1 PALSAR · L-band λ 23.6 cm · T+${fmtT(t)}`, 1824, 112, { kind: 'mono', size: 14, weight: 400, color: C.textDim, align: 'right', p: v, role: 'hud', id: 'hud-readout' });
       // --- bottom: pipeline tracker, phases 0–7 (incl. 4.5). The current phase widens and shows its name.
       const x0 = 96, x1 = 1824, gap = 12, y = 1004, n = L.PHASES.length;

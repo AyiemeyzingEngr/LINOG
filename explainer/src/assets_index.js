@@ -7,6 +7,7 @@
     "logo:egg_lockup_white": "assets/logos/egg_lockup_white.png",
     "logo:egg_mark_white": "assets/logos/egg_mark_white.png",
     "logo:jaxa": "assets/logos/jaxa.png",
+    "logo:linog": "assets/logos/linog.png",
     "logo:nigs": "assets/logos/nigs.png",
     "logo:philsa": "assets/logos/philsa.png",
     "logo:up_csrc": "assets/logos/up_csrc.png",
