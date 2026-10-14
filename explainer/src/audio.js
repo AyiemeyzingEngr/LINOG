@@ -1,28 +1,33 @@
 /* LInOG explainer — soundtrack engine (v2, documentary): original hybrid-orchestral score + voice-over mix.
  *
  * Output: 44.1 kHz stereo, exactly 60.000 s (2,646,000 frames); 16-bit WAV with seeded TPDF dither, peaks held at or below
- * −1 dBFS by the master limiter (the levels are set by the voice and the bed, not by peak normalisation), last sample 0. Reproducible to ±1 LSB (Chromium's vectorised DSP paths can round differently run to run).
+ * −1.5 dBFS by the master limiter (true peak ≤ −1 dBTP) (the levels are set by the voice and the bed, not by peak normalisation), last sample 0. Reproducible to ±1 LSB (Chromium's vectorised DSP paths can round differently run to run).
  * No ConvolverNode, no Math.random, no Date.
  *
  * Pipeline
  *   1. Score: an OfflineAudioContext renders the instruments into 8 discrete channels (dry, room send, hall send,
  *      echo send). Voices are created just in time at ctx.suspend() points, so the live graph stays small.
  *   2. Effects in plain JS (bit-exact): two feedback-delay-network reverbs (room, hall) and a ping-pong echo.
- *   3. Music stem: the score (active level −20.7 dBFS, a look-ahead limiter at −1 dBFS as a safety ceiling) or an external
- *      music file (setMusic: matched to −20.7 dBFS, peak-safe) → ducking under the VO → drop ending (57–60 s: exponential
+ *   3. Music stem: the score (active level −18.2 dBFS, a look-ahead limiter at −1.5 dBFS as a safety ceiling) or an external
+ *      music file (setMusic: matched to −18.2 dBFS, peak-safe) → ducking under the VO → drop ending (57–60 s: exponential
  *      low-pass sweep 18 kHz → 200 Hz while the final chord's reverb tail fades to exactly 0 at 60.000 s).
- *      Balance for a narrated web documentary (silent VO, RMS over 0.4 s): bed ≈ −22 dBFS between lines, ≈ −30 dBFS under
- *      a line; the act hits, the 48 s accent and the 56 s arrival ≈ the narrator's level, never above it.
+ *      Balance for a narrated web documentary (see Ducking): the bed sits ≈ 12 LU under the voice during a line and swells
+ *      in the longer gaps; the act hits, the 48 s accent and the 56 s arrival land between lines at about the voice's peaks.
  *   4. VO (setVO): WAV parsed in JS (PCM 16/24/32-bit int, 32/64-bit float; any channel count; any sample rate, resampled
  *      with a windowed-sinc kernel) → 70 Hz high-pass → active-speech level (gated RMS) normalised to VO_TARGET_DB (−16.5 dBFS) →
  *      look-ahead peak limiter at −3 dBFS.
- *   5. Mix = ducked music + VO → look-ahead limiter at −1 dBFS → 16-bit TPDF dither.
+ *   5. Mix = ducked music + VO → look-ahead limiter at −1.5 dBFS → 16-bit TPDF dither.
  *
- * Ducking (music only): (a) automation from the cue sheet (src/vo_cues.js): −8 dB, a raised-cosine ramp starting
- * 0.15 s before each line's `in`, back up over 0.4 s after its `out`, lines closer than 0.6 s merged (no pumping); a
- * gentle presence dip (−3 dB @ 2.8 kHz) rides the same curve so consonants stay clear. (b) From the VO signal itself:
- * its detected speech windows join the automation (a line that drifts out of its slot is still ducked the full −8 dB),
- * and an envelope follower (30 ms look-ahead, 30 ms attack, 300 ms release) adds up to −5 dB more under the words.
+ * Ducking (music only): (a) automation from the cue sheet (src/vo_cues.js): −6.5 dB, a raised-cosine ramp starting
+ * 0.15 s before each line's `in`, back up over 0.4 s after its `out`, lines closer than 0.9 s merged (no pumping); a
+ * broad speech-band dip (−6 dB @ 1.5 kHz, Q 0.6) rides the same curve: the bed keeps its lows and air under the voice
+ * while the band the voice needs (≈ 0.7–3 kHz: strings, horns, the radar ping) clears. (b) From the VO signal itself:
+ * its detected speech windows join the automation (a line that drifts out of its slot is still ducked the full −6.5 dB),
+ * and an envelope follower (30 ms look-ahead, 30 ms attack, 300 ms release) adds up to −3.5 dB more under the words.
+ * With the narration: the voice ≈ 12 LU over the bed under a line (momentary loudness), the hits ≈ the voice's peaks.
+ * (c) The music marks (act hits 10/18/30/42, the 48 s accent, the 56 s arrival) stay at full level when no line is
+ * spoken over them: windows never merge across one, a release before one is shortened to end 20 ms ahead of it, the
+ * next line's dip starts no earlier than 80 ms after it, and the sidechain lets go around it.
  * A line starting within the first 0.5 s is ducked from t = 0 (the opening notes never dip under the first word).
  *
  * Score (120 BPM: beat 0.5 s, bar 2 s; D minor, i–VI–III–VII = Dm–B♭–F–C, lifting to D major at the end card):
@@ -45,10 +50,12 @@
   const SR = 44100, DUR = 60, N = SR * DUR;
   const HITS = [10, 18, 30, 42]; // act cuts: riser → ensemble hit (the picture flares the through-line on each)
   const ACCENT = 48; // the Cabanatuan reveal
+  const MARKS = HITS.concat([ACCENT, 56]); // + the end-card arrival: never ducked (duckCurves). Not 52: the riser into
+  // act 6 stays under the VO-14 → VO-15 bridge, so the subsidence line is not dramatised before its caveat
   const DROP = [57, 60]; // music low-pass sweep + fade to silence (the picture fades to black over the same span)
-  const VO_TARGET_DB = -16.5, VO_CEIL_DB = -1.5, MASTER_CEIL_DB = -1; // web delivery: mix ≈ −16 LUFS with narration
+  const VO_TARGET_DB = -16.5, VO_CEIL_DB = -1.5, MASTER_CEIL_DB = -1.5; // web delivery: ≈ −15 LUFS, true peak ≤ −1 dBTP
   const MUSIC_RMS_DB = -18.2; // active (gated) RMS of the music stem before ducking — the score and external music alike
-  const DUCK = { depth: 8, pre: 0.15, post: 0.4, merge: 0.6, eqDb: 3, eqHz: 2800, scDepth: 5, scLook: 0.03, scAttack: 0.03, scRelease: 0.3 };
+  const DUCK = { depth: 6.5, pre: 0.15, post: 0.4, merge: 0.9, eqDb: 6, eqHz: 1500, eqQ: 0.6, scDepth: 3.5, scLook: 0.03, scAttack: 0.03, scRelease: 0.3 };
   const mtof = (m) => 440 * Math.pow(2, (m - 69) / 12);
   const dbg = (db) => Math.pow(10, db / 20);
   const clamp = (x, a, b) => (x < a ? a : x > b ? b : x);
@@ -695,8 +702,8 @@
   const r3 = (x) => (isFinite(x) ? Math.round(x * 1000) / 1000 : x);
 
   let scoreP = null;
-  /** The synthesised score as a stereo music stem (before ducking): active level −20.7 dBFS, a −1 dBFS look-ahead limiter,
-   *  and a trim that only ever cuts (if the stem as ducked by the cue sheet alone would still peak above −1 dBFS). Cached. */
+  /** The synthesised score as a stereo music stem (before ducking): active level −18.2 dBFS, a −1.5 dBFS look-ahead limiter,
+   *  and a trim that only ever cuts (if the stem as ducked by the cue sheet alone would still peak above −1.5 dBFS). Cached. */
   function score() {
     if (scoreP) return scoreP;
     const t0 = performance.now();
@@ -711,11 +718,11 @@
       const Lm = new Float32Array(N), Rm = new Float32Array(N);
       for (let i = 0; i < N; i++) { Lm[i] = ch[0][i] + rL[i] + wL[i] + 0.55 * eL[i]; Rm[i] = ch[1][i] + rR[i] + wR[i] + 0.55 * eR[i]; }
       const hp = bq('highpass', 28, 0.707); biquad(Lm, hp); biquad(Rm, hp);
-      // level: active RMS to −20.7 dBFS (sets the bed); a look-ahead limiter at −1 dBFS catches anything above it
+      // level: active RMS to MUSIC_RMS_DB (sets the bed); a look-ahead limiter at the master ceiling catches anything above it
       const g1 = dbg(MUSIC_RMS_DB - activeLevel([Lm, Rm]).db);
       for (let i = 0; i < N; i++) { Lm[i] *= g1; Rm[i] *= g1; }
       const grDb = limiter([Lm, Rm], dbg(MASTER_CEIL_DB), 0.004, 0.09);
-      // trim (cut only): the stem as ducked by the cue sheet alone (no VO) and dropped never peaks above −1 dBFS
+      // trim (cut only): the stem as ducked by the cue sheet alone (no VO) and dropped never peaks above the master ceiling
       const probe = [Float32Array.from(Lm), Float32Array.from(Rm)];
       shape(probe, duckCurves(null));
       const pk = peakOf(probe), g = pk > dbg(MASTER_CEIL_DB) ? dbg(MASTER_CEIL_DB) / pk : 1;
@@ -730,7 +737,7 @@
     return chs.map(fit);
   }
   const inputInfo = (raw) => ({ sampleRate: raw.sampleRate, channels: raw.channels.length, bits: raw.bits, format: raw.format, seconds: r3(raw.frames / raw.sampleRate) });
-  /** External music: matched to the score's gated RMS (−20.7 dBFS) or lower so its peak stays ≤ −1 dBFS. */
+  /** External music: matched to the score's gated RMS (−18.2 dBFS) or lower so its peak stays at or below the master ceiling. */
   function prepMusic(raw) {
     const [l, r] = decodeInput(raw), hp = bq('highpass', 20, 0.707);
     biquad(l, hp); biquad(r, hp);
@@ -753,14 +760,18 @@
     return { L: l, R: r, silent, info: { ...inputInfo(raw), silent, levelDb: r3(lev.db), targetDb: VO_TARGET_DB, active: r3(lev.active), gainDb: r3(gDb), limiterDb: r3(grDb), peakDb: r3(toDb(peakOf([l, r]))) } };
   }
 
-  /** Merge [start, end] windows closer than DUCK.merge (no pumping between close lines). */
-  function mergeWins(ws) {
+  /** Merge [start, end] windows closer than DUCK.merge (no pumping between close lines), never across a music mark. */
+  function mergeWins(ws, marks = []) {
     const out = [];
-    for (const w of ws.slice().sort((a, b) => a[0] - b[0])) { const last = out[out.length - 1]; if (last && w[0] - last[1] < DUCK.merge) last[1] = Math.max(last[1], w[1]); else out.push([w[0], w[1]]); }
+    for (const w of ws.slice().sort((a, b) => a[0] - b[0])) {
+      const last = out[out.length - 1];
+      if (last && w[0] - last[1] < DUCK.merge && !marks.some((h) => h > last[1] && h < w[0])) last[1] = Math.max(last[1], w[1]);
+      else out.push([w[0], w[1]]);
+    }
     return out;
   }
-  const cueWindows = () => mergeWins(cueList().map((c) => [c.in, c.out]));
-  /** Ducking: dB curve (≤ 0) + normalised amount (0..1) for the presence dip, from the cue windows and the VO signal. */
+  const cueWindows = () => mergeWins(cueList().map((c) => [c.in, c.out]), MARKS);
+  /** Ducking: dB curve (≤ 0) + normalised amount (0..1) for the speech-band dip, from the cue windows and the VO signal. */
   function duckCurves(vo) {
     const wc = cueWindows();
     let wv = [], mono = null;
@@ -775,15 +786,20 @@
         if (b < nb) { let e = 0; for (let i = b * BL; i < (b + 1) * BL; i++) e += mono[i] * mono[i]; on = e / BL > thr; }
         if (on && s < 0) s = b; else if (!on && s >= 0) { wv.push([s * BL / SR, b * BL / SR]); s = -1; }
       }
-      wv = mergeWins(wv).filter((w) => w[1] - w[0] >= 0.1);
+      wv = mergeWins(wv, MARKS).filter((w) => w[1] - w[0] >= 0.1);
     }
-    const wins = mergeWins(wc.concat(wv)), a = new Float32Array(N);
+    const wins = mergeWins(wc.concat(wv), MARKS), a = new Float32Array(N);
+    // marks no line is spoken over play at full level: the release before one ends 20 ms ahead of it, the next
+    // line's dip starts 80 ms after it, and the sidechain lets go around it
+    const free = MARKS.filter((h) => !wins.some(([s, e]) => h >= s && h <= e));
     for (const [s, e] of wins) {
-      const early = s - DUCK.pre < 0.5; // a line in the first half second: the music starts already ducked
-      const i0 = early ? 0 : Math.max(0, Math.floor((s - DUCK.pre) * SR)), i1 = Math.min(N, Math.ceil((e + DUCK.post) * SR));
+      const hb = Math.max(-1, ...free.filter((h) => h <= s)), ha = Math.min(DUR + 1, ...free.filter((h) => h >= e));
+      const pre = Math.max(0.03, Math.min(DUCK.pre, s - hb - 0.08)), post = Math.max(0.05, Math.min(DUCK.post, ha - e - 0.02));
+      const early = s - pre < 0.5; // a line in the first half second: the music starts already ducked
+      const i0 = early ? 0 : Math.max(0, Math.floor((s - pre) * SR)), i1 = Math.min(N, Math.ceil((e + post) * SR));
       for (let i = i0; i < i1; i++) {
         const t = i / SR;
-        const v = t < s && !early ? 0.5 - 0.5 * Math.cos(Math.PI * Math.max(0, t - (s - DUCK.pre)) / DUCK.pre) : t > e ? 0.5 + 0.5 * Math.cos(Math.PI * Math.min(1, (t - e) / DUCK.post)) : 1;
+        const v = t < s && !early ? 0.5 - 0.5 * Math.cos(Math.PI * Math.max(0, t - (s - pre)) / pre) : t > e ? 0.5 + 0.5 * Math.cos(Math.PI * Math.min(1, (t - e) / post)) : 1;
         if (v > a[i]) a[i] = v;
       }
     }
@@ -803,6 +819,13 @@
         if (j >= 0) sc[j] = sm;
       }
       for (let j = N - la; j < N; j++) sc[j] = sm;
+      for (const h of free) { // 0 over [h − 30 ms, h + 100 ms], raised-cosine ramps of 120 ms either side
+        const j0 = Math.max(0, Math.floor((h - 0.15) * SR)), j1 = Math.min(N, Math.ceil((h + 0.22) * SR));
+        for (let j = j0; j < j1; j++) {
+          const x = j / SR - h, g = x < -0.03 ? 0.5 + 0.5 * Math.cos(Math.PI * (x + 0.15) / 0.12) : x <= 0.1 ? 0 : 0.5 - 0.5 * Math.cos(Math.PI * (x - 0.1) / 0.12);
+          sc[j] *= g;
+        }
+      }
       for (let i = 0; i < N; i++) if (sc[i] > scMax) scMax = sc[i];
     }
     const db = new Float32Array(N), amt = new Float32Array(N);
@@ -810,10 +833,10 @@
     return { db, amt, wins, nCue: wc.length, nVo: wv.length, scMaxDb: r3(-DUCK.scDepth * scMax) };
   }
 
-  /** In place on the music stem [L, R]: presence dip + ducking gain, then the drop ending (24 dB/oct low-pass — two
+  /** In place on the music stem [L, R]: speech-band dip + ducking gain, then the drop ending (24 dB/oct low-pass — two
    *  Butterworth stages — sweeping 18 kHz → 200 Hz exponentially over 57–60 s, and a cos(π/2·x²) fade to 0 at 60.000 s). */
   function shape([ml, mr], dk) {
-    const eq = (i) => bq('peaking', DUCK.eqHz, 0.9, -DUCK.eqDb * dk.amt[i]); // presence dip riding the duck
+    const eq = (i) => bq('peaking', DUCK.eqHz, DUCK.eqQ, -DUCK.eqDb * dk.amt[i]); // speech-band dip riding the duck
     biquadTV(ml, eq); biquadTV(mr, eq);
     for (let i = 0; i < N; i++) { const g = Math.exp(dk.db[i] * 0.11512925464970229); ml[i] *= g; mr[i] *= g; }
     const d0 = Math.round(DROP[0] * SR), span = N - 1 - d0;

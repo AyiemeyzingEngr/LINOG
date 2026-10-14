@@ -235,8 +235,8 @@ visualisation, but it never disappears.
 
 ## 6. Storyboard v2 (times are global; VO lines from src/vo_cues.js; ★ = spotlight target id the scene must mark)
 
-**Act 1 · 0–10 · Prologue** (no HUD). VO-01 0.5 "The Earth never stops moving." · VO-02 2.9 "Yet we seldom see it." ·
-VO-03 4.6 "From orbit, radar measures it, even through cloud." · VO-04 7.8 "This is Project LInOG."
+**Act 1 · 0–10 · Prologue** (no HUD). VO-01 0.5 "The Earth never stops moving." · VO-02 2.65 "Yet we seldom see it." ·
+VO-03 4.5 "From orbit, radar measures it, even through cloud." · VO-04 7.8 "This is Project LInOG."
 - Visuals as before (kinetic type split by the L-band pulse; globe → ALOS-1 pass through cloud; title).
 - Text v2: headline **THE EARTH NEVER STOPS MOVING.** (`role:'headline'`); "L-band · λ = 23.6 cm"; place label
   "Luzon, Philippines"; "ALOS-1 PALSAR · ascending pass"; title **PROJECT LInOG** (`role:'headline'`) + the full name in

@@ -1,0 +1,23 @@
+{
+  "source": "elevenlabs_quentin_take1.mp3",
+  "about": "ElevenLabs narration, voice 'Quentin – Narrator and Educator' (original file ElevenLabs_2026-10-14T08_37_42_Quentin_-_Narrator_and_Educator_pvc_sp108_s100_sb100_v4.mp3): one continuous 54.5 s read of VO script v2, 44.1 kHz mono MP3. `node tools/vo.js --take vo/source/elevenlabs_quentin_take1.json` cuts it into the 16 cue lines and writes vo/vo.wav with each line's first word on its cue `in` (src/vo_cues.js).",
+  "how": "src: the source window [s, e] holding exactly one line, cut in the silence between lines (mid-pause). parts: how many speech runs the line has (runs split by pauses of 0.15 s or more); the tool stops if it finds a different count, so a window that drifts onto the wrong line cannot pass. pauses: optional target length (s) for each pause inside the line, in order; null keeps it as read. Only VO-02 and VO-03 are tightened, because the take reads them longer than the picture allows. gainDb: clip gain for one line (VO-02 is read about 3 LU softer than the rest; +2 dB keeps it intimate but clear of the music).",
+  "lines": [
+    { "id": "VO-01", "src": [0.0, 2.225], "parts": 1 },
+    { "id": "VO-02", "src": [2.225, 4.335], "parts": 2, "pauses": [0.18], "gainDb": 2 },
+    { "id": "VO-03", "src": [4.335, 8.31], "parts": 3, "pauses": [0.18, 0.22] },
+    { "id": "VO-04", "src": [8.31, 10.71], "parts": 1 },
+    { "id": "VO-05", "src": [10.71, 14.71], "parts": 2 },
+    { "id": "VO-06", "src": [14.71, 18.3], "parts": 2 },
+    { "id": "VO-07", "src": [18.3, 20.775], "parts": 1 },
+    { "id": "VO-08", "src": [20.775, 24.54], "parts": 2 },
+    { "id": "VO-09", "src": [24.54, 28.495], "parts": 1 },
+    { "id": "VO-10", "src": [28.495, 33.305], "parts": 1 },
+    { "id": "VO-11", "src": [33.305, 39.2], "parts": 2 },
+    { "id": "VO-12", "src": [39.2, 41.525], "parts": 1 },
+    { "id": "VO-13", "src": [41.525, 44.62], "parts": 1 },
+    { "id": "VO-14", "src": [44.62, 48.345], "parts": 2 },
+    { "id": "VO-15", "src": [48.345, 51.245], "parts": 1 },
+    { "id": "VO-16", "src": [51.245, 54.5175], "parts": 2 }
+  ]
+}

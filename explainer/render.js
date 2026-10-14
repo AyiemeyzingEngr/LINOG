@@ -123,7 +123,7 @@ async function soundtrack(p) {
   fs.rmSync(tmp, { recursive: true, force: true });
   const info = await p.page.evaluate(() => window.LINOG.audio.info());
   log(`soundtrack: ${rel(file)} — ${frames} frames @ 44.1 kHz = ${(frames / 44100).toFixed(3)} s, 16-bit stereo (mixed in ${((Date.now() - t0) / 1000).toFixed(1)} s)`);
-  log(`  music: ${info.music.source === 'score' ? `score (${info.music.events} events, synth ${info.music.msSynth} ms + effects ${info.music.msFx} ms, music limiter ${info.music.limiterDb} dB)` : 'external file'}; ducking −8 dB on ${info.duck.windows.length} windows (${info.duck.fromCues} from the cue sheet${info.duck.fromVO ? `, ${info.duck.fromVO} detected in the VO` : ''}), sidechain down to ${info.duck.sidechainMaxDb} dB`);
+  log(`  music: ${info.music.source === 'score' ? `score (${info.music.events} events, synth ${info.music.msSynth} ms + effects ${info.music.msFx} ms, music limiter ${info.music.limiterDb} dB)` : 'external file'}; ducking ${info.duck.depthDb} dB + a ${info.duck.presenceDipDb} dB speech-band dip on ${info.duck.windows.length} windows (${info.duck.fromCues} from the cue sheet${info.duck.fromVO ? `, ${info.duck.fromVO} detected in the VO` : ''}), sidechain down to ${info.duck.sidechainMaxDb} dB`);
   log(`  mix: peak ${info.mix.peakDb} dBFS (master limiter ${info.mix.limiterDb} dB) · ${loudnessOf(file)}`);
   log(`  stems: ${rel(stems.music)}${inp.vo ? ', ' + rel(stems.vo) : ''}`);
   return file;

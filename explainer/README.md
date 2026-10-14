@@ -11,7 +11,7 @@ real logos, and the **real LInOG velocity products**.
 | `dist/linog_explainer.html` | **The animation.** One standalone file: all code, coastlines, fonts, logos and data are embedded. Open it in Chromium or Chrome to preview with sound. Space plays and pauses, ← and → step one beat, `?t=24.5` starts at a time. Play is enabled after about 6–8 s. Drop a recorded VO WAV onto the page to hear it mixed; a file whose name contains "music" replaces the score instead. |
 | `render.js` | Playwright + FFmpeg renderer → `out/linog_explainer.mp4`. |
 | `VO_SCRIPT.md` | The voice-over script v2: lines, slots, delivery, pronunciation and fact basis. |
-| `vo/` | `vo/vo.wav` is a silent 60.000 s template (48 kHz 24-bit stereo) until the narration is recorded. `vo/README.md` describes the recording and delivery workflow. |
+| `vo/` | `vo/vo.wav` is the narration: an ElevenLabs read cut from `vo/source/` onto the cue sheet by `tools/vo.js --take`. `vo/README.md` describes the narration, how it was fitted, and the recording and delivery workflow. |
 | `src/` | Sources. |
 | `src/core.js` | Engine: phases, HUD, typography rule, spotlight API. |
 | `src/main.js` | Runtime: seek, spotlight compositing, fade-out, asset loading. |
@@ -45,11 +45,13 @@ What `render.js` does:
 3. **Mix the soundtrack in the page** (`src/audio.js`).
    - An OfflineAudioContext renders the score (44.1 kHz, exactly 60.000 s, seeded noise). Reverbs, ducking and limiting run in plain JS.
    - The score is mixed with `vo/vo.wav` (`--vo FILE`, `--no-vo`; `--music FILE` replaces the score). FFmpeg first normalises these inputs to 44.1 kHz stereo of exactly 60.000 s.
-   - The VO's speech level is set to −16.5 dBFS (mix ≈ −16 LUFS with narration, for web delivery).
-   - The music ducks −8 dB under every cue-sheet line, plus up to −5 dB from a sidechain on the recording.
+   - The VO's speech level is set to −16.5 dBFS (mix ≈ −15 LUFS integrated, true peak ≤ −1 dBTP, for web delivery).
+   - The music ducks −6.5 dB under every line, with a −6 dB speech-band dip (1.5 kHz) and up to −3.5 dB more from a
+     sidechain on the recording. The act hits (10, 18, 30, 42 s), the 48 s accent and the 56 s arrival stay at full level
+     between lines.
    - The music drops out with a low-pass sweep and a reverb tail over 57–60 s.
    - Outputs:
-     - `out/soundtrack.wav`: 16-bit, peaks held at or below −1 dBFS by the master limiter, TPDF dither, last sample 0.
+     - `out/soundtrack.wav`: 16-bit, peaks held at or below −1.5 dBFS by the master limiter, TPDF dither, last sample 0.
      - `out/music_stem.wav` and `out/vo_stem.wav`.
      - `out/vo_cues.csv` and `out/vo_cues_audacity.txt`.
    - The mix is reproducible to ±1 LSB. It is cached by a hash of `src/audio.js`, `src/core.js`, `src/vo_cues.js` and the VO and music files; `--fresh-audio` forces a new mix.
@@ -89,16 +91,25 @@ Other tools:
 - `node tools/snap.js --from A --to B --step S --out DIR [--sheet] [--qa] [--dist]`: frames, contact sheet and QA for a range.
 - `node tools/determinism.js [--dist]`: pixel hashes across seek orders and fresh pages.
 - `node tools/strings.js [--out FILE]`: every on-screen string with its time span.
-- `node tools/vo.js --cues | --silent | --assemble | --test FILE`: see `vo/README.md`.
+- `node tools/vo.js --cues | --take EDL.json | --assemble | --silent | --burn | --test FILE`: see `vo/README.md`.
 
 ## Voice-over workflow
 
-1. `node tools/vo.js --cues` prints the 16 lines with their slots: seconds, mm:ss.mmm and 60 fps frame numbers. It also writes
-   `out/vo_cues.csv` and an Audacity label track (`out/vo_cues_audacity.txt`).
-2. Record each line inside its slot. Pronunciation: **LInOG = "lee-nog"**, **Cabanatuan = "ka-ba-na-tu-an"**.
-   See `VO_SCRIPT.md` for delivery notes.
-3. Deliver either one 60.000 s WAV aligned to the film as `vo/vo.wav`, or per-line files `vo/VO-01.wav` … `vo/VO-16.wav`
-   assembled with `node tools/vo.js --assemble`.
+The film is narrated by an ElevenLabs read (voice "Quentin – Narrator and Educator").
+- `vo/source/elevenlabs_quentin_take1.mp3` is the take as generated.
+- `vo/source/elevenlabs_quentin_take1.json` is the edit list that cuts it into the 16 cue lines.
+- `node tools/vo.js --take vo/source/elevenlabs_quentin_take1.json --force` rebuilds `vo/vo.wav`, with every first word
+  on its cue's `in`.
+
+To replace the narration:
+1. `node tools/vo.js --cues` prints the 16 lines with their timings: seconds, mm:ss.mmm and 60 fps frame numbers. It also
+   writes `out/vo_cues.csv` and an Audacity label track (`out/vo_cues_audacity.txt`).
+2. Record each line from its `in`, ending near its `out`. Pronunciation: **LInOG = "lee-nog"**, **Cabanatuan =
+   "ka-ba-na-tu-an"**. See `VO_SCRIPT.md` for delivery notes.
+3. Deliver one of these:
+   - one 60.000 s WAV aligned to the film, as `vo/vo.wav`;
+   - per-line files `vo/VO-01.wav` … `vo/VO-16.wav`, assembled with `node tools/vo.js --assemble`;
+   - one continuous take with an edit list, fitted with `--take`.
 4. Run `node render.js`. The music ducks under the voice automatically.
 5. Optional captions: `node tools/vo.js --cues` also writes `out/vo_captions.srt` (for any player) and
    `out/vo_captions.ass`; `node tools/vo.js --burn` burns them into `out/linog_explainer_captions.mp4` without re-rendering

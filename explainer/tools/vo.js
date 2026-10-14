@@ -12,12 +12,15 @@
  *        [--dir vo] [--out vo/vo.wav]  (leading/trailing silence trimmed) starts exactly at its cue's `in`; reports
  *        [--rate 48000] [--bits 24]    lines that overrun their slot or the next line
  *        [--no-trim] [--force]
- *   node tools/vo.js --test FILE       synthetic speech-like test VO inside the cue slots (to check ducking and levels;
+ *   node tools/vo.js --take EDL.json   build vo/vo.wav from ONE continuous narration take: the edit list (e.g.
+ *        [--out vo/vo.wav] [--force]   vo/source/elevenlabs_quentin_take1.json) cuts it into the cue lines; each
+ *        [--rate 44100] [--bits 16]    line's first word lands on its cue's `in` (mono WAV)
+ *   node tools/vo.js --test FILE      synthetic speech-like test VO inside the cue slots (to check ducking and levels;
  *        [--level -26] [--shift S]     never a deliverable). --shift moves every line by S seconds (drift test).
  *        [--rate 48000] [--mono]
  *
- * --silent / --assemble refuse to overwrite a WAV that contains audio unless --force is given.
- * Requires FFmpeg on PATH for --assemble and for the overwrite check (any input format/rate is accepted).
+ * --silent / --assemble / --take refuse to overwrite a WAV that contains audio unless --force is given.
+ * Requires FFmpeg on PATH for --assemble, --take and the overwrite check (any input format/rate is accepted).
  */
 const fs = require('fs');
 const path = require('path');
@@ -197,6 +200,66 @@ function assemble({ dir, out, rate = 48000, bits = 24, trim = true, force = fals
   return { out, lines: lines.length, missing, warn };
 }
 
+/* ------------------------------------------------------------------ one continuous take → cue-aligned VO */
+/** Cuts one continuous narration take into the cue lines of an edit list (JSON: {source, lines: [{id, src: [s, e],
+ *  parts, pauses}]}, see vo/source/*.json) and puts each line's first word exactly on its cue's `in`.
+ *  Speech is found on a 10 ms RMS envelope (threshold: the line's loudest frame − 30 dB, floor −60 dBFS); pauses of
+ *  0.15 s or more split a line into parts, and a part count that differs from `parts` stops the edit. A line keeps 40 ms
+ *  before its first word and 200 ms after its last (10 ms fade-in, 60 ms fade-out). A pause with a target length loses
+ *  its middle (5 ms fades either side of the cut, which lies in silence); `gainDb` is a clip gain for the line.
+ *  Output: mono, `rate`, `bits`, 60.000 s. */
+function fromTake({ edl, out, rate = 44100, bits = 16, force = false }) {
+  const spec = JSON.parse(fs.readFileSync(edl, 'utf8'));
+  const [x] = decode(path.resolve(path.dirname(edl), spec.source), rate, 1);
+  const H = Math.round(0.01 * rate), PRE = Math.round(0.04 * rate), TAIL = Math.round(0.2 * rate), MINP = 15; // frames
+  const fade = (buf, i0, len, up) => { for (let i = 0; i < len && i0 + i < buf.length; i++) { const g = 0.5 - 0.5 * Math.cos(Math.PI * (i + 0.5) / len); buf[i0 + i] *= up ? g : 1 - g; } };
+  guardOverwrite(out, force);
+  const n = rate * DUR, y = new Float32Array(n), rows = [];
+  for (const ln of spec.lines) {
+    const k = CUES.findIndex((c) => c.id === ln.id);
+    if (k < 0) throw new Error(`${ln.id}: not in src/vo_cues.js`);
+    const c = CUES[k], a = Math.max(0, Math.round(ln.src[0] * rate)), b = Math.min(x.length, Math.round(ln.src[1] * rate));
+    const nf = Math.floor((b - a) / H), db = new Float32Array(nf);
+    let pk = -Infinity;
+    for (let f = 0; f < nf; f++) { let e = 0; for (let i = a + f * H; i < a + (f + 1) * H; i++) e += x[i] * x[i]; db[f] = 10 * Math.log10(e / H + 1e-20); pk = Math.max(pk, db[f]); }
+    const thr = Math.max(-60, pk - 30), runs = [];
+    for (let f = 0; f < nf; f++) if (db[f] > thr) { const r = runs[runs.length - 1]; if (r && f - r[1] < MINP) r[1] = f + 1; else runs.push([f, f + 1]); }
+    if (!runs.length) throw new Error(`${ln.id}: no speech in ${ln.src.join('–')} s of the take`);
+    if (ln.parts && runs.length !== ln.parts) throw new Error(`${ln.id}: ${runs.length} speech part(s) in ${ln.src.join('–')} s, the edit list expects ${ln.parts} (wrong window for this take?)`);
+    const on = a + runs[0][0] * H, off = a + runs[runs.length - 1][1] * H, s0 = Math.max(a, on - PRE), s1 = Math.min(b, off + TAIL);
+    // keep-ranges: the line minus the middle of each pause that has a target length
+    const keep = [[s0, s1]], pauses = [];
+    for (let p = 0; p + 1 < runs.length; p++) {
+      const p0 = a + runs[p][1] * H, p1 = a + runs[p + 1][0] * H, tgt = ln.pauses && ln.pauses[p] != null ? Math.round(ln.pauses[p] * rate) : null;
+      pauses.push(`${((p1 - p0) / rate).toFixed(2)}${tgt != null && p1 - p0 > tgt ? '→' + (tgt / rate).toFixed(2) : ''}`);
+      if (tgt == null || p1 - p0 <= tgt) continue;
+      const last = keep.pop();
+      keep.push([last[0], p0 + (tgt >> 1)], [p1 - (tgt - (tgt >> 1)), last[1]]);
+    }
+    const len = keep.reduce((m, [u, v]) => m + v - u, 0), seg = new Float32Array(len);
+    let o = 0;
+    keep.forEach(([u, v], j) => {
+      seg.set(x.subarray(u, v), o);
+      if (j > 0) fade(seg, o, Math.round(0.005 * rate), true);
+      if (j < keep.length - 1) fade(seg, o + (v - u) - Math.round(0.005 * rate), Math.round(0.005 * rate), false);
+      o += v - u;
+    });
+    fade(seg, 0, Math.round(0.01 * rate), true); fade(seg, len - Math.round(0.06 * rate), Math.round(0.06 * rate), false);
+    if (ln.gainDb) { const g = Math.pow(10, ln.gainDb / 20); for (let i = 0; i < len; i++) seg[i] *= g; }
+    const at = Math.round(c.in * rate) - (on - s0), cut = (s1 - s0) - len, end = c.in + (off - on - cut) / rate;
+    for (let i = 0; i < len; i++) if (at + i >= 0 && at + i < n) y[at + i] += seg[i];
+    const next = CUES[k + 1], notes = [];
+    if (next && next.in - end < 0.25) notes.push(`only ${(next.in - end).toFixed(2)} s before ${next.id}`);
+    if (Math.abs(end - c.out) > 0.05) notes.push(`cue out is ${c.out.toFixed(2)}`);
+    if (ln.gainDb) notes.unshift(`clip gain ${ln.gainDb > 0 ? '+' : ''}${ln.gainDb} dB`);
+    rows.push({ id: c.id, srcOn: on / rate, srcOff: off / rate, parts: runs.length, pauses, in: c.in, end, gap: next ? next.in - end : DUR - end, notes });
+  }
+  let pk = 0; for (let i = 0; i < n; i++) pk = Math.max(pk, Math.abs(y[i]));
+  fs.mkdirSync(path.dirname(out), { recursive: true });
+  fs.writeFileSync(out, wavBytes([y], rate, bits));
+  return { out, rows, peakDb: 20 * Math.log10(pk + 1e-12), source: spec.source };
+}
+
 /* ------------------------------------------------------------------ synthetic test VO (QA only) */
 function rng(seed) { let a = seed >>> 0; return () => { a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
 /** Speech-like test signal: voiced syllables (formant-weighted harmonics with a gliding pitch) and fricative
@@ -235,7 +298,7 @@ function testVO({ rate = 48000, level = -26, shift = 0 } = {}) {
   return x;
 }
 
-module.exports = { CUES, cueRows, cueTable, writeCueFiles, writeCaptionFiles, burnCaptions, captionEvents, writeSilentWav, wavBytes, decode, isSilent, assemble, testVO, fmtTC };
+module.exports = { CUES, cueRows, cueTable, writeCueFiles, writeCaptionFiles, burnCaptions, captionEvents, writeSilentWav, wavBytes, decode, isSilent, assemble, fromTake, testVO, fmtTC };
 
 /* ------------------------------------------------------------------ CLI */
 if (require.main === module) {
@@ -268,6 +331,13 @@ if (require.main === module) {
       for (const w of r.warn) console.log('  ⚠ ' + w);
       did = true;
     }
+    if (opt('take')) {
+      const r = fromTake({ edl: path.resolve(opt('take')), out: path.resolve(opt('out', path.join(ROOT, 'vo', 'vo.wav'))), rate: +opt('rate', 44100), bits: +opt('bits', 16), force: flag('force') });
+      console.log(`ID      take: first word – last word   parts  pauses (s)      film: in → end    gap   note`);
+      for (const w of r.rows) console.log(`${w.id.padEnd(6)}  ${w.srcOn.toFixed(2).padStart(10)} – ${w.srcOff.toFixed(2).padEnd(14)} ${String(w.parts).padStart(3)}    ${w.pauses.join(', ').padEnd(14)}  ${w.in.toFixed(2).padStart(6)} → ${w.end.toFixed(2).padEnd(6)}  ${w.gap.toFixed(2).padStart(5)}   ${w.notes.join('; ') || 'ok'}`);
+      console.log(`wrote ${rel(r.out)} from ${r.source}: ${r.rows.length} lines on their cues, peak ${r.peakDb.toFixed(1)} dBFS`);
+      did = true;
+    }
     if (opt('test')) {
       const file = path.resolve(opt('test')), rate = +opt('rate', 48000);
       if (path.resolve(file) === path.join(ROOT, 'vo', 'vo.wav') && !flag('force')) throw new Error('the test VO is a QA signal, not a deliverable: write it somewhere else than vo/vo.wav');
@@ -277,6 +347,6 @@ if (require.main === module) {
       console.log(`wrote ${rel(file)}: synthetic speech-like test VO (${rate} Hz, 24-bit, ${flag('mono') ? 'mono' : 'stereo'}), lines shifted by ${(+opt('shift', 0)).toFixed(2)} s`);
       did = true;
     }
-    if (!did) { console.log(fs.readFileSync(__filename, 'utf8').split('\n').slice(1, 18).map((l) => l.replace(/^ \*\/?/, '')).join('\n')); process.exitCode = 1; }
+    if (!did) { const src = fs.readFileSync(__filename, 'utf8').split('\n'); console.log(src.slice(1, src.findIndex((l) => l.startsWith(' */'))).map((l) => l.replace(/^ \*\/?/, '')).join('\n')); process.exitCode = 1; }
   } catch (e) { console.error(e.message); process.exitCode = 1; }
 }
