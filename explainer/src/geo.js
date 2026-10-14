@@ -52,8 +52,8 @@
   };
   /** Clip subsequent drawing to land (call inside ctx.save()/restore()). */
   G.clipLand = (ctx, view, which = 'ph') => {
-    ctx.save(); view.apply(ctx);
-    const m = ctx.getTransform(); ctx.restore();
+    // path in the caller's current space: only the view matrix goes into the path (ctx.clip applies the current transform)
+    const s = view.ppd, m = new DOMMatrix([s, 0, 0, s, view.cx - view.lon * K * s, view.cy + view.lat * s]);
     const p = new Path2D(); p.addPath(PATHS[which], m);
     ctx.clip(p);
   };

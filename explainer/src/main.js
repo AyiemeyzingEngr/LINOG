@@ -149,7 +149,7 @@
       L._sceneId = 'hud';
     }
     L.hud.draw(c, t);
-    L.bg.post(c);
+    L.bg.post(c, t);
     // the picture fades to black over the last three seconds (the music drops out under it in audio.js)
     if (t > L.FADE[0]) {
       c.save(); c.setTransform(1, 0, 0, 1, 0, 0);

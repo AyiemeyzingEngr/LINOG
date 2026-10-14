@@ -646,14 +646,17 @@
       ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
       ctx.restore();
     },
-    post(ctx) {
+    post(ctx, t = 0) {
+      // the scanline texture eases out under the end card (it would stripe the white partner band)
+      const a = 1 - L.smooth((t - 54.5) / 1.0);
+      if (a <= 0) return;
       if (!scanlineTile) {
         scanlineTile = L.canvas(W, H);
         const c = scanlineTile.getContext('2d');
         c.fillStyle = 'rgba(0,0,0,0.06)';
         for (let y = 0; y < H; y += 3) c.fillRect(0, y, W, 1);
       }
-      ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(scanlineTile, 0, 0); ctx.restore();
+      ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = a; ctx.drawImage(scanlineTile, 0, 0); ctx.restore();
     },
   };
 
