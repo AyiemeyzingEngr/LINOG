@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* Project LInOG explainer — renderer.
  *
- *   node render.js                 build → soundtrack WAV → self-test (QA) → 3,600 frames → MP4
+ *   node render.js                 build → soundtrack WAV → self-test (QA) → 3,960 frames → MP4
  *   node render.js --selftest      build → WAV → beat frames every 1.0 s + contact sheet + QA report, then stop
  *   node render.js --from 10 --to 18 --out out/act2.mp4     partial render
  *

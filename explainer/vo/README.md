@@ -53,7 +53,7 @@ Pronunciation: **LInOG** = "lee-nog" · **Cabanatuan** = "ka-ba-na-tu-an" (all f
 
 **A. One file aligned to the film.**
 - Export a single WAV as long as the film (66.000 s) whose t = 0 is the film's first frame (for example, export the whole session
-  from 0:00 to 1:00).
+  from 0:00 to 1:06).
 - Save it as `vo/vo.wav`.
 - A file of another length is padded or trimmed at the end by the renderer, so it must still start at t = 0.
 

@@ -103,7 +103,7 @@
    *   'base'  everything except the scene text, the HUD and the fade to black (opaque);
    *   'text'  the scene text alone (whatever L.text paints in a scene), on transparency, spotlit like the picture;
    *   'hud'   the HUD alone, on transparency.
-   * Stacked base → text → hud under a fade to black over 57–60 s, they give the film. While a scene draws, a router
+   * Stacked base → text → hud under the fade to black (L.FADE), they give the film. While a scene draws, a router
    * stands in for its 2D context: state and path calls reach both canvases, so transforms, clips and alpha stay in step;
    * paint calls reach only the layer being drawn (L.text marks its paint as text). Questions are answered by the base. */
   const PAINT = new Set(['fill', 'stroke', 'fillRect', 'strokeRect', 'clearRect', 'fillText', 'strokeText', 'drawImage', 'putImageData', 'drawFocusIfNeeded']);
@@ -307,8 +307,10 @@
     const ui = document.getElementById('ui');
     if (ui) ui.style.display = 'flex';
     const bar = document.getElementById('scrub'), lab = document.getElementById('time'), btn = document.getElementById('play');
+    const END = L.DURATION - 0.01, BARS = Math.ceil(L.DURATION / 2); // 120 BPM: a 4/4 bar is 2 s
+    if (bar) bar.max = String(END);
     let playing = false, ac = null, src = null, startAt = 0, offset = 0, raf = 0;
-    const show = (t) => { window.seek(t); if (bar) bar.value = String(t); if (lab) lab.textContent = `${t.toFixed(2)} s · bar ${Math.floor(t / 2) + 1}/30`; };
+    const show = (t) => { window.seek(t); if (bar) bar.value = String(t); if (lab) lab.textContent = `${t.toFixed(2)} s · bar ${Math.floor(t / 2) + 1}/${BARS}`; };
     const loop = () => { const t = offset + (ac.currentTime - startAt); if (t >= L.DURATION) { stop(); show(L.DURATION - 1e-6); return; } show(t); raf = requestAnimationFrame(loop); };
     async function play() {
       if (playing) return;
@@ -323,7 +325,7 @@
     function stop() { if (!playing) return; offset = Math.min(L.DURATION, offset + (ac.currentTime - startAt)); src.stop(); playing = false; cancelAnimationFrame(raf); btn.textContent = 'Play'; }
     btn && btn.addEventListener('click', () => (playing ? stop() : play()));
     bar && bar.addEventListener('input', () => { if (playing) stop(); offset = +bar.value; show(offset); });
-    window.addEventListener('keydown', (e) => { if (e.code === 'Space') { e.preventDefault(); playing ? stop() : play(); } if (e.code === 'ArrowRight') { stop(); offset = Math.min(59.99, offset + 0.5); show(offset); } if (e.code === 'ArrowLeft') { stop(); offset = Math.max(0, offset - 0.5); show(offset); } });
+    window.addEventListener('keydown', (e) => { if (e.code === 'Space') { e.preventDefault(); playing ? stop() : play(); } if (e.code === 'ArrowRight') { stop(); offset = Math.min(END, offset + 0.5); show(offset); } if (e.code === 'ArrowLeft') { stop(); offset = Math.max(0, offset - 0.5); show(offset); } });
     // drop a recorded vo.wav (or a music.wav named so) onto the page to hear it mixed with the score
     window.addEventListener('dragover', (e) => e.preventDefault());
     window.addEventListener('drop', async (e) => {

@@ -2,7 +2,7 @@
   "name": "linog-explainer",
   "version": "1.0.0",
   "private": true,
-  "description": "Project LInOG 60-second motion explainer: deterministic canvas animation, Web Audio soundtrack, Playwright + FFmpeg renderer.",
+  "description": "Project LInOG 66-second motion explainer: deterministic canvas animation, Web Audio soundtrack, Playwright + FFmpeg renderer.",
   "scripts": {
     "build": "node build.js",
     "snap": "node tools/snap.js",
