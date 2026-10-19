@@ -134,10 +134,11 @@ and ducking follow the voice.
   - A release before a mark is shortened so it ends just ahead of it.
   - The next line's dip waits until just after it.
   - Keep a few tenths of a second clear before each mark.
-- **Measured with this narration** (momentary loudness):
-  - The voice sits ≈ 12–13 LU over the bed during a line.
+- **Measured with this narration** (v3, the Max take):
+  - Over each line's cue window, the voice sits 11.5–18 LU over the music (median 13 LU, integrated loudness of the
+    two stems). The sign-off, VO-16, sits highest, over the quiet end-card bed.
   - The marks peak at about the voice's own peaks.
-  - The mix is ≈ −15 LUFS integrated, with true peak ≤ −1.4 dBTP.
+  - The mix is −14.7 LUFS integrated, with true peak −1.3 dBTP (−1.4 dBTP after AAC encoding in the MP4).
 
 ## Test signal (QA only)
 
