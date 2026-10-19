@@ -16,7 +16,7 @@
  *   LInOG_L1_graphics.mp4  everything but the scene text, the HUD and the fade to black (H.264, opaque)
  *   LInOG_L2_text.webm     the scene text, spotlit like the picture (VP9 with alpha)
  *   LInOG_L3_hud.webm      the phase header, tracker and logo (VP9 with alpha)
- * Stacked L1 → L2 → L3 under a fade to black over 57–60 s (inOutSine), they rebuild the film. Differences from the
+ * Stacked L1 → L2 → L3 under a fade to black over FADE (src/timing.js, inOutSine), they rebuild the film. Differences from the
  * film: the scan-line texture sits on L1 only, and the spotlight defocuses text and picture separately.
  */
 const fs = require('fs');
@@ -25,13 +25,14 @@ const path = require('path');
 const { spawn, spawnSync, execFileSync } = require('child_process');
 const { build } = require('../build');
 const lib = require('./lib');
+const TIMING = require('../src/timing.js'); // the film's length and fade
 
 const args = process.argv.slice(2);
 const opt = (k, d) => { const i = args.indexOf('--' + k); return i >= 0 && args[i + 1] !== undefined && !args[i + 1].startsWith('--') ? args[i + 1] : d; };
 const flag = (k) => args.includes('--' + k);
 const ROOT = path.resolve(__dirname, '..');
 const OUT = path.resolve(opt('out-dir', path.join(ROOT, 'out', 'layers')));
-const FPS = 60;
+const FPS = TIMING.FPS, DUR = TIMING.DURATION, [F0, F1] = TIMING.FADE;
 const FILES = { base: 'LInOG_L1_graphics.mp4', text: 'LInOG_L2_text.webm', hud: 'LInOG_L3_hud.webm' };
 const log = (...m) => console.log(`[${new Date().toISOString().slice(11, 19)}]`, ...m);
 const rel = (f) => path.relative(process.cwd(), f) || f;
@@ -96,7 +97,7 @@ async function renderLayer(app, layer, f0, f1, subframes) {
 
 /** The ffmpeg filter that restacks the layers (inputs: L1, L2, L3) under the film's fade to black. */
 const RESTACK = '[1:v]format=yuva420p[t];[2:v]format=yuva420p[h];[0:v][t]overlay=format=auto[a];[a][h]overlay=format=auto,'
-  + "fade=t=out:st=57:d=3:color=black[v]";
+  + `fade=t=out:st=${F0}:d=${F1 - F0}:color=black[v]`;
 
 function measure(a, b) { // → {psnr, ssim} of two inputs (files), compared as RGB
   const run = (f) => spawnSync('ffmpeg', ['-hide_banner', '-nostats', '-i', a, '-i', b, '-lavfi', f, '-f', 'null', '-'], { encoding: 'utf8' }).stderr || '';
@@ -114,7 +115,7 @@ async function check(app, times) {
     fs.writeFileSync(f('film'), (await lib.capture(p, t, { subframes: 1 })).png);
     for (const k of ['base', 'text', 'hud']) fs.writeFileSync(f(k), await grab(p, t, k, 1));
     // restack the stills (the fade, when t is inside it, as a black layer at the film's opacity)
-    const a = t > 57 ? 0.5 - 0.5 * Math.cos(Math.PI * (t - 57) / 3) : 0;
+    const a = t > F0 ? 0.5 - 0.5 * Math.cos(Math.PI * (t - F0) / (F1 - F0)) : 0;
     execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', f('base'), '-i', f('text'), '-i', f('hud'),
       '-filter_complex', `[0][1]overlay=format=auto[a];[a][2]overlay=format=auto,drawbox=c=black@${a.toFixed(4)}:t=fill`, f('restack')]);
     const m = measure(f('restack'), f('film'));
@@ -163,7 +164,7 @@ async function stems(app) {
     if (opt('check')) { await check(app, opt('check').split(',').map(Number)); return; }
     if (flag('stems')) { await stems(app); return; }
     const subframes = Math.max(1, +opt('subframes', 4));
-    const f0 = Math.round(+opt('from', 0) * FPS), f1 = Math.round(+opt('to', 60) * FPS);
+    const f0 = Math.round(+opt('from', 0) * FPS), f1 = Math.round(+opt('to', DUR) * FPS);
     for (const layer of opt('layers', 'base,text,hud').split(',')) {
       if (!FILES[layer]) throw new Error(`unknown layer ${layer} (base, text, hud)`);
       await renderLayer(app, layer, f0, f1, subframes);

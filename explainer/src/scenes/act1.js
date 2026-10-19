@@ -1,6 +1,6 @@
 /* Act 1 · The hook & mission (0–10 s, bars 1–5). No HUD. Camera sections [0,4] and [4,10].
- * Narrated (src/vo_cues.js): VO-01 0.5 "The Earth never stops moving." · VO-02 2.65 "Yet we seldom see it." ·
- * VO-03 4.5 "From orbit, radar measures it, even through cloud." · VO-04 7.8 "This is Project LInOG."
+ * Narrated (src/vo_cues.js): VO-01 0.4 "The Earth never stops moving." · VO-02 2.67 "Yet we seldom see it." ·
+ * VO-03 4.5 "From orbit, radar measures it, even through cloud." · VO-04 7.9 "This is Project LInOG."
  * Text v2 (≤ 6 readable strings per section): the headline THE EARTH NEVER / STOPS MOVING. (role 'headline', one QA
  * string per line) + "L-band · λ = 23.6 cm"; then "Luzon, Philippines", "ALOS-1 PALSAR · ascending pass" and the full
  * name. The title card is the official LInOG logo + the NIGS seal and the white EGG lockup (real artwork, L.drawImg).
@@ -702,12 +702,12 @@
    * 7.0 the LInOG logo is revealed left → right by a feathered sweep (the satellite "L" first, then its beam and "InOG",
    * as if the radar painted them); 7.125 / 7.25 the full name scans in; 7.25 / 7.375 the NIGS seal and the white EGG
    * lockup fade + rise in (a hairline draws between them); 7.5–9.0 the acronym decodes on quarter notes
-   * (L · In · O · G). Complete by ≈ 7.85, it holds through VO-04 "This is Project LInOG." (7.8–9.55) and leaves together
-   * 9.6 → 9.95 (fade / scan-out) as the iris closes. Without the LInOG artwork the headline PROJECT LInOG stands in. */
+   * (L · In · O · G). Complete by ≈ 7.85, it holds through VO-04 "This is Project LInOG." (7.9–9.72) and leaves together
+   * 9.7 → 9.95 (fade / scan-out) as the iris closes. Without the LInOG artwork the headline PROJECT LInOG stands in. */
   const HERO = { x: 172, y: 100, h: 176, at: 7.0, dur: 0.75, feather: 76 }; // logo:linog (≈ 190 px tall on screen)
   const SUB_O = { kind: 'sans', size: 28, weight: 500 }, SUB_X = 174, SUB_Y = [322, 360];
   const LOGO = { y: 392, h: 68, gap: 22 };             // credits row: top + height (≥ 48 px on screen, never stretched)
-  const T_OUT = 9.95, T_OUT_D = 0.35;                  // exit springs start at 9.6
+  const T_OUT = 9.95, T_OUT_D = 0.25;                  // exit springs start at 9.7, as VO-04 ends on "LInOG"
   const ACR = [0, 1, 2, 3].map((i) => 7.5 + 0.5 * i);  // acronym decode on quarter notes
   const acrK = (lt, i) => L.sp(lt, ACR[i], 0.35);
   const hi = (lt, i) => L.css(L.mix(C.text, C.cyan, clamp(acrK(lt, i))));

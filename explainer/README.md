@@ -1,4 +1,4 @@
-# Project LInOG — 60-second documentary explainer
+# Project LInOG — documentary explainer (66 s)
 
 A deterministic 1920×1080 / 60 fps scientific motion explainer for **Project LInOG** (Leveraging InSAR for Observation and
 Modeling of Earthquake Generators, UP Diliman NIGS — Earthquake Geodesy and Geology Laboratory). It is narrated by a
@@ -34,7 +34,7 @@ Requirements: Node 18+, FFmpeg ≥ 4 with libx264 and the native AAC encoder, an
 cd explainer
 npm install                    # playwright 1.56.1 (then `npx playwright install chromium` if no browser is present)
 node render.js --selftest      # build + soundtrack + 61 beat frames + contact sheet + QA report → out/selftest/
-node render.js                 # build → soundtrack → self-test → 3,600 frames → out/linog_explainer.mp4
+node render.js                 # build → soundtrack → self-test → 3,960 frames → out/linog_explainer.mp4
 node render.js --vo path/to/narration.wav     # use a recorded VO (default: vo/vo.wav)
 ```
 
@@ -44,13 +44,13 @@ What `render.js` does:
    `dist/linog_explainer.html`.
 2. **Load.** It opens the file in headless Chromium at 1920×1080 and waits for the fonts and images (`window.ready`).
 3. **Mix the soundtrack in the page** (`src/audio.js`).
-   - An OfflineAudioContext renders the score (44.1 kHz, exactly 60.000 s, seeded noise). Reverbs, ducking and limiting run in plain JS.
-   - The score is mixed with `vo/vo.wav` (`--vo FILE`, `--no-vo`; `--music FILE` replaces the score). FFmpeg first normalises these inputs to 44.1 kHz stereo of exactly 60.000 s.
+   - An OfflineAudioContext renders the score (44.1 kHz, exactly the film's length, seeded noise). Reverbs, ducking and limiting run in plain JS.
+   - The score is mixed with `vo/vo.wav` (`--vo FILE`, `--no-vo`; `--music FILE` replaces the score). FFmpeg first normalises these inputs to 44.1 kHz stereo of exactly the film's length.
    - The VO's speech level is set to −16.5 dBFS (mix ≈ −15 LUFS integrated, true peak ≤ −1 dBTP, for web delivery).
    - The music ducks −6.5 dB under every line, with a −6 dB speech-band dip (1.5 kHz) and up to −3.5 dB more from a
      sidechain on the recording. The act hits (10, 18, 30, 42 s), the 48 s accent and the 56 s arrival stay at full level
      between lines.
-   - The music drops out with a low-pass sweep and a reverb tail over 57–60 s.
+   - The music drops out with a low-pass sweep and a reverb tail over 63–66 s.
    - Outputs:
      - `out/soundtrack.wav`: 16-bit, peaks held at or below −1.5 dBFS by the master limiter, TPDF dither, last sample 0.
      - `out/music_stem.wav` and `out/vo_stem.wav`.
@@ -79,7 +79,10 @@ Options:
 - `--fps`, `--preset` (x264, default medium) and `--out FILE`.
 - `--skip-selftest`, `--force` and `--fresh-audio`.
 
-Run time on 4 cores: about 1 min for build, soundtrack (≈ 7 s) and self-test, then about 6 min for 3,600 frames.
+Run time on 4 cores: about 2 min for build, soundtrack (≈ 12 s) and self-test, then about 6 min for 3,960 frames.
+
+The film's length and its fade live in `src/timing.js` (66 s, fade 63–66 s, end-card arrival at 56 s); the page, the
+score, the renderer and every tool read them from there.
 
 Exit codes:
 - 0: ok.
@@ -96,10 +99,10 @@ Other tools:
 
 ## Voice-over workflow
 
-The film is narrated by an ElevenLabs read (voice "Quentin – Narrator and Educator").
-- `vo/source/elevenlabs_quentin_take1.mp3` is the take as generated.
-- `vo/source/elevenlabs_quentin_take1.json` is the edit list that cuts it into the 16 cue lines.
-- `node tools/vo.js --take vo/source/elevenlabs_quentin_take1.json --force` rebuilds `vo/vo.wav`, with every first word
+The film is narrated by an ElevenLabs read (v3: voice "Max – Elearning and Documentary", with Doc JD's revisions).
+- `vo/source/elevenlabs_max_take2.mp3` is the take as generated.
+- `vo/source/elevenlabs_max_take2.json` is the edit list that cuts it into the 16 cue lines.
+- `node tools/vo.js --take vo/source/elevenlabs_max_take2.json --force` rebuilds `vo/vo.wav`, with every first word
   on its cue's `in`.
 
 To replace the narration:
@@ -134,7 +137,7 @@ node tools/layers.js --check 3,12,29,50   # stills of each layer and of the rest
 - **L2 · text and labels** is VP9 with alpha. It holds whatever `L.text` paints, spotlit like the picture.
 - **L3 · HUD** is VP9 with alpha: the phase header, tracker and logo.
 
-Stacked L1 → L2 → L3 under a fade to black over 57–60 s, the layers rebuild the film: SSIM 0.994 over all 3,600 frames
+Stacked L1 → L2 → L3 under the fade to black (src/timing.js), the layers rebuild the film: SSIM 0.994 over all frames
 for the encoded layers, and 47–76 dB PSNR for most stills. Known differences:
 - the through-line passes under the headline at about 3 s instead of over it;
 - the scan-line texture sits on L1 only;
@@ -145,7 +148,8 @@ for the encoded layers, and 47–76 dB PSNR for most stills. Known differences:
 - Together they sum to the unducked score, with a residual 63 dB down.
 
 **The invideo project**, "Project LInOG · 60 s explainer (editable layers)", timeline "LInOG explainer · editable
-layers", 1080p60, has a checkpoint "v1" that matches the rendered film.
+layers", 1080p60, has a checkpoint "v1" that matches the v2 film (60 s, the Quentin read). It has not been updated
+to v3 yet: re-render the layers with `tools/layers.js` and replace them when the v3 cut is approved.
 - **Video tracks:**
   - L1 and L2 are cut at the act boundaries (10, 18, 30, 42, 52 s), giving six named clips each.
   - L3 runs 10–52 s.
@@ -181,7 +185,8 @@ because Chromium caches scaled decodes of images, which made small logo draws de
 - **VO spotlight.** While the narration names a data point (`spot` in `src/vo_cues.js`), the runtime dims and defocuses
   everything except that target. Scenes mark the target each frame with `LINOG.spot.mark`. It is a single
   quarter-resolution overlay costing about 7 ms per frame.
-- **Ending.** The picture fades to black over 57–60 s in sync with the music's low-pass drop; there is no hard cut.
+- **Ending.** The end card holds, complete, from 56 to 63 s; then the picture fades to black over 63–66 s in sync with
+  the music's low-pass drop. There is no hard cut.
 
 ## Content notes
 

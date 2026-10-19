@@ -4,11 +4,12 @@
  */
 const fs = require('fs');
 const lib = require('./lib');
+const DUR = require('../src/timing.js').DURATION;
 const args = process.argv.slice(2);
 const opt = (k, d) => { const i = args.indexOf('--' + k); return i >= 0 ? args[i + 1] : d; };
 
 (async () => {
-  const from = +opt('from', 0), to = Math.min(+opt('to', 60), 59.99), step = +opt('step', 0.1);
+  const from = +opt('from', 0), to = Math.min(+opt('to', DUR), DUR - 0.01), step = +opt('step', 0.1);
   const app = await lib.open('dev');
   const p = app.pages[0], rows = [], cur = new Map(); // cur: key → the open span for that key
   for (let t = from; t <= to + 1e-9; t = Math.round((t + step) * 1000) / 1000) {

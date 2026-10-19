@@ -1,0 +1,23 @@
+{
+  "source": "elevenlabs_max_take2.mp3",
+  "about": "ElevenLabs narration v3, voice 'Max – Elearning and Documentary' (original file ElevenLabs_2026-10-19T12_37_34_Max_-_Elearning_and_Documentary_pvc_sp100_s50_sb75_v4_1.mp3): one continuous 59.2 s read of VO script v3 (Doc JD's revisions: VO-05 'Four years of satellite radar observations, unified.', VO-16 'Project LInOG. Towards nationwide ground deformation detection from space.'), 44.1 kHz mono MP3. `node tools/vo.js --take vo/source/elevenlabs_max_take2.json --force` cuts it into the 16 cue lines and writes vo/vo.wav with each line's first word on its cue `in` (src/vo_cues.js).",
+  "how": "src: the source window [s, e] holding exactly one line, cut in the silence between lines (mid-pause). parts: how many speech runs the line has (runs split by pauses of 0.15 s or more); the tool stops if it finds a different count. pauses: optional target length (s) for each pause inside the line, in order; null keeps it as read. This read is slower than take 1, so the opening lines' comma pauses are tightened (VO-02, VO-03) to fit before the 10 s hit, and VO-09 and VO-11 lose a little of their inner pause so they finish clear of the 30 s and 42 s hits.",
+  "lines": [
+    { "id": "VO-01", "src": [0.0, 2.3], "parts": 1 },
+    { "id": "VO-02", "src": [2.3, 4.42], "parts": 2, "pauses": [0.14] },
+    { "id": "VO-03", "src": [4.42, 8.625], "parts": 3, "pauses": [0.16, 0.2] },
+    { "id": "VO-04", "src": [8.625, 11.15], "parts": 1 },
+    { "id": "VO-05", "src": [11.15, 15.065], "parts": 1 },
+    { "id": "VO-06", "src": [15.065, 18.93], "parts": 3 },
+    { "id": "VO-07", "src": [18.93, 21.605], "parts": 1 },
+    { "id": "VO-08", "src": [21.605, 25.465], "parts": 2 },
+    { "id": "VO-09", "src": [25.465, 29.685], "parts": 2, "pauses": [0.15] },
+    { "id": "VO-10", "src": [29.685, 34.73], "parts": 1 },
+    { "id": "VO-11", "src": [34.73, 40.83], "parts": 2, "pauses": [0.32] },
+    { "id": "VO-12", "src": [40.83, 43.23], "parts": 1 },
+    { "id": "VO-13", "src": [43.23, 46.49], "parts": 1 },
+    { "id": "VO-14", "src": [46.49, 50.42], "parts": 2 },
+    { "id": "VO-15", "src": [50.42, 53.65], "parts": 1 },
+    { "id": "VO-16", "src": [53.65, 59.2457], "parts": 2 }
+  ]
+}

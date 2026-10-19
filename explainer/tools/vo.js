@@ -6,9 +6,9 @@
  *                                      + out/vo_captions.srt (subtitles) + out/vo_captions.ass (burn-in style)
  *   node tools/vo.js --burn            burn the VO captions into a rendered film (no re-render):
  *        [--in out/linog_explainer.mp4] [--out out/linog_explainer_captions.mp4]
- *   node tools/vo.js --silent          write vo/vo.wav: a silent 60.000 s WAV (recording template / "no VO yet")
+ *   node tools/vo.js --silent          write vo/vo.wav: a silent WAV of the film's length (recording template)
  *        [--rate 48000] [--bits 16|24|32] [--channels 1|2] [--out FILE] [--force]
- *   node tools/vo.js --assemble        build one 60.000 s VO from per-line files vo/VO-01.wav … vo/VO-16.wav: each line
+ *   node tools/vo.js --assemble        build one VO of the film's length from per-line files vo/VO-01.wav … VO-16.wav: each line
  *        [--dir vo] [--out vo/vo.wav]  (leading/trailing silence trimmed) starts exactly at its cue's `in`; reports
  *        [--rate 48000] [--bits 24]    lines that overrun their slot or the next line
  *        [--no-trim] [--force]
@@ -28,7 +28,7 @@ const { execFileSync } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '..');
 const { CUES } = require('../src/vo_cues.js');
-const DUR = 60, FPS = 60;
+const { DURATION: DUR, FPS } = require('../src/timing.js'); // the film's length
 
 /* ------------------------------------------------------------------ cue table */
 const fmtTC = (t) => { const m = Math.floor(t / 60), s = t - m * 60; return `${String(m).padStart(2, '0')}:${s.toFixed(3).padStart(6, '0')}`; };
@@ -155,7 +155,7 @@ function guardOverwrite(file, force) {
   try { silent = isSilent(file); } catch (_) { /* unreadable: treat as audio */ }
   if (!silent) throw new Error(`${path.relative(process.cwd(), file)} contains audio — refusing to overwrite it (pass --force)`);
 }
-/** Silent WAV of exactly `seconds` (default 60.000 s). */
+/** Silent WAV of exactly `seconds` (default: the film's length). */
 function writeSilentWav(file, { rate = 48000, bits = 24, channels = 2, seconds = DUR, force = false } = {}) {
   if (![16, 24, 32].includes(bits)) throw new Error('--bits must be 16, 24 or 32 (float)');
   guardOverwrite(file, force);
@@ -187,7 +187,7 @@ function assemble({ dir, out, rate = 48000, bits = 24, trim = true, force = fals
     const at = Math.round(c.in * rate), len = b - a, end = (at + len) / rate, notes = [];
     if (len / rate > c.out - c.in + 0.1) notes.push(`overruns its ${(c.out - c.in).toFixed(2)} s slot by ${(len / rate - (c.out - c.in)).toFixed(2)} s`);
     if (next && end > next.in) notes.push(`overlaps ${next.id} (starts ${next.in.toFixed(2)} s)`);
-    if (end > DUR) notes.push('runs past 60 s (cut)');
+    if (end > DUR) notes.push(`runs past ${DUR} s (cut)`);
     for (let i = 0; i < len && at + i < n; i++) { mix[0][at + i] += l[a + i]; mix[1][at + i] += r[a + i]; }
     if (notes.length) warn.push(`${c.id}: ${notes.join('; ')}`);
     log(`${c.id.padEnd(6)}  ${path.basename(file).padEnd(18)} ${(len / rate).toFixed(2).padStart(6)}  ${(c.out - c.in).toFixed(2).padStart(5)}  ${c.in.toFixed(3).padStart(9)}  ${end.toFixed(3).padStart(8)}   ${notes.join('; ') || 'ok'}`);
@@ -207,7 +207,7 @@ function assemble({ dir, out, rate = 48000, bits = 24, trim = true, force = fals
  *  0.15 s or more split a line into parts, and a part count that differs from `parts` stops the edit. A line keeps 40 ms
  *  before its first word and 200 ms after its last (10 ms fade-in, 60 ms fade-out). A pause with a target length loses
  *  its middle (5 ms fades either side of the cut, which lies in silence); `gainDb` is a clip gain for the line.
- *  Output: mono, `rate`, `bits`, 60.000 s. */
+ *  Output: mono, `rate`, `bits`, the film's length. */
 function fromTake({ edl, out, rate = 44100, bits = 16, force = false }) {
   const spec = JSON.parse(fs.readFileSync(edl, 'utf8'));
   const [x] = decode(path.resolve(path.dirname(edl), spec.source), rate, 1);

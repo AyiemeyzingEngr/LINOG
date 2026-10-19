@@ -1,8 +1,9 @@
-/* Act 6 · Where LInOG stands today + end card (52–60 s) — bars 27–30, HUD gone: the whole title-safe frame.
- * VO-15 52.3 "This signal still needs validation on the ground." · VO-16 55.4 "Project LInOG. The work continues."
+/* Act 6 · Where LInOG stands today + end card (52–66 s) — bars 27–33, HUD gone: the whole title-safe frame.
+ * VO-15 52.3 "This signal still needs validation on the ground." · VO-16 56.3 "Project LInOG. Towards nationwide ground
+ * deformation detection from space."
  *
  * Beat plan (lt = t − 52 s · 1 beat = 0.5 s · bars start at lt 0, 2, 4, 6). The runtime adds the cut flare + shock
- * ring at 52.0 and fades the picture to black over 57–60 s (L.FADE); this act adds neither.
+ * ring at 52.0 and fades the picture to black over 63–66 s (L.FADE, src/timing.js); this act adds neither.
  *  A · WHERE LInOG STANDS TODAY (52–55) — REAL data (L.real)
  *   0.00  BAR 27 hit on act 5's last picture, reproduced exactly (handView): the real P448 F0290 product at
  *         L.CABANATUAN_VIEW under act 5's final camera, act 5's dimmed regional mosaic, land base, "no data" hatch,
@@ -15,20 +16,22 @@
  *         (descending, gold) sweeps north → south.
  *   0.50  AS OF OCTOBER 2026 · 0.625 16 frames processed · 0.75 12 ascending · 0.875 4 descending (swatches = the
  *         footprint colours) · 1.0 legend · 1.125 source. Each readable ≥ 1.6 s.
- *  B · END CARD (54–60)
+ *  B · END CARD (54–66)
  *   2.00  BAR 28: the TL leaves the bowl — contour → ring, crimson → white-hot → cyan — on an arc (≈ 360 px, peak
  *         ≈ 800 px/s) to the orbital swoosh of the white EGG lockup (ring size, aspect and tilt measured from the PNG).
  *   2.25  the map dissolves while receding; 2.5 → 2.81 the overview text unscans, top to bottom, on 32nds.
  *   2.50  PROJECT (kicker) + the official LInOG logo, wiped in left → right with a feathered edge (≈ 55.0) ·
- *         2.75 full name · 2.875 tagline.
- *   2.75  the EGG globe unmasks radially around the ring and the ring's arcs slip behind it (the TL is clipped by the
+ *         2.75 full name · 2.875 tagline TOWARDS NATIONWIDE GROUND DEFORMATION DETECTION FROM SPACE (cyan headline).
+ *   2.75  the EGG lockup (150 px tall, emphasised in v3) — its globe unmasks radially around the ring and the ring's
+ *         arcs slip behind it (the TL is clipped by the
  *         growing globe disc): the ring takes the artwork's white and becomes the logo's orbit; a cyan satellite
  *         bead + streak carries the through-line. 2.875 the lab wordmark wipes in.
  *   2.875 a white hairline draws out from the centre and opens into the partner band on the 55.0 beat; 3.125 → 3.56
  *         logos (+ captions) fade + rise left → right on 32nds; 3.625 JAXA/METI credit; 3.75 footer (read by ≈ 55.9).
  *   4.00  BAR 29 (56.0 hit): orbital ripple + ring flare. Then the card holds with gentle motion: the satellite keeps
  *         orbiting (one orbit per two bars, behind the globe and out again), the kicker's tracking breathes open, the
- *         ring glow breathes on the beat, the camera pushes ×1.04 per section. 57–60: the runtime fade to black.
+ *         ring glow breathes on the beat, the camera pushes ×1.04 over 56–66. The card holds, complete, 56–63 for
+ *         the sign-off and the logos; 63–66: the runtime fade to black.
  */
 (function () {
   'use strict';
@@ -290,9 +293,9 @@
 
   /* ------------------------------------------------------------ end card layout (world px) */
   // kicker · the official LInOG logo (hero) · full name · tagline · EGG lockup (+ TL ring) · partner band; footer = screen
-  const KICK_Y = 166, LOGO = { top: 188, h: 236 }, NAME_Y = 482, TAG_Y = 520;
-  const LOCK = { h: 92, top: 562 };
-  const BAND = { y: 694, h: 216 };
+  const KICK_Y = 146, LOGO = { top: 166, h: 236 }, NAME_Y = 458, TAG_Y = 499;
+  const LOCK = { h: 150, top: 526 };   // the white EGG lockup with its orbiting satellite (v3: 92 → 150 px, emphasised)
+  const BAND = { y: 700, h: 216 };
   /* The white EGG lockup (assets/logos/egg_lockup_white.png, 632 × 260), measured from the PNG in its own pixels:
    * the orbital swoosh is the centre line of an ellipse (two-arc least-squares fit), the globe its outer circle; the
    * swoosh arcs stop where they would enter the globe (r ≈ 88.5); the lab wordmark starts at x = 179. */
@@ -361,7 +364,8 @@
   }
 
   /* ------------------------------------------------------------ end card drawing */
-  const kickTracking = (lt) => 0.3 + 0.06 * L.ease.inOutSine((lt - 3.0) / 5.0);   // breathes open through the hold
+  const HOLD = L.DURATION - T0 - 3.0;                                              // 55.0 → the end of the film
+  const kickTracking = (lt) => 0.3 + 0.06 * L.ease.inOutSine((lt - 3.0) / HOLD);  // breathes open through the hold
   const logoK = (lt) => sp(lt, T_HERO, 0.6);
   let SCR = null;                                                                  // scratch canvas (fully redrawn on use)
   /** The official LInOG logo (hero): a feathered wipe left → right, the way the satellite's beam reads the letters,
@@ -399,13 +403,13 @@
     }
     // fallback while assets/logos/linog.png is missing: the wordmark, centred on the logo's slot
     L.text(ctx, [{ s: L.caps('Project '), color: C.text }, { s: 'LInOG', color: C.cyan }], 960, LOGO.top + LOGO.h / 2 + 34,
-      { kind: 'display', size: 96, weight: 700, tracking: 0.02 + 0.012 * L.ease.inOutSine((lt - 3.0) / 5.0), align: 'center', p, role: 'headline', id: 'a6-title' });
+      { kind: 'display', size: 96, weight: 700, tracking: 0.02 + 0.012 * L.ease.inOutSine((lt - 3.0) / HOLD), align: 'center', p, role: 'headline', id: 'a6-title' });
   }
   function drawNames(ctx, lt) {
     L.text(ctx, 'Leveraging InSAR for Observation and Modeling of Earthquake Generators', 960, NAME_Y,
       { kind: 'sans', size: 30, weight: 500, color: C.text, align: 'center', p: sp(lt, 2.75, 0.4), id: 'a6-name' });
-    L.text(ctx, 'Measuring mm-scale crustal movements from space', 960, TAG_Y,
-      { kind: 'sans', size: 25, weight: 500, color: C.textDim, align: 'center', p: sp(lt, 2.875, 0.4), id: 'a6-tag' });
+    L.text(ctx, L.caps('Towards nationwide ground deformation detection from space'), 960, TAG_Y,
+      { kind: 'display', size: 26, weight: 700, tracking: 0.06, color: L.ink(C.cyan), align: 'center', p: sp(lt, 2.875, 0.4), role: 'headline', id: 'a6-tag' });
   }
   /** The white EGG lockup: the globe unmasks radially around the ring, then the lab wordmark wipes in. */
   function drawLockup(ctx, lt, E) {
@@ -559,7 +563,7 @@
 
   /* ------------------------------------------------------------ scene */
   L.scene({
-    id: 'act6', t0: T0, t1: T0 + 8,
+    id: 'act6', t0: T0, t1: L.DURATION,
     focus: FOCUS,
     init() {
       handView(); vbarCanvas(); ensure();

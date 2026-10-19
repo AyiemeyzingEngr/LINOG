@@ -7,7 +7,7 @@
  *         the VO-06 spotlight target 'network').  Everything stays inside the HUD-safe box at the section's maximum
  *         camera push (×1.04 in 10–14, ×1.0816 in 14–18).
  * TEXT  (v2, narrated film: ≤ 6 readable strings per section; the narration carries the story)
- *   10–14  "779" · "PALSAR Level 1.1 archives · 1.04 TB" · "FBS" · "FBD" ·
+ *   10–14  "779" · "PALSAR Level 1.1 archives · 2007–2011 · 1.04 TB" · "FBS" · "FBD" ·
  *          "FBS band-limited 28 → 14 MHz · FBS + FBD merged into one stack" · "Level 1.1 SLC"
  *   14–18  "Elevation model" · "NAMRIA IfSAR DEM (+ SRTM) · schematic" · "Baseline network" · "P448 F0290 · 24 dates" ·
  *          "· 149 pairs formed" · "Schematic dates and baselines"
@@ -23,7 +23,7 @@
  *  10.625  speckled SLC scene strip scans in above the chip (crisp 2:1); 10.75 zoom box, 10.875 zoom leaders → the
  *          chip is that box blown up, one sample per cell.  11.125 the phase channel scans over the chip.
  *  10.750–11.625  41×19 = 779 tiles fill in eight 16th-note sweeps; the hero counter (display 700, amber ink) rolls
- *          0 → 779 with them and holds to the end of the section.  10.875 "PALSAR Level 1.1 archives · 1.04 TB".
+ *          0 → 779 with them and holds to the end of the section.  10.875 "PALSAR Level 1.1 archives · 2007–2011 · 1.04 TB" (VO-05: "Four years of satellite radar observations").
  *  11.000  divider; 11.25 frequency axis (deco ticks −14…+14 MHz); 11.5 FBS 28 MHz band (amber) + label;
  *          11.75 FBD 14 MHz band (blue) + label.
  * ── Bar 7 · 12–14 s ────────────────────────────────────────────────────────────────────────────────
@@ -535,7 +535,7 @@
       const co = { kind: 'display', size: 88, weight: 700, color: ink().amber, p: rv(lt, 0.625, 0.3), scanColor: C.amber };
       counter(ctx, A.gx - 4, A.cy, count, A.cols * A.rows, co, null, null, 'a2-count');
       const wBox = L.measure(ctx, '779', co).w;
-      cardText(ctx, 'PALSAR Level 1.1 archives · 1.04 TB', A.gx - 4 + wBox + 26, A.cy, { kind: 'sans', size: 26, weight: 500, p: rv(lt, 0.875, 0.4), scanColor: C.amber });
+      cardText(ctx, 'PALSAR Level 1.1 archives · 2007–2011 · 1.04 TB', A.gx - 4 + wBox + 26, A.cy, { kind: 'sans', size: 26, weight: 500, p: rv(lt, 0.875, 0.4), scanColor: C.amber });
       drawUnify(ctx, lt, t);
     });
   }

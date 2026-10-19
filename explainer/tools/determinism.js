@@ -5,6 +5,7 @@
  */
 const crypto = require('crypto');
 const lib = require('./lib');
+const DUR = require('../src/timing.js').DURATION;
 
 const args = process.argv.slice(2);
 const opt = (k, d) => { const i = args.indexOf('--' + k); return i >= 0 ? args[i + 1] : d; };
@@ -30,7 +31,7 @@ async function hashes(mode, times) {
 (async () => {
   const n = +opt('n', 48);
   const mode = args.includes('--dist') ? require('../build').build() : 'dev';
-  const times = Array.from({ length: n }, (_, i) => Math.round(((i + 0.37) * 60 / n) * 1000) / 1000);
+  const times = Array.from({ length: n }, (_, i) => Math.round(((i + 0.37) * DUR / n) * 1000) / 1000);
   const rng = (() => { let a = 12345; return () => ((a = (Math.imul(a, 1103515245) + 12345) >>> 0) / 4294967296); })();
   const shuffled = times.slice().sort(() => rng() - 0.5).sort((a, b) => crypto.createHash('md5').update(String(a)).digest()[0] - crypto.createHash('md5').update(String(b)).digest()[0]);
   const A = await hashes(mode, times);

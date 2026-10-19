@@ -8,7 +8,8 @@
   'use strict';
   const L = (window.LINOG = window.LINOG || {});
   const W = 1920, H = 1080, TAU = Math.PI * 2;
-  Object.assign(L, { W, H, TAU, BPM: 120, BEAT: 0.5, BAR: 2, DURATION: 60, FPS: 60 });
+  const TM = L.TIMING; // src/timing.js: the film's length and fade
+  Object.assign(L, { W, H, TAU, BPM: 120, BEAT: 0.5, BAR: 2, DURATION: TM.DURATION, FPS: TM.FPS });
 
   /* ------------------------------------------------------------------ palette */
   const C = (L.C = {
@@ -26,10 +27,10 @@
   /* ------------------------------------------------------------------ timeline */
   L.ACTS = [
     { id: 'act1', t0: 0, t1: 10 }, { id: 'act2', t0: 10, t1: 18 }, { id: 'act3', t0: 18, t1: 30 },
-    { id: 'act4', t0: 30, t1: 42 }, { id: 'act5', t0: 42, t1: 52 }, { id: 'act6', t0: 52, t1: 60 },
+    { id: 'act4', t0: 30, t1: 42 }, { id: 'act5', t0: 42, t1: 52 }, { id: 'act6', t0: 52, t1: TM.DURATION },
   ];
   // Sub-sections from the storyboard. Camera pushes 1.00 -> 1.04 across each one.
-  L.SECTIONS = [[0, 4], [4, 10], [10, 14], [14, 18], [18, 22], [22, 26], [26, 30], [30, 36], [36, 42], [42, 48], [48, 52], [52, 56], [56, 60]];
+  L.SECTIONS = [[0, 4], [4, 10], [10, 14], [14, 18], [18, 22], [22, 26], [26, 30], [30, 36], [36, 42], [42, 48], [48, 52], [52, 56], [56, TM.DURATION]];
   /* Processing phases, numbered and named as in the LInOG ALOS-1 FBS+FBD pipeline v4.0 (processing manual D6, cited by
    * the DOST Y2Q2 report: "Phases 0 to 7 of the pipeline, 23 quality gates (G1–G23)"). `label` = the manual's phase
    * title, `short` = the tracker label (flowchart deck v4.0, slide 1). t0/t1 = where the film depicts the phase. */
@@ -55,7 +56,7 @@
   L.SAFE_HUD = { x0: 96, y0: 132, x1: 1824, y1: 958 };
   L.HUD_WINDOW = [10, 52];
   /** The film fades to black over its last three seconds (picture here, music in audio.js). */
-  L.FADE = [57, 60];
+  L.FADE = TM.FADE.slice();
   /** Shared by act 5 (ends on it) and act 6 (starts on it): the real P448 F0290 map around the Cabanatuan bowl, in WORLD
    *  coordinates (before the camera). The bowl's deepest point in the product is at BOWL. */
   L.CABANATUAN_VIEW = { lon: 121.1, lat: 15.45, ppd: 2000, cx: 960, cy: 540 };

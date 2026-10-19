@@ -4,15 +4,17 @@ The film is narrated in 16 short lines. Their text, delivery notes and timing li
 `src/vo_cues.js`. The picture (spotlights) and the soundtrack (music ducking) both read it. On the film timeline, each
 line's `in` is its first word and its `out` is the end of its last word.
 
-`vo/vo.wav` is the **delivered narration**: an ElevenLabs read (voice "Quentin – Narrator and Educator"). It is
-60.000 s, 44.1 kHz, 16-bit mono, with every line's first word on its cue's `in`.
+`vo/vo.wav` is the **delivered narration** (v3): an ElevenLabs read by the voice "Max – Elearning and Documentary",
+with Doc JD's revisions. It is as long as the film (66.000 s, src/timing.js), 44.1 kHz, 16-bit mono, with every line's
+first word on its cue's `in`.
 
-- The source take: `vo/source/elevenlabs_quentin_take1.mp3`.
-- The edit list: `vo/source/elevenlabs_quentin_take1.json`.
-- Rebuild it with `node tools/vo.js --take vo/source/elevenlabs_quentin_take1.json --force`.
+- The source take: `vo/source/elevenlabs_max_take2.mp3`.
+- The edit list: `vo/source/elevenlabs_max_take2.json`.
+- Rebuild it with `node tools/vo.js --take vo/source/elevenlabs_max_take2.json --force`.
+- The v2 read (voice "Quentin – Narrator and Educator") and its edit list stay in `vo/source/elevenlabs_quentin_take1.*`.
 
 To render without narration, use `node render.js --no-vo`. `node tools/vo.js --silent --out FILE` writes a silent
-60.000 s template.
+template as long as the film.
 
 ## 1. Get the cue sheet
 
@@ -50,10 +52,10 @@ Pronunciation: **LInOG** = "lee-nog" · **Cabanatuan** = "ka-ba-na-tu-an" (all f
 ## 3. Deliver: three ways
 
 **A. One file aligned to the film.**
-- Export a single WAV of exactly 60.000 s whose t = 0 is the film's first frame (for example, export the whole session
+- Export a single WAV as long as the film (66.000 s) whose t = 0 is the film's first frame (for example, export the whole session
   from 0:00 to 1:00).
 - Save it as `vo/vo.wav`.
-- A file that is not exactly 60.000 s long is padded or trimmed at the end by the renderer, so it must still start at t = 0.
+- A file of another length is padded or trimmed at the end by the renderer, so it must still start at t = 0.
 
 **B. One file per line.** Name each file after its cue ID: `vo/VO-01.wav`, `vo/VO-02.wav`, … `vo/VO-16.wav`. Missing
 lines stay silent. Then assemble them:
@@ -70,7 +72,7 @@ node tools/vo.js --assemble --force    # → vo/vo.wav (48 kHz 24-bit stereo)
   first sample).
 
 **C. One continuous take** (how the current narration was made). For a TTS or studio read of the whole script in one
-file, write an edit list next to it, like `vo/source/elevenlabs_quentin_take1.json`. For each line, give:
+file, write an edit list next to it, like `vo/source/elevenlabs_max_take2.json`. For each line, give:
 - `src`: the source window, cut in the pauses between lines;
 - `parts`: how many speech runs the line has;
 - `pauses` (optional): target lengths for its internal pauses;
@@ -79,7 +81,7 @@ file, write an edit list next to it, like `vo/source/elevenlabs_quentin_take1.js
 Then:
 
 ```bash
-node tools/vo.js --take vo/source/elevenlabs_quentin_take1.json --force
+node tools/vo.js --take vo/source/elevenlabs_max_take2.json --force
 ```
 
 - The tool finds speech on a 10 ms envelope. It stops if a window holds a different number of speech runs than
@@ -91,16 +93,21 @@ node tools/vo.js --take vo/source/elevenlabs_quentin_take1.json --force
 After a new take, set each cue's `out` in `src/vo_cues.js` to the printed end (rounded up to 0.05 s), so that captions
 and ducking follow the voice.
 
-**How the current take was fitted**
-- The ElevenLabs read is 54.5 s long. Its 16 lines were identified from their pauses and confirmed by their lengths and
-  by fricatives at the boundaries: "Seven…", "…archives,", "…products.", "…subsidence.", "…continues.".
-- Only three cues moved:
-  - VO-02: 2.90 → 2.65 s.
-  - VO-03: 4.60 → 4.50 s, landing on ALOS-1 appearing in its orbit.
-  - Both moves keep the gaps before "From orbit…" and "This is Project LInOG." at about 0.33 s without speeding up the voice.
-- Two pauses were shortened: VO-03's two comma pauses, 0.29 → 0.18 s and 0.40 → 0.22 s.
-- VO-02 has a +2 dB clip gain, because the read is about 3 LU softer than the other lines.
-- Every other line is on its original `in`, unedited.
+**How the current take (v3) was fitted**
+- The read is 59.2 s long, slower than the v2 take. Its 16 lines were identified from their pauses and confirmed by
+  their lengths and by fricatives at the boundaries: "Four…", "…satellite data show subsidence.", "…products.",
+  "…from space.".
+- Seven cues moved, by 0.05–0.30 s:
+  - VO-01 starts at 0.40 s, VO-02 at 2.67 s, VO-03 at 4.50 s and VO-04 at 7.90 s. The opening four lines finish
+    0.28 s before the 10 s hit, with about 0.3 s between them.
+  - VO-09 starts at 26.0 s, VO-11 at 36.2 s and VO-13 at 44.85 s. They end 0.31–0.37 s clear of the 30 s and 42 s
+    hits and the 48 s reveal.
+- Five pauses were shortened:
+  - VO-02's pause after "Yet": 0.16 → 0.14 s;
+  - VO-03's comma pauses: 0.29 → 0.16 s and 0.40 → 0.20 s;
+  - VO-09's comma pause: 0.21 → 0.15 s;
+  - VO-11's pause between its two sentences: 0.45 → 0.32 s.
+- No speed change and no clip gain. VO-16, the sign-off, runs 56.3–61.3 s over the end card.
 
 ## 4. Hear it and render
 

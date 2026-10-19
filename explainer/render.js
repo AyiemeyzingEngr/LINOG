@@ -26,6 +26,8 @@ const { spawn, spawnSync, execFileSync } = require('child_process');
 const { build } = require('./build');
 const lib = require('./tools/lib');
 const voTools = require('./tools/vo');
+const TIMING = require('./src/timing.js'); // the film's length and fade
+const DUR = TIMING.DURATION, AUDIO_FRAMES = 44100 * DUR;
 
 const args = process.argv.slice(2);
 const opt = (k, d) => { const i = args.indexOf('--' + k); return i >= 0 ? args[i + 1] : d; };
@@ -45,7 +47,7 @@ function checkFfmpeg() {
 
 const rel = (f) => path.relative(process.cwd(), f);
 const sha1 = (buf) => crypto.createHash('sha1').update(buf).digest('hex');
-const NORM = 'ffmpeg-44k1-s24-stereo-2646000-v1'; // bump when normaliseInput() changes
+const NORM = `ffmpeg-44k1-s24-stereo-${AUDIO_FRAMES}-v1`; // bump when normaliseInput() changes
 
 /** The external inputs: --vo FILE (default vo/vo.wav when present; --no-vo disables) and --music FILE. */
 function audioInputs() {
@@ -57,13 +59,13 @@ function audioInputs() {
   };
   return { vo: pick('vo', path.join(__dirname, 'vo', 'vo.wav')), music: pick('music', null) };
 }
-/** Any audio file → 44.1 kHz stereo 24-bit PCM, padded/trimmed to exactly 60.000 s (2,646,000 frames). Mono is
+/** Any audio file → 44.1 kHz stereo 24-bit PCM, padded/trimmed to exactly the film's length (DUR s). Mono is
  *  duplicated to both channels (not −3 dB); more than two channels are downmixed. Deterministic. */
 function normaliseInput(src, dst) {
   const ch = +execFileSync('ffprobe', ['-v', 'error', '-select_streams', 'a:0', '-show_entries', 'stream=channels', '-of', 'csv=p=0', src], { encoding: 'utf8' }).trim();
   if (!ch) throw new Error(`${rel(src)}: no audio stream`);
   const seconds = +execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', src], { encoding: 'utf8' }).trim();
-  const af = `${ch === 1 ? 'pan=stereo|c0=c0|c1=c0,' : ''}aresample=44100,aformat=sample_fmts=s32:channel_layouts=stereo,apad=whole_len=2646000,atrim=end_sample=2646000`;
+  const af = `${ch === 1 ? 'pan=stereo|c0=c0|c1=c0,' : ''}aresample=44100,aformat=sample_fmts=s32:channel_layouts=stereo,apad=whole_len=${AUDIO_FRAMES},atrim=end_sample=${AUDIO_FRAMES}`;
   execFileSync('ffmpeg', ['-v', 'error', '-y', '-i', src, '-map', '0:a:0', '-af', af, '-fflags', '+bitexact', '-flags:a', '+bitexact', '-map_metadata', '-1', '-c:a', 'pcm_s24le', dst]);
   return { channels: ch, seconds };
 }
@@ -106,7 +108,7 @@ async function soundtrack(p) {
   for (const kind of ['vo', 'music']) {
     if (!inp[kind]) continue;
     const norm = path.join(tmp, `${kind}_44k1.wav`), src = normaliseInput(inp[kind], norm);
-    if (Math.abs(src.seconds - 60) > 0.001) log(`  ⚠ ${rel(inp[kind])} is ${src.seconds.toFixed(3)} s long — ${src.seconds < 60 ? 'padded' : 'trimmed'} to 60.000 s (it must start at t = 0)`);
+    if (Math.abs(src.seconds - DUR) > 0.001) log(`  ⚠ ${rel(inp[kind])} is ${src.seconds.toFixed(3)} s long — ${src.seconds < DUR ? 'padded' : 'trimmed'} to ${DUR.toFixed(3)} s (it must start at t = 0)`);
     const info = await sendAudio(p.page, kind, norm);
     if (kind === 'vo') log(`  VO: ${src.channels} ch → stereo; ${info.silent ? 'silent (no speech: music ducks by the cue sheet only)' : `active speech level ${info.levelDb} dBFS → gain ${info.gainDb > 0 ? '+' : ''}${info.gainDb} dB (target ${info.targetDb} dBFS), peak limiter ${info.limiterDb} dB, peak ${info.peakDb} dBFS`}`);
     else log(`  music: ${src.channels} ch, active level ${info.activeDb} dBFS → gain ${info.gainDb} dB`);
@@ -115,7 +117,7 @@ async function soundtrack(p) {
   const get = async (stem) => Buffer.from(await p.page.evaluate((s) => window.LINOG.audio.wavBase64({ stem: s }), stem), 'base64');
   const buf = await get('mix');
   const frames = (buf.length - 44) / 4;
-  if (frames !== 44100 * 60) throw new Error('soundtrack is not exactly 60.000 s');
+  if (frames !== AUDIO_FRAMES) throw new Error(`soundtrack is not exactly ${DUR.toFixed(3)} s`);
   fs.writeFileSync(file, buf);
   fs.writeFileSync(stems.music, await get('music'));
   if (inp.vo) fs.writeFileSync(stems.vo, await get('vo')); else fs.rmSync(stems.vo, { force: true });
@@ -135,8 +137,8 @@ async function selftest(app) {
   fs.mkdirSync(dir, { recursive: true });
   const p = app.pages[0];
   const times = [];
-  for (let s = 0; s < 60; s++) times.push(s);
-  times.push(59.99);
+  for (let s = 0; s < DUR; s++) times.push(s);
+  times.push(DUR - 0.01);
   const files = [];
   for (const t of times) {
     const { png } = await lib.capture(p, t);
@@ -145,10 +147,10 @@ async function selftest(app) {
   }
   const list = path.join(dir, 'inputs.txt');
   fs.writeFileSync(list, files.map((f) => `file '${f}'`).join('\n'));
-  execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', list, '-vf', 'scale=384:216,tile=8x8:padding=4:color=0x05080F', '-frames:v', '1', path.join(dir, 'contact_sheet.png')]);
+  execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', list, '-vf', `scale=384:216,tile=${Math.ceil((DUR + 1) / 8)}x8:padding=4:color=0x05080F`, '-frames:v', '1', path.join(dir, 'contact_sheet.png')]);
   fs.unlinkSync(list);
   log(`self-test: ${files.length} beat frames + contact sheet in ${path.relative(process.cwd(), dir)}`);
-  const qa = await lib.runQA(p, { from: 0, to: 60, step: 0.25, log: (m) => log(m) });
+  const qa = await lib.runQA(p, { from: 0, to: DUR, step: 0.25, log: (m) => log(m) });
   if (app.info.fontsMissing.length) qa.issues.push({ t: null, kind: 'fonts', msg: 'missing: ' + app.info.fontsMissing.join(', ') });
   if ((app.info.assetsMissing || []).length) qa.issues.push({ t: null, kind: 'assets', msg: 'images failed to load: ' + app.info.assetsMissing.join(', ') });
   const report = `LInOG explainer self-test\nframes checked: ${qa.stats.frames} (every 0.25 s) + 5 match-cut pairs\nframe draw + raster time: avg ${qa.stats.msAvg.toFixed(1)} ms, max ${qa.stats.msMax.toFixed(0)} ms\nissues: ${qa.issues.length}\n\n${lib.summarize(qa.issues)}\n`;
@@ -161,7 +163,7 @@ async function selftest(app) {
 }
 
 async function renderVideo(app, wav, out) {
-  const fps = +opt('fps', 60), from = +opt('from', 0), to = +opt('to', 60);
+  const fps = +opt('fps', TIMING.FPS), from = +opt('from', 0), to = +opt('to', DUR);
   const subframes = Math.max(1, +opt('subframes', 4));
   const f0 = Math.round(from * fps), f1 = Math.round(to * fps), total = f1 - f0;
   const a0 = f0 / fps, adur = total / fps; // audio trimmed to exactly the rendered frames

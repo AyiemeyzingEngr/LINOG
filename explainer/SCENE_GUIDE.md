@@ -100,7 +100,7 @@ No other hues except inside data colormaps.
 
 ## 3. The through-line: "The Radar Phase Wave"
 
-One luminous object tracked for all 60 s; every act boundary is a physical morph / match cut of it.
+One luminous object tracked for the whole film; every act boundary is a physical morph / match cut of it.
 State (screen space): `{x, y, size, rot, form, to, k, phase, amp, energy, alpha, tint, cycles, seed, aspect}`.
 Forms (closed loops; morphs are point-wise, so `pulse → anything` "opens" the wave into a loop):
 
@@ -243,7 +243,7 @@ VO-03 4.5 "From orbit, radar measures it, even through cloud." · VO-04 7.8 "Thi
   Title Case. Replace the "UPD NIGS · EGG Laboratory" text line with the real logos (NIGS seal + white EGG lockup, ~56 px
   tall, above or below the title). Cut "L-band radar sees through cloud" and "Mapping ground motion … 2007–2011".
 
-**Act 2 · 10–18 · Phases 0–1 (10–14), Phase 2 (14–18).** VO-05 10.3 "Seven hundred seventy-nine radar archives, unified."
+**Act 2 · 10–18 · Phases 0–1 (10–14), Phase 2 (14–18).** VO-05 10.3 "Four years of satellite radar observations, unified."
 ★`archives` 10.6–13.7 (the 779 counter + archive grid card) · VO-06 14.3 "Mapped onto the terrain, then linked, pair by
 pair." ★`network` 15.6–17.6 (the baseline-network panel).
 - Text v2: "779" + "PALSAR Level 1.1 archives · 1.04 TB"; card headers in sentence case ("Level 1.1 SLC", "Range
@@ -280,16 +280,20 @@ VO-12 42.4 "Every pixel is placed on the map." · VO-13 45.0 "Each frame is deli
   validation"; legend "Vertical velocity (cm/yr)" −5…+5; source "LInOG product P448 F0290". No fault trace, no GNSS,
   no cumulative cm, no "schematic" on this real map.
 
-**Act 6 · 52–60 · Where LInOG stands today + end card** (HUD gone by 52). VO-15 52.3 "This signal still needs validation on
-the ground." · VO-16 55.4 "Project LInOG. The work continues."
+**Act 6 · 52–66 · Where LInOG stands today + end card** (HUD gone by 52). VO-15 52.3 "This signal still needs validation on
+the ground." · VO-16 56.3 "Project LInOG. Towards nationwide ground deformation detection from space."
 - 52–55: pull back from Cabanatuan to ALL processed data (real `L.real.asc` mosaic, then `L.real.desc` joining with its
   footprints): headline **AS OF OCTOBER 2026** (or similar); "16 frames processed"; "12 ascending · Paths 447–449";
   "4 descending · Path 84"; legend. The TL contour opens into a ring that sweeps out with the reveal.
 - 55–57: end card fully readable from ≈ 55.0: **PROJECT LInOG** (use `L.img('logo:linog')` instead when it exists), full name
-  in Title Case, tagline; the white EGG lockup — the TL ring settles into the EGG mark's orbit; a white partner band with
+  in Title Case, the tagline **TOWARDS NATIONWIDE GROUND DEFORMATION DETECTION FROM SPACE** (cyan, `role:'headline'`);
+  the white EGG lockup, 150 px tall (v3, emphasised) — the TL ring settles into the EGG mark's orbit; a white partner band with
   real logos and small sentence-case group captions: Implementing agency (UP seal, NIGS) · Funded by (DOST-PCIEERD) ·
   Supporting agencies (DOST-PHIVOLCS, PhilSA) · Partners (UP CSRC, UP ISC) · Satellite data (JAXA + "ALOS PALSAR © JAXA/METI").
-- 57–60: the runtime fades the picture to black (do not add your own fade); keep gentle motion underneath. No hard cut.
+- 56–63: the card holds, complete, under VO-16 and then on its own for the logos (gentle motion: the orbiting
+  satellite, the breathing kicker).
+- 63–66: the runtime fades the picture to black (L.FADE from src/timing.js; do not add your own fade); keep gentle
+  motion underneath. No hard cut.
 
 ## 7. Self-test loop (do this, repeatedly)
 

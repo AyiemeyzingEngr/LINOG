@@ -40,6 +40,21 @@ window.GEO_DATA = {
 };
 
 </script>
+<script>/* src/timing.js */
+/* LInOG explainer — the film's length and ending. One source for the page (LINOG.TIMING, read by core.js, audio.js and
+ * the scenes) and for the Node tools (render.js, tools/*.js).
+ * DURATION: the film, in seconds (DURATION × FPS frames). FADE: the picture fades to black and the score falls away
+ * under a low-pass sweep over these seconds. END_CARD: the end card's music arrival (D major), the start of the hold
+ * on the logos. The film was 60 s with FADE 57–60; v3 holds the end card 56–63 s for the longer sign-off and the logos.
+ */
+(function (root) {
+  'use strict';
+  const TIMING = { DURATION: 66, FPS: 60, FADE: [63, 66], END_CARD: 56 };
+  if (typeof module !== 'undefined' && module.exports) module.exports = TIMING;
+  else { const L = (root.LINOG = root.LINOG || {}); L.TIMING = TIMING; }
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
 <script>/* src/vo_cues.js */
 /* LInOG explainer — voice-over cue sheet (VO script v2). Single source of truth for:
  *   - the page: spotlight timing (LINOG.spot) and music ducking (LINOG.audio),
@@ -54,22 +69,22 @@ window.GEO_DATA = {
 (function (root) {
   'use strict';
   const CUES = [
-    { id: 'VO-01', in: 0.5, out: 2.35, text: 'The Earth never stops moving.', delivery: 'Slow and weighty; each word lands with the title.' },
-    { id: 'VO-02', in: 2.65, out: 4.15, text: 'Yet we seldom see it.', delivery: 'Quieter, close to the microphone.' },
-    { id: 'VO-03', in: 4.5, out: 7.5, text: 'From orbit, radar measures it, even through cloud.', delivery: 'Opening up; a sense of scale.' },
-    { id: 'VO-04', in: 7.8, out: 9.55, text: 'This is Project LInOG.', delivery: 'Clear and proud. LInOG = "lee-nog".' },
-    { id: 'VO-05', in: 10.3, out: 13.8, text: 'Seven hundred seventy-nine radar archives, unified.', delivery: 'Crisp and factual.', spot: { target: 'archives', t0: 10.6, t1: 13.7, strength: 0.8 } },
-    { id: 'VO-06', in: 14.3, out: 17.45, text: 'Mapped onto the terrain, then linked, pair by pair.', delivery: 'Measured.', spot: { target: 'network', t0: 15.6, t1: 17.6, strength: 0.6 } },
-    { id: 'VO-07', in: 18.4, out: 20.4, text: 'Aligned to a fraction of a pixel.', delivery: 'Precise.', spot: { target: 'subpixel', t0: 19.2, t1: 21.6, strength: 0.75 } },
+    { id: 'VO-01', in: 0.4, out: 2.4, text: 'The Earth never stops moving.', delivery: 'Slow and weighty; each word lands with the title.' },
+    { id: 'VO-02', in: 2.67, out: 4.2, text: 'Yet we seldom see it.', delivery: 'Quieter, close to the microphone.' },
+    { id: 'VO-03', in: 4.5, out: 7.6, text: 'From orbit, radar measures it, even through cloud.', delivery: 'Opening up; a sense of scale.' },
+    { id: 'VO-04', in: 7.9, out: 9.75, text: 'This is Project LInOG.', delivery: 'Clear and proud. LInOG = "lee-nog".' },
+    { id: 'VO-05', in: 10.3, out: 13.75, text: 'Four years of satellite radar observations, unified.', delivery: 'Crisp and factual.', spot: { target: 'archives', t0: 10.6, t1: 13.7, strength: 0.8 } },
+    { id: 'VO-06', in: 14.3, out: 17.7, text: 'Mapped onto the terrain, then linked, pair by pair.', delivery: 'Measured.', spot: { target: 'network', t0: 15.6, t1: 17.6, strength: 0.6 } },
+    { id: 'VO-07', in: 18.4, out: 20.55, text: 'Aligned to a fraction of a pixel.', delivery: 'Precise.', spot: { target: 'subpixel', t0: 19.2, t1: 21.6, strength: 0.75 } },
     { id: 'VO-08', in: 22.4, out: 25.7, text: 'Then the waves interfere, and motion turns to colour.', delivery: 'The moment of discovery.', spot: { target: 'fringes', t0: 22.8, t1: 25.6, strength: 0.7 } },
-    { id: 'VO-09', in: 26.3, out: 29.8, text: 'Each pair is unwrapped, then inspected before it goes forward.', delivery: 'Brisk, then settling.', spot: { target: 'qc', t0: 28.1, t1: 29.85, strength: 0.75 } },
-    { id: 'VO-10', in: 30.3, out: 34.7, text: 'More than sixteen hundred interferograms become one history of the ground.', delivery: 'Building.', spot: { target: 'ifg-count', t0: 30.7, t1: 35.2, strength: 0.75 } },
-    { id: 'VO-11', in: 36.3, out: 41.7, text: 'Unreliable pixels are masked out. Nearly twenty-eight thousand square kilometres remain.', delivery: 'Grave, then a reveal on the number.', spot: { target: 'valid-area', t0: 38.3, t1: 41.7, strength: 0.8 } },
-    { id: 'VO-12', in: 42.4, out: 44.3, text: 'Every pixel is placed on the map.', delivery: 'Confident.' },
-    { id: 'VO-13', in: 45.0, out: 47.7, text: 'Each frame is delivered as sixteen products.', delivery: 'Matter-of-fact.', spot: { target: 'products', t0: 45.3, t1: 47.9, strength: 0.75 } },
-    { id: 'VO-14', in: 48.3, out: 51.65, text: 'Around Cabanatuan, satellite data show subsidence.', delivery: 'The headline, unhurried. Cabanatuan = "ka-ba-na-tu-an".', spot: { target: 'cabanatuan', t0: 48.3, t1: 52.0, strength: 1 } },
-    { id: 'VO-15', in: 52.3, out: 54.75, text: 'This signal still needs validation on the ground.', delivery: 'Measured and careful; not alarming.' },
-    { id: 'VO-16', in: 56.3, out: 59.05, text: 'Project LInOG. The work continues.', delivery: 'Warm sign-off over the fade to black; starts just after the 56.0 s music arrival. LInOG = "lee-nog".' },
+    { id: 'VO-09', in: 26.0, out: 29.65, text: 'Each pair is unwrapped, then inspected before it goes forward.', delivery: 'Brisk, then settling.', spot: { target: 'qc', t0: 28.1, t1: 29.85, strength: 0.75 } },
+    { id: 'VO-10', in: 30.3, out: 34.9, text: 'More than sixteen hundred interferograms become one history of the ground.', delivery: 'Building.', spot: { target: 'ifg-count', t0: 30.7, t1: 35.2, strength: 0.75 } },
+    { id: 'VO-11', in: 36.2, out: 41.7, text: 'Unreliable pixels are masked out. Nearly twenty-eight thousand square kilometres remain.', delivery: 'Grave, then a reveal on the number.', spot: { target: 'valid-area', t0: 38.3, t1: 41.7, strength: 0.8 } },
+    { id: 'VO-12', in: 42.4, out: 44.35, text: 'Every pixel is placed on the map.', delivery: 'Confident.' },
+    { id: 'VO-13', in: 44.85, out: 47.65, text: 'Each frame is delivered as sixteen products.', delivery: 'Matter-of-fact.', spot: { target: 'products', t0: 45.3, t1: 47.9, strength: 0.75 } },
+    { id: 'VO-14', in: 48.3, out: 51.8, text: 'Around Cabanatuan, satellite data show subsidence.', delivery: 'The headline, unhurried. Cabanatuan = "ka-ba-na-tu-an".', spot: { target: 'cabanatuan', t0: 48.3, t1: 52.0, strength: 1 } },
+    { id: 'VO-15', in: 52.3, out: 54.9, text: 'This signal still needs validation on the ground.', delivery: 'Measured and careful; not alarming.' },
+    { id: 'VO-16', in: 56.3, out: 61.3, text: 'Project LInOG. Towards nationwide ground deformation detection from space.', delivery: 'Warm sign-off over the end card, just after the 56.0 s music arrival; the card holds for the logos until the fade at 63 s. LInOG = "lee-nog".' },
   ];
   const PRONUNCIATION = { LInOG: 'lee-nog', Cabanatuan: 'ka-ba-na-tu-an' };
   if (typeof module !== 'undefined' && module.exports) module.exports = { CUES, PRONUNCIATION };
@@ -112,7 +127,8 @@ window.GEO_DATA = {
   'use strict';
   const L = (window.LINOG = window.LINOG || {});
   const W = 1920, H = 1080, TAU = Math.PI * 2;
-  Object.assign(L, { W, H, TAU, BPM: 120, BEAT: 0.5, BAR: 2, DURATION: 60, FPS: 60 });
+  const TM = L.TIMING; // src/timing.js: the film's length and fade
+  Object.assign(L, { W, H, TAU, BPM: 120, BEAT: 0.5, BAR: 2, DURATION: TM.DURATION, FPS: TM.FPS });
 
   /* ------------------------------------------------------------------ palette */
   const C = (L.C = {
@@ -130,10 +146,10 @@ window.GEO_DATA = {
   /* ------------------------------------------------------------------ timeline */
   L.ACTS = [
     { id: 'act1', t0: 0, t1: 10 }, { id: 'act2', t0: 10, t1: 18 }, { id: 'act3', t0: 18, t1: 30 },
-    { id: 'act4', t0: 30, t1: 42 }, { id: 'act5', t0: 42, t1: 52 }, { id: 'act6', t0: 52, t1: 60 },
+    { id: 'act4', t0: 30, t1: 42 }, { id: 'act5', t0: 42, t1: 52 }, { id: 'act6', t0: 52, t1: TM.DURATION },
   ];
   // Sub-sections from the storyboard. Camera pushes 1.00 -> 1.04 across each one.
-  L.SECTIONS = [[0, 4], [4, 10], [10, 14], [14, 18], [18, 22], [22, 26], [26, 30], [30, 36], [36, 42], [42, 48], [48, 52], [52, 56], [56, 60]];
+  L.SECTIONS = [[0, 4], [4, 10], [10, 14], [14, 18], [18, 22], [22, 26], [26, 30], [30, 36], [36, 42], [42, 48], [48, 52], [52, 56], [56, TM.DURATION]];
   /* Processing phases, numbered and named as in the LInOG ALOS-1 FBS+FBD pipeline v4.0 (processing manual D6, cited by
    * the DOST Y2Q2 report: "Phases 0 to 7 of the pipeline, 23 quality gates (G1–G23)"). `label` = the manual's phase
    * title, `short` = the tracker label (flowchart deck v4.0, slide 1). t0/t1 = where the film depicts the phase. */
@@ -159,7 +175,7 @@ window.GEO_DATA = {
   L.SAFE_HUD = { x0: 96, y0: 132, x1: 1824, y1: 958 };
   L.HUD_WINDOW = [10, 52];
   /** The film fades to black over its last three seconds (picture here, music in audio.js). */
-  L.FADE = [57, 60];
+  L.FADE = TM.FADE.slice();
   /** Shared by act 5 (ends on it) and act 6 (starts on it): the real P448 F0290 map around the Cabanatuan bowl, in WORLD
    *  coordinates (before the camera). The bowl's deepest point in the product is at BOWL. */
   L.CABANATUAN_VIEW = { lon: 121.1, lat: 15.45, ppd: 2000, cx: 960, cy: 540 };
@@ -1389,7 +1405,7 @@ window.GEO_DATA = {
 <script>/* src/audio.js */
 /* LInOG explainer — soundtrack engine (v2, documentary): original hybrid-orchestral score + voice-over mix.
  *
- * Output: 44.1 kHz stereo, exactly 60.000 s (2,646,000 frames); 16-bit WAV with seeded TPDF dither, peaks held at or below
+ * Output: 44.1 kHz stereo, exactly the film's length (src/timing.js: 66.000 s = 2,910,600 frames); 16-bit WAV with seeded TPDF dither, peaks held at or below
  * −1.5 dBFS by the master limiter (true peak ≤ −1 dBTP) (the levels are set by the voice and the bed, not by peak normalisation), last sample 0. Reproducible to ±1 LSB (Chromium's vectorised DSP paths can round differently run to run).
  * No ConvolverNode, no Math.random, no Date.
  *
@@ -1398,8 +1414,8 @@ window.GEO_DATA = {
  *      echo send). Voices are created just in time at ctx.suspend() points, so the live graph stays small.
  *   2. Effects in plain JS (bit-exact): two feedback-delay-network reverbs (room, hall) and a ping-pong echo.
  *   3. Music stem: the score (active level −18.2 dBFS, a look-ahead limiter at −1.5 dBFS as a safety ceiling) or an external
- *      music file (setMusic: matched to −18.2 dBFS, peak-safe) → ducking under the VO → drop ending (57–60 s: exponential
- *      low-pass sweep 18 kHz → 200 Hz while the final chord's reverb tail fades to exactly 0 at 60.000 s).
+ *      music file (setMusic: matched to −18.2 dBFS, peak-safe) → ducking under the VO → drop ending (DROP = src/timing.js FADE, 63–66 s: exponential
+ *      low-pass sweep 18 kHz → 200 Hz while the final chord's reverb tail fades to exactly 0 at the last sample).
  *      Balance for a narrated web documentary (see Ducking): the bed sits ≈ 12 LU under the voice during a line and swells
  *      in the longer gaps; the act hits, the 48 s accent and the 56 s arrival land between lines at about the voice's peaks.
  *   4. VO (setVO): WAV parsed in JS (PCM 16/24/32-bit int, 32/64-bit float; any channel count; any sample rate, resampled
@@ -1430,18 +1446,21 @@ window.GEO_DATA = {
  *          (felt piano, celesta, low drone; no drums)
  *   52–56  pull-back (wonder): B♭ – Csus – C over a rising bass, gentle 8th-note pulse, heartbeat toms
  *   56.0   end-card arrival, on the bar line with the picture's orbital ripple: a warm D-major (add 9) chord, soft
- *          boom + taiko, celesta F♯–A–D (no new note onsets after 56.5 s)
- *   57–60  drop: low-pass sweep + reverb tail to true silence at 60.000 s
+ *          boom + taiko, celesta F♯–A–D
+ *   56–63  the end-card hold (src/timing.js): the D-major chord sustains under the sign-off; a second, softer horn
+ *          chord on D (58.6) and the end motif's echoes on the bar lines (celesta 58, 60, 62; felt piano 60)
+ *   63–66  drop: low-pass sweep + reverb tail to true silence at the film's last sample
  */
 (function () {
   'use strict';
   const L = window.LINOG;
-  const SR = 44100, DUR = 60, N = SR * DUR;
+  const SR = 44100, DUR = L.TIMING.DURATION, N = SR * DUR; // src/timing.js
   const HITS = [10, 18, 30, 42]; // act cuts: riser → ensemble hit (the picture flares the through-line on each)
   const ACCENT = 48; // the Cabanatuan reveal
-  const MARKS = HITS.concat([ACCENT, 56]); // + the end-card arrival: never ducked (duckCurves). Not 52: the riser into
+  const END = L.TIMING.END_CARD; // 56.0: the end-card arrival (D major); the card holds until the drop
+  const MARKS = HITS.concat([ACCENT, END]); // + the end-card arrival: never ducked (duckCurves). Not 52: the riser into
   // act 6 stays under the VO-14 → VO-15 bridge, so the subsidence line is not dramatised before its caveat
-  const DROP = [57, 60]; // music low-pass sweep + fade to silence (the picture fades to black over the same span)
+  const DROP = L.TIMING.FADE.slice(); // music low-pass sweep + fade to silence (the picture fades to black over the same span)
   const VO_TARGET_DB = -16.5, VO_CEIL_DB = -1.5, MASTER_CEIL_DB = -1.5; // web delivery: ≈ −15 LUFS, true peak ≤ −1 dBTP
   const MUSIC_RMS_DB = -18.2; // active (gated) RMS of the music stem before ducking — the score and external music alike
   const DUCK = { depth: 6.5, pre: 0.15, post: 0.4, merge: 0.9, eqDb: 6, eqHz: 1500, eqQ: 0.6, scDepth: 3.5, scLook: 0.03, scAttack: 0.03, scRelease: 0.3 };
@@ -1471,7 +1490,7 @@ window.GEO_DATA = {
     [30, 32, 'Dm'], [32, 34, 'Bb'], [34, 36, 'F'], [36, 38, 'Gm'], [38, 40, 'Bb'], [40, 42, 'C'],
     [42, 44, 'F'], [44, 46, 'C'], [46, 48, 'Dm'],
     [48, 50, 'Bbmaj7'], [50, 52, 'FA'],
-    [52, 54, 'Bb'], [54, 55, 'Csus'], [55, 56, 'C'], [56, 60, 'D'],
+    [52, 54, 'Bb'], [54, 55, 'Csus'], [55, 56, 'C'], [56, DUR, 'D'],
   ];
   // bus levels (the mix): strings carry, grooves support, hits accent
   const MIX = { pad: 1.6, low: 1.4, ost: 2.0, brass: 1.5, perc: 0.3, hit: 0.17, fx: 0.55, sub: 0.6, keys: 0.5, air: 0.35 };
@@ -1484,9 +1503,9 @@ window.GEO_DATA = {
   };
   // section levels (0..1) — the arrangement's dynamics
   const LV = {
-    pad: curve([[4, 0.5], [9.8, 0.66], [10, 0.64], [17.8, 0.66], [18, 0.56], [29.8, 0.66], [30, 0.6], [35.6, 0.66], [36.2, 0.46], [38, 0.5], [41.8, 0.72], [42, 0.66], [47.8, 0.66], [48, 0.55], [52, 0.6], [55.8, 0.58], [56, 0.5], [60, 0.5]]),
-    cut: curve([[4, 900], [10, 1500], [18, 1700], [30, 1950], [36, 1150], [38, 1300], [42, 2300], [48, 2700], [52, 2000], [56, 2500], [60, 2500]]),
-    low: curve([[4, 0.3], [9.9, 0.5], [10, 0.72], [17.9, 0.72], [18, 0.68], [29.9, 0.68], [30, 0.74], [35.8, 0.78], [36.2, 0.32], [38, 0.42], [42, 0.74], [47.9, 0.8], [48, 0.68], [52, 0.5], [56, 0.46], [57.2, 0.42], [60, 0.36]]),
+    pad: curve([[4, 0.5], [9.8, 0.66], [10, 0.64], [17.8, 0.66], [18, 0.56], [29.8, 0.66], [30, 0.6], [35.6, 0.66], [36.2, 0.46], [38, 0.5], [41.8, 0.72], [42, 0.66], [47.8, 0.66], [48, 0.55], [52, 0.6], [55.8, 0.58], [56, 0.5], [DUR, 0.5]]),
+    cut: curve([[4, 900], [10, 1500], [18, 1700], [30, 1950], [36, 1150], [38, 1300], [42, 2300], [48, 2700], [52, 2000], [56, 2500], [DUR, 2500]]),
+    low: curve([[4, 0.3], [9.9, 0.5], [10, 0.72], [17.9, 0.72], [18, 0.68], [29.9, 0.68], [30, 0.74], [35.8, 0.78], [36.2, 0.32], [38, 0.42], [42, 0.74], [47.9, 0.8], [48, 0.68], [52, 0.5], [56, 0.46], [DROP[0] + 0.2, 0.42], [DUR, 0.36]]),
     ost: curve([[6, 0.26], [9.9, 0.55], [10, 0.72], [14, 0.74], [17.9, 0.78], [18, 0.62], [29.9, 0.82], [30, 0.8], [35.9, 0.82], [38, 0.3], [41.9, 0.95], [42, 0.82], [47.9, 0.95], [52, 0.26], [55.9, 0.34]]),
     perc: curve([[4, 0.3], [9.9, 0.85], [10, 0.62], [17.9, 0.72], [18, 0.66], [29.9, 0.84], [30, 0.82], [35.9, 0.8], [38, 0.35], [41.9, 0.85], [42, 0.8], [47.9, 0.85], [52, 0.3], [56, 0.38]]),
   };
@@ -1811,7 +1830,7 @@ window.GEO_DATA = {
       at(t, t + 0.2, () => spic(t, m, v, { pan: 0.3, bright, dj, off: o }));
     }
 
-    // string pads from 4 s: three voice-led lines (common tones tied), slow attacks, final chord released at 57.6 s
+    // string pads from 4 s: three voice-led lines (common tones tied), slow attacks, final chord released 0.6 s into the drop
     const lines = [[], [], []];
     for (const [a, b, name] of PROG) {
       if (b <= 4) continue;
@@ -1820,13 +1839,13 @@ window.GEO_DATA = {
     const PADV = [{ pan: -0.42, vib: 5.1 }, { pan: 0.05, vib: 5.5 }, { pan: 0.42, vib: 4.8 }];
     const padOpts = (v, first, last) => ({ lv: 0.03, att: first ? 1.4 : 0.35, rel: last ? 1.5 : 0.45, pan: PADV[v].pan + (R() - 0.5) * 0.1, vib: PADV[v].vib + R() * 0.3, dj: (R() - 0.5) * 4, cut: LV.cut, bus: B.pad });
     lines.forEach((ln, v) => ln.forEach(([t0, t1, m], i) => {
-      const last = t1 >= DUR - 1e-6, e1 = last ? 57.6 : t1, o = padOpts(v, i === 0, last);
+      const last = t1 >= DUR - 1e-6, e1 = last ? DROP[0] + 0.6 : t1, o = padOpts(v, i === 0, last);
       at(t0, e1 + o.rel + 0.1, () => padNote(t0, e1, m, o));
     }));
-    for (const [a, b] of [[42, 52], [56, 57.6]]) lines[2].forEach(([t0, t1, m]) => { // violins an octave above the top line
+    for (const [a, b] of [[42, 52], [END, DROP[0] + 0.6]]) lines[2].forEach(([t0, t1, m]) => { // violins an octave above the top line
       const s = Math.max(a, t0), e = Math.min(b, t1);
       if (e - s < 0.5) return;
-      const o = { ...padOpts(2, true, e >= 57.6), lv: 0.016, att: 0.6, pan: 0.25 };
+      const o = { ...padOpts(2, true, e >= DROP[0] + 0.6), lv: 0.016, att: 0.6, pan: 0.25 };
       at(s, e + o.rel + 0.1, () => padNote(s, e, m + 12, o));
     });
 
@@ -1834,7 +1853,7 @@ window.GEO_DATA = {
     const low = [];
     for (const [a, b, name] of PROG) { if (b <= 10) continue; const m = CH[name].bass, last = low[low.length - 1]; if (last && last[2] === m) last[1] = b; else low.push([Math.max(a, 10), b, m]); }
     low.forEach(([t0, t1, m]) => {
-      const last = t1 >= DUR - 1e-6, e1 = last ? 57.6 : t1, o = { lv: 0.06, att: 0.18, rel: last ? 1.4 : 0.35, marc: HITS.includes(t0) || t0 === ACCENT };
+      const last = t1 >= DUR - 1e-6, e1 = last ? DROP[0] + 0.6 : t1, o = { lv: 0.06, att: 0.18, rel: last ? 1.4 : 0.35, marc: HITS.includes(t0) || t0 === ACCENT };
       at(t0, e1 + o.rel + 0.1, () => lowNote(t0, e1, m, o));
     });
 
@@ -1855,12 +1874,17 @@ window.GEO_DATA = {
     [[52, 74, 0.3], [52.75, 76, 0.22], [53, 77, 0.28], [54, 79, 0.28], [54.75, 77, 0.2], [55, 76, 0.26], [55.5, 79, 0.22], [56, 78, 0.3], [56.25, 81, 0.26], [56.5, 86, 0.28]].forEach(([t, m, v]) => cel(t, m, v, 0.25));
     pno(52, [46, 58], 0.3); pno(54, [48, 55], 0.3); pno(55, [48, 52], 0.24); pno(56, [38, 50, 57, 66], 0.13);
 
-    // shimmer + air: discovery (22), the reveal (48), the close (52–60)
+    // shimmer + air: discovery (22), the reveal (48), the close (52 → the end)
     [[84, 0.07, 0.26, -0.3], [89, 0.06, 0.34, 0.35], [91, 0.05, 0.19, 0]].forEach(([m, lv, hz, pn], i) => { const t0 = 22 + i * 0.25; at(t0, 26.5, () => shimmer(t0, 26.4, m, lv, hz, pn, 1.0, 1.2)); });
     [[81, 0.1, 0.21, -0.4], [86, 0.09, 0.29, 0.4], [89, 0.07, 0.37, -0.1]].forEach(([m, lv, hz, pn], i) => { const t0 = 48.2 + i * 0.4; at(t0, 52.8, () => shimmer(t0, 52.7, m, lv, hz, pn, 1.6, 0.9)); });
-    [[86, 0.1, 0.23, -0.45], [88, 0.075, 0.33, 0.35], [93, 0.07, 0.19, 0.05]].forEach(([m, lv, hz, pn], i) => { const t0 = 52 + i * 0.3; at(t0, 59.7, () => shimmer(t0, 59.6, m, lv, hz, pn, 1.2, 2.4)); });
-    at(56, 59.7, () => shimmer(56, 59.6, 90, 0.07, 0.27, 0.5, 0.8, 2.4));
-    { const o = off(); at(48, 59.7, () => air(48, 59.6, 0.04, 2, 2.5, o)); }
+    [[86, 0.1, 0.23, -0.45], [88, 0.075, 0.33, 0.35], [93, 0.07, 0.19, 0.05]].forEach(([m, lv, hz, pn], i) => { const t0 = 52 + i * 0.3; at(t0, DUR - 0.3, () => shimmer(t0, DUR - 0.4, m, lv, hz, pn, 1.2, 2.4)); });
+    at(END, DUR - 0.3, () => shimmer(END, DUR - 0.4, 90, 0.07, 0.27, 0.5, 0.8, 2.4));
+    { const o = off(); at(48, DUR - 0.3, () => air(48, DUR - 0.4, 0.04, 2, 2.5, o)); }
+    // the end-card hold (56 → the drop): a second, softer horn chord on D and the end motif's echoes on the bar lines,
+    // so the logos sit in a warm, slowly moving D major. Drawn last: the humanisation of everything before is unchanged.
+    horn(END + 2.6, DROP[0] + 1.4, [50, 57, 62], 0.17);
+    [[END + 2, 78, 0.15], [END + 2.25, 81, 0.13], [END + 2.5, 86, 0.14], [END + 4, 74, 0.14], [END + 4.5, 78, 0.12], [END + 5, 81, 0.11], [END + 6, 86, 0.1]].forEach(([t, m, v]) => cel(t, m, v, 0.25));
+    pno(END + 4, [38, 50, 57, 66], 0.09);
 
     /* ---- scheduler: create voices ≥ 1 s before they start, release them once they are silent */
     EV.sort((a, b) => a.t - b.t);
@@ -2244,7 +2268,7 @@ window.GEO_DATA = {
   }
 
   /** In place on the music stem [L, R]: speech-band dip + ducking gain, then the drop ending (24 dB/oct low-pass — two
-   *  Butterworth stages — sweeping 18 kHz → 200 Hz exponentially over 57–60 s, and a cos(π/2·x²) fade to 0 at 60.000 s). */
+   *  Butterworth stages — sweeping 18 kHz → 200 Hz exponentially over DROP (63–66 s), and a cos(π/2·x²) fade to 0 at the last sample). */
   function shape([ml, mr], dk) {
     const eq = (i) => bq('peaking', DUCK.eqHz, DUCK.eqQ, -DUCK.eqDb * dk.amt[i]); // speech-band dip riding the duck
     biquadTV(ml, eq); biquadTV(mr, eq);
@@ -2327,8 +2351,8 @@ window.GEO_DATA = {
 </script>
 <script>/* src/scenes/act1.js */
 /* Act 1 · The hook & mission (0–10 s, bars 1–5). No HUD. Camera sections [0,4] and [4,10].
- * Narrated (src/vo_cues.js): VO-01 0.5 "The Earth never stops moving." · VO-02 2.65 "Yet we seldom see it." ·
- * VO-03 4.5 "From orbit, radar measures it, even through cloud." · VO-04 7.8 "This is Project LInOG."
+ * Narrated (src/vo_cues.js): VO-01 0.4 "The Earth never stops moving." · VO-02 2.67 "Yet we seldom see it." ·
+ * VO-03 4.5 "From orbit, radar measures it, even through cloud." · VO-04 7.9 "This is Project LInOG."
  * Text v2 (≤ 6 readable strings per section): the headline THE EARTH NEVER / STOPS MOVING. (role 'headline', one QA
  * string per line) + "L-band · λ = 23.6 cm"; then "Luzon, Philippines", "ALOS-1 PALSAR · ascending pass" and the full
  * name. The title card is the official LInOG logo + the NIGS seal and the white EGG lockup (real artwork, L.drawImg).
@@ -3030,12 +3054,12 @@ window.GEO_DATA = {
    * 7.0 the LInOG logo is revealed left → right by a feathered sweep (the satellite "L" first, then its beam and "InOG",
    * as if the radar painted them); 7.125 / 7.25 the full name scans in; 7.25 / 7.375 the NIGS seal and the white EGG
    * lockup fade + rise in (a hairline draws between them); 7.5–9.0 the acronym decodes on quarter notes
-   * (L · In · O · G). Complete by ≈ 7.85, it holds through VO-04 "This is Project LInOG." (7.8–9.55) and leaves together
-   * 9.6 → 9.95 (fade / scan-out) as the iris closes. Without the LInOG artwork the headline PROJECT LInOG stands in. */
+   * (L · In · O · G). Complete by ≈ 7.85, it holds through VO-04 "This is Project LInOG." (7.9–9.72) and leaves together
+   * 9.7 → 9.95 (fade / scan-out) as the iris closes. Without the LInOG artwork the headline PROJECT LInOG stands in. */
   const HERO = { x: 172, y: 100, h: 176, at: 7.0, dur: 0.75, feather: 76 }; // logo:linog (≈ 190 px tall on screen)
   const SUB_O = { kind: 'sans', size: 28, weight: 500 }, SUB_X = 174, SUB_Y = [322, 360];
   const LOGO = { y: 392, h: 68, gap: 22 };             // credits row: top + height (≥ 48 px on screen, never stretched)
-  const T_OUT = 9.95, T_OUT_D = 0.35;                  // exit springs start at 9.6
+  const T_OUT = 9.95, T_OUT_D = 0.25;                  // exit springs start at 9.7, as VO-04 ends on "LInOG"
   const ACR = [0, 1, 2, 3].map((i) => 7.5 + 0.5 * i);  // acronym decode on quarter notes
   const acrK = (lt, i) => L.sp(lt, ACR[i], 0.35);
   const hi = (lt, i) => L.css(L.mix(C.text, C.cyan, clamp(acrK(lt, i))));
@@ -3272,7 +3296,7 @@ window.GEO_DATA = {
  *         the VO-06 spotlight target 'network').  Everything stays inside the HUD-safe box at the section's maximum
  *         camera push (×1.04 in 10–14, ×1.0816 in 14–18).
  * TEXT  (v2, narrated film: ≤ 6 readable strings per section; the narration carries the story)
- *   10–14  "779" · "PALSAR Level 1.1 archives · 1.04 TB" · "FBS" · "FBD" ·
+ *   10–14  "779" · "PALSAR Level 1.1 archives · 2007–2011 · 1.04 TB" · "FBS" · "FBD" ·
  *          "FBS band-limited 28 → 14 MHz · FBS + FBD merged into one stack" · "Level 1.1 SLC"
  *   14–18  "Elevation model" · "NAMRIA IfSAR DEM (+ SRTM) · schematic" · "Baseline network" · "P448 F0290 · 24 dates" ·
  *          "· 149 pairs formed" · "Schematic dates and baselines"
@@ -3288,7 +3312,7 @@ window.GEO_DATA = {
  *  10.625  speckled SLC scene strip scans in above the chip (crisp 2:1); 10.75 zoom box, 10.875 zoom leaders → the
  *          chip is that box blown up, one sample per cell.  11.125 the phase channel scans over the chip.
  *  10.750–11.625  41×19 = 779 tiles fill in eight 16th-note sweeps; the hero counter (display 700, amber ink) rolls
- *          0 → 779 with them and holds to the end of the section.  10.875 "PALSAR Level 1.1 archives · 1.04 TB".
+ *          0 → 779 with them and holds to the end of the section.  10.875 "PALSAR Level 1.1 archives · 2007–2011 · 1.04 TB" (VO-05: "Four years of satellite radar observations").
  *  11.000  divider; 11.25 frequency axis (deco ticks −14…+14 MHz); 11.5 FBS 28 MHz band (amber) + label;
  *          11.75 FBD 14 MHz band (blue) + label.
  * ── Bar 7 · 12–14 s ────────────────────────────────────────────────────────────────────────────────
@@ -3800,7 +3824,7 @@ window.GEO_DATA = {
       const co = { kind: 'display', size: 88, weight: 700, color: ink().amber, p: rv(lt, 0.625, 0.3), scanColor: C.amber };
       counter(ctx, A.gx - 4, A.cy, count, A.cols * A.rows, co, null, null, 'a2-count');
       const wBox = L.measure(ctx, '779', co).w;
-      cardText(ctx, 'PALSAR Level 1.1 archives · 1.04 TB', A.gx - 4 + wBox + 26, A.cy, { kind: 'sans', size: 26, weight: 500, p: rv(lt, 0.875, 0.4), scanColor: C.amber });
+      cardText(ctx, 'PALSAR Level 1.1 archives · 2007–2011 · 1.04 TB', A.gx - 4 + wBox + 26, A.cy, { kind: 'sans', size: 26, weight: 500, p: rv(lt, 0.875, 0.4), scanColor: C.amber });
       drawUnify(ctx, lt, t);
     });
   }
@@ -6846,11 +6870,12 @@ window.GEO_DATA = {
 
 </script>
 <script>/* src/scenes/act6.js */
-/* Act 6 · Where LInOG stands today + end card (52–60 s) — bars 27–30, HUD gone: the whole title-safe frame.
- * VO-15 52.3 "This signal still needs validation on the ground." · VO-16 55.4 "Project LInOG. The work continues."
+/* Act 6 · Where LInOG stands today + end card (52–66 s) — bars 27–33, HUD gone: the whole title-safe frame.
+ * VO-15 52.3 "This signal still needs validation on the ground." · VO-16 56.3 "Project LInOG. Towards nationwide ground
+ * deformation detection from space."
  *
  * Beat plan (lt = t − 52 s · 1 beat = 0.5 s · bars start at lt 0, 2, 4, 6). The runtime adds the cut flare + shock
- * ring at 52.0 and fades the picture to black over 57–60 s (L.FADE); this act adds neither.
+ * ring at 52.0 and fades the picture to black over 63–66 s (L.FADE, src/timing.js); this act adds neither.
  *  A · WHERE LInOG STANDS TODAY (52–55) — REAL data (L.real)
  *   0.00  BAR 27 hit on act 5's last picture, reproduced exactly (handView): the real P448 F0290 product at
  *         L.CABANATUAN_VIEW under act 5's final camera, act 5's dimmed regional mosaic, land base, "no data" hatch,
@@ -6863,20 +6888,22 @@ window.GEO_DATA = {
  *         (descending, gold) sweeps north → south.
  *   0.50  AS OF OCTOBER 2026 · 0.625 16 frames processed · 0.75 12 ascending · 0.875 4 descending (swatches = the
  *         footprint colours) · 1.0 legend · 1.125 source. Each readable ≥ 1.6 s.
- *  B · END CARD (54–60)
+ *  B · END CARD (54–66)
  *   2.00  BAR 28: the TL leaves the bowl — contour → ring, crimson → white-hot → cyan — on an arc (≈ 360 px, peak
  *         ≈ 800 px/s) to the orbital swoosh of the white EGG lockup (ring size, aspect and tilt measured from the PNG).
  *   2.25  the map dissolves while receding; 2.5 → 2.81 the overview text unscans, top to bottom, on 32nds.
  *   2.50  PROJECT (kicker) + the official LInOG logo, wiped in left → right with a feathered edge (≈ 55.0) ·
- *         2.75 full name · 2.875 tagline.
- *   2.75  the EGG globe unmasks radially around the ring and the ring's arcs slip behind it (the TL is clipped by the
+ *         2.75 full name · 2.875 tagline TOWARDS NATIONWIDE GROUND DEFORMATION DETECTION FROM SPACE (cyan headline).
+ *   2.75  the EGG lockup (150 px tall, emphasised in v3) — its globe unmasks radially around the ring and the ring's
+ *         arcs slip behind it (the TL is clipped by the
  *         growing globe disc): the ring takes the artwork's white and becomes the logo's orbit; a cyan satellite
  *         bead + streak carries the through-line. 2.875 the lab wordmark wipes in.
  *   2.875 a white hairline draws out from the centre and opens into the partner band on the 55.0 beat; 3.125 → 3.56
  *         logos (+ captions) fade + rise left → right on 32nds; 3.625 JAXA/METI credit; 3.75 footer (read by ≈ 55.9).
  *   4.00  BAR 29 (56.0 hit): orbital ripple + ring flare. Then the card holds with gentle motion: the satellite keeps
  *         orbiting (one orbit per two bars, behind the globe and out again), the kicker's tracking breathes open, the
- *         ring glow breathes on the beat, the camera pushes ×1.04 per section. 57–60: the runtime fade to black.
+ *         ring glow breathes on the beat, the camera pushes ×1.04 over 56–66. The card holds, complete, 56–63 for
+ *         the sign-off and the logos; 63–66: the runtime fade to black.
  */
 (function () {
   'use strict';
@@ -7138,9 +7165,9 @@ window.GEO_DATA = {
 
   /* ------------------------------------------------------------ end card layout (world px) */
   // kicker · the official LInOG logo (hero) · full name · tagline · EGG lockup (+ TL ring) · partner band; footer = screen
-  const KICK_Y = 166, LOGO = { top: 188, h: 236 }, NAME_Y = 482, TAG_Y = 520;
-  const LOCK = { h: 92, top: 562 };
-  const BAND = { y: 694, h: 216 };
+  const KICK_Y = 146, LOGO = { top: 166, h: 236 }, NAME_Y = 458, TAG_Y = 499;
+  const LOCK = { h: 150, top: 526 };   // the white EGG lockup with its orbiting satellite (v3: 92 → 150 px, emphasised)
+  const BAND = { y: 700, h: 216 };
   /* The white EGG lockup (assets/logos/egg_lockup_white.png, 632 × 260), measured from the PNG in its own pixels:
    * the orbital swoosh is the centre line of an ellipse (two-arc least-squares fit), the globe its outer circle; the
    * swoosh arcs stop where they would enter the globe (r ≈ 88.5); the lab wordmark starts at x = 179. */
@@ -7209,7 +7236,8 @@ window.GEO_DATA = {
   }
 
   /* ------------------------------------------------------------ end card drawing */
-  const kickTracking = (lt) => 0.3 + 0.06 * L.ease.inOutSine((lt - 3.0) / 5.0);   // breathes open through the hold
+  const HOLD = L.DURATION - T0 - 3.0;                                              // 55.0 → the end of the film
+  const kickTracking = (lt) => 0.3 + 0.06 * L.ease.inOutSine((lt - 3.0) / HOLD);  // breathes open through the hold
   const logoK = (lt) => sp(lt, T_HERO, 0.6);
   let SCR = null;                                                                  // scratch canvas (fully redrawn on use)
   /** The official LInOG logo (hero): a feathered wipe left → right, the way the satellite's beam reads the letters,
@@ -7247,13 +7275,13 @@ window.GEO_DATA = {
     }
     // fallback while assets/logos/linog.png is missing: the wordmark, centred on the logo's slot
     L.text(ctx, [{ s: L.caps('Project '), color: C.text }, { s: 'LInOG', color: C.cyan }], 960, LOGO.top + LOGO.h / 2 + 34,
-      { kind: 'display', size: 96, weight: 700, tracking: 0.02 + 0.012 * L.ease.inOutSine((lt - 3.0) / 5.0), align: 'center', p, role: 'headline', id: 'a6-title' });
+      { kind: 'display', size: 96, weight: 700, tracking: 0.02 + 0.012 * L.ease.inOutSine((lt - 3.0) / HOLD), align: 'center', p, role: 'headline', id: 'a6-title' });
   }
   function drawNames(ctx, lt) {
     L.text(ctx, 'Leveraging InSAR for Observation and Modeling of Earthquake Generators', 960, NAME_Y,
       { kind: 'sans', size: 30, weight: 500, color: C.text, align: 'center', p: sp(lt, 2.75, 0.4), id: 'a6-name' });
-    L.text(ctx, 'Measuring mm-scale crustal movements from space', 960, TAG_Y,
-      { kind: 'sans', size: 25, weight: 500, color: C.textDim, align: 'center', p: sp(lt, 2.875, 0.4), id: 'a6-tag' });
+    L.text(ctx, L.caps('Towards nationwide ground deformation detection from space'), 960, TAG_Y,
+      { kind: 'display', size: 26, weight: 700, tracking: 0.06, color: L.ink(C.cyan), align: 'center', p: sp(lt, 2.875, 0.4), role: 'headline', id: 'a6-tag' });
   }
   /** The white EGG lockup: the globe unmasks radially around the ring, then the lab wordmark wipes in. */
   function drawLockup(ctx, lt, E) {
@@ -7407,7 +7435,7 @@ window.GEO_DATA = {
 
   /* ------------------------------------------------------------ scene */
   L.scene({
-    id: 'act6', t0: T0, t1: T0 + 8,
+    id: 'act6', t0: T0, t1: L.DURATION,
     focus: FOCUS,
     init() {
       handView(); vbarCanvas(); ensure();

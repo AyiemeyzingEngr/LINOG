@@ -10,6 +10,7 @@ const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
 const lib = require('./lib');
+const LAST = require('../src/timing.js').DURATION - 0.01;
 
 const args = process.argv.slice(2);
 const opt = (k, d) => { const i = args.indexOf('--' + k); return i >= 0 ? args[i + 1] : d; };
@@ -21,8 +22,8 @@ const flag = (k) => args.includes('--' + k);
   let times;
   if (opt('times')) times = opt('times').split(',').map(Number);
   else {
-    const from = +opt('from', 0), to = +opt('to', 59.99), step = +opt('step', 1);
-    times = []; for (let t = from; t <= to + 1e-9; t = Math.round((t + step) * 1000) / 1000) times.push(Math.min(t, 59.99));
+    const from = +opt('from', 0), to = +opt('to', LAST), step = +opt('step', 1);
+    times = []; for (let t = from; t <= to + 1e-9; t = Math.round((t + step) * 1000) / 1000) times.push(Math.min(t, LAST));
   }
   let mode = 'dev';
   if (flag('dist')) { mode = require('../build').build(); }
